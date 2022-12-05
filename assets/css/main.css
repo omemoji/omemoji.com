@@ -1,0 +1,49 @@
+@tailwind tailwindcss/base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0px;
+  padding: 0px;
+}
+body {
+  margin: 0px;
+  padding: 0px;
+  padding-top: 62px;
+}
+
+h1{
+  font-size: 32px;
+}
+ul{
+  list-style: none;
+}
+.omemoji-color {
+  --tw-bg-opacity: 1;
+  background-color: rgba(185, 28, 28, var(--tw-bg-opacity));
+}
+
+.header-shadow {
+  --tw-shadow: 0px -15px 10px 20px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
+    var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
+.card {
+  margin: 12px;
+  padding: 8px;
+  max-width: 100%;
+  background: #fff;
+  border-style: solid;
+  border-color: #ccc;
+  border-radius: 5px;
+  border-width: 1px;
+}
+.card-image {
+  padding: 0;
+  border-style: none;
+}
+.card-shadow {
+  border-style: none;
+  box-shadow: 0 1px 5px #aaa;
+}
