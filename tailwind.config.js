@@ -11,6 +11,7 @@ module.exports = {
   theme: {
     screens: {
       laptop: "800px",
+      xs: "480px",
       md: "768px",
     },
     container: {

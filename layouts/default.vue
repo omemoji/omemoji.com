@@ -6,6 +6,7 @@
       <div class="">
         <slot />
       </div>
+      <LinkCard class="card-shadow" />
       <Footer />
     </div>
   </div>

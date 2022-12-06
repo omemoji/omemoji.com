@@ -1,22 +1,15 @@
 <template>
-  
   <div class="card card-shadow">
     <div class="card card-image">
-      <img class="w-full rounded-md" src="/wallpaper.png" />
+      <img class="w-full rounded-md title-image" src="/wallpaper.png" />
     </div>
     <div class="card">
-      <h2 class="text-center">omemoji.com</h2>
-      <div class="card">omemojiのポートフォリオ</div>
+      <h2 class="text-center m-1">Home</h2>
+      <div class="text-center mb-2">
+        創作物紹介 is omemoji's portfolio website.
+      </div>
     </div>
   </div>
-
-  <div class="card card-shadow">
-    <h2 class="text-center">Contents</h2>
-    <div class="card card-image">
-      <img class="w-full rounded-md" src="/wallpaper.png" />
-    </div>
-  </div>
-
 </template>
 <script>
 export default {};
