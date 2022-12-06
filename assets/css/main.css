@@ -5,26 +5,28 @@
 * {
   margin: 0px;
   padding: 0px;
+  border-color: #ccc;
 }
 body {
   margin: 0px;
   padding: 0px;
-  padding-top: 62px;
+  padding-top: 0px;
 }
 
-h1{
+h1 {
   font-size: 32px;
 }
-ul{
+ul {
   list-style: none;
 }
 .omemoji-color {
   --tw-bg-opacity: 1;
-  background-color: rgba(185, 28, 28, var(--tw-bg-opacity));
+  /* background-color: rgba(185, 28, 28, var(--tw-bg-opacity)); */
+  background-color: rgba(0, 0, 0, var(--tw-bg-opacity));
 }
 
 .header-shadow {
-  --tw-shadow: 0px -15px 10px 20px rgba(0, 0, 0, 0.5);
+  --tw-shadow: 0px 8px 10px -4px rgba(0, 0, 0, 0.6);
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
     var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }

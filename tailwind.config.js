@@ -9,6 +9,10 @@ module.exports = {
     "./app.vue",
   ],
   theme: {
+    screens: {
+      laptop: "800px",
+      md: "768px",
+    },
     container: {
       center: true,
     },
