@@ -1,23 +1,22 @@
 <template>
-  <div class="card">
+  <div class="p-2 m-0 bg-black/10 text-black">
     <h2 class="text-center">Link</h2>
-    <ul class="flex-wrap flex">
-      <li v-for="item in items" class="w-1/3">
+
+    <ul class="flex-wrap flex justify-center">
+      <li v-for="item in items" class="">
         <a
           target="_blank"
           rel="noopener noreferrer"
           :href="item.href"
-          class="flex justify-center xs:justify-start p-2 my-2 rounded-md border hover:bg-gray-200 m-1 my-1"
+          class="card w-12 h-12 flex justify-center transition-colors hover:bg-white/0 bg-white/80 p-2 m-1"
         >
-          <img :src="item.icon" class="w-8 h-8 my-auto" :alt="item.name" />
-          <p class="hidden xs:block xs:my-auto xs:mx-3">{{ item.name }}</p>
+          <img :src="item.icon" class="w-8 my-auto" :alt="item.name" />
         </a>
       </li>
     </ul>
   </div>
 </template>
 <script>
-import omemoji from "@/assets/logo/omemoji-icon.png";
 import github from "@/assets/logo/github.svg";
 import twitter from "@/assets/logo/twitter.svg";
 import instagram from "@/assets/logo/instagram.svg";
@@ -29,11 +28,6 @@ export default {
     return {
       items: [
         {
-          icon: omemoji,
-          name: "Home",
-          href: "/",
-        },
-        {
           icon: github,
           name: "GitHub",
           href: "https://github.com/Omemoji",
@@ -44,14 +38,14 @@ export default {
           href: "https://twitter.com/omemoji_itf",
         },
         {
-          icon: instagram,
-          name: "Instagram",
-          href: "https://instagram.com/omemoji",
-        },
-        {
           icon: zenn,
           name: "Zenn",
           href: "https://zenn.dev/omemoji/",
+        },
+        {
+          icon: instagram,
+          name: "Instagram",
+          href: "https://instagram.com/omemoji",
         },
         {
           icon: inkscape,

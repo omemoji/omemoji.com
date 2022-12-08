@@ -1,13 +1,15 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+
   app: {
+    
     head: {
-      titleTemplate: "omemoji",
+      titleTemplate: "創作物紹介",
       link: [
         { rel: "icon", type: "image/png", href: "/favicon.png" },
         {
           rel: "apple-touch-icon",
-          href: "https://www.omemoji.dev/omemoji_square.png",
+          href: "https://omemoji.dev/omemoji.png",
         },
       ],
       htmlAttrs: {
@@ -39,17 +41,26 @@ export default defineNuxtConfig({
         {
           hid: "og:image",
           property: "og:image",
-          content: "https://omemoji.com/omemoji_square.png",
+          content: "https://omemoji.com/omemoji.png",
         },
         { name: "twitter:card", content: "summary" },
       ],
     },
+    
   },
-  css: ["~/assets/css/main.css"],
+  modules: [
+    '@nuxt/image-edge',
+  ],
+  image: {
+  },
+  css: ["~/assets/css/main.css",
+],
   postcss: {
     plugins: {
       tailwindcss: {},
       autoprefixer: {},
     },
   },
+
+  
 });
