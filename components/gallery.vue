@@ -1,5 +1,44 @@
 <template>
-    <div class="card card-shadow p-2 m-3 bg-white">
-      <h2 class="text-center">Gallery</h2>
+  <div class="card card-shadow bg-white m-3 p-3">
+    <h2 class="text-center">Gallery</h2>
+    <div class="card mt-3 p-3" style="font-size: 0">
+      <h3 class="text-center">Artworks</h3>
+      <hr class="my-3" />
+      <div class="aspect-square overflow-y-auto over-contain">
+        <div
+          v-for="(artwork, i) in artworks"
+          :key="i"
+          class="w-1/3 inline-block mb-0 border border-white"
+        >
+          <nuxt-link v-if="i <= 8" :to="'/Artworks/' + artwork.id">
+            <nuxt-img
+              :src="artwork.image"
+              width="300"
+              quality="30"
+              class="object-cover aspect-square"
+            />
+          </nuxt-link>
+          <nuxt-link v-if="i > 8" :to="'/Artworks/' + artwork.id">
+            <nuxt-img
+              :src="artwork.image"
+              width="300"
+              quality="30"
+              class="object-cover aspect-square"
+              loading="lazy"
+            />
+          </nuxt-link>
+        </div>
+      </div>
     </div>
-  </template>
+  </div>
+</template>
+<script>
+import artworks from "@/assets/json/artworks.json";
+export default {
+  data() {
+    return {
+      artworks: artworks,
+    };
+  },
+};
+</script>

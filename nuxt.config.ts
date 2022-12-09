@@ -1,8 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-
   app: {
-    
     head: {
       titleTemplate: "創作物紹介",
       link: [
@@ -32,7 +30,7 @@ export default defineNuxtConfig({
         },
         { hid: "og:type", property: "og:type", content: "website" },
         { hid: "og:url", content: "https://omemoji.com/" },
-        { hid: "og:title", property: "og:title", content: "omemoji"},
+        { hid: "og:title", property: "og:title", content: "omemoji" },
         {
           hid: "og:description",
           property: "og:description",
@@ -46,21 +44,15 @@ export default defineNuxtConfig({
         { name: "twitter:card", content: "summary" },
       ],
     },
-    
   },
-  modules: [
-    '@nuxt/image-edge',
-  ],
-  image: {
-  },
-  css: ["~/assets/css/main.css",
-],
+  modules: ["@nuxt/image-edge"],
+  image: {},
+  plugins: [],
+  css: ["~/assets/css/main.css"],
   postcss: {
     plugins: {
       tailwindcss: {},
       autoprefixer: {},
     },
   },
-
-  
 });

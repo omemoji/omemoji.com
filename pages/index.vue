@@ -1,6 +1,6 @@
 <template>
   <div class="card card-shadow m-3 p-3 bg-white">
-    <div class="card bg-white/40 mb-3">
+    <div class="card">
       <nuxt-img
         width="800"
         class="title-image"
@@ -8,8 +8,8 @@
         alt="創作物紹介 omemoji"
       />
     </div>
-    <h1 class="text-center">創作物紹介</h1>
-    <div class="text-center my-2">
+    <h1 class="text-center my-3">創作物紹介</h1>
+    <div class="text-center mb-3">
       創作物紹介 is omemoji's portfolio website.
     </div>
   </div>
