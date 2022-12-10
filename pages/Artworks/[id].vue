@@ -1,6 +1,6 @@
 <template>
-  <div class="card card-shadow bg-white m-3 p-3">
-    <div class="card bg-white/40 mb-3 p-3">
+  <div class="card card-shadow m-3 p-3">
+    <div class="card bg-white/40 p-3">
       <div class="card">
         <nuxt-img
           width="800"

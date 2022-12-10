@@ -2,9 +2,7 @@
   <div class="card card-shadow bg-white m-3 p-3">
     <h2 class="text-center">Gallery</h2>
     <div class="card mt-3 p-3" style="font-size: 0">
-      <h3 class="text-center">Artworks</h3>
-      <hr class="my-3" />
-      <div class="aspect-square overflow-y-auto over-contain">
+      <div class="aspect-square overflow-y-auto over-contain card">
         <div
           v-for="(artwork, i) in artworks"
           :key="i"
@@ -13,8 +11,8 @@
           <nuxt-link v-if="i <= 8" :to="'/Artworks/' + artwork.id">
             <nuxt-img
               :src="artwork.image"
-              width="300"
               quality="30"
+              width="300"
               class="object-cover aspect-square"
             />
           </nuxt-link>
@@ -22,7 +20,6 @@
             <nuxt-img
               :src="artwork.image"
               width="300"
-              quality="30"
               class="object-cover aspect-square"
               loading="lazy"
             />

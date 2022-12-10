@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="fixed text-center overflow-y-auto h-full bg-white w-60">
+    <div class="fixed text-center overflow-y-auto h-full w-60">
       <div class="py-3 m-3">
         <div class="">
           <nuxt-img
@@ -16,11 +16,11 @@
       <ul class="">
         <li class="transition-colors hover:bg-black/10 border-y">
           <NuxtLink to="/">
-            <h3 class="py-2">Gallery</h3>
+            <h3 class="py-2">Home</h3>
           </NuxtLink>
         </li>
         <li class="transition-colors hover:bg-black/10 border-b">
-          <NuxtLink to="/">
+          <NuxtLink to="/About">
             <h3 class="py-2">About</h3>
           </NuxtLink>
         </li>

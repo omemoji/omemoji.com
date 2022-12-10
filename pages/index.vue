@@ -1,5 +1,5 @@
 <template>
-  <div class="card card-shadow m-3 p-3 bg-white">
+  <div class="card card-shadow m-3 p-3">
     <div class="card">
       <nuxt-img
         width="800"
@@ -13,6 +13,7 @@
       創作物紹介 is omemoji's portfolio website.
     </div>
   </div>
+
 </template>
 <script>
 export default {};

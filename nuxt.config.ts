@@ -45,10 +45,11 @@ export default defineNuxtConfig({
       ],
     },
   },
-  modules: ["@nuxt/image-edge"],
-  image: {},
-  plugins: [],
-  css: ["~/assets/css/main.css"],
+  modules: ["@nuxt/image-edge", "@nuxt/content"],
+  css: ["~/assets/css/main.css",
+  'github-markdown-css'],
+  image:{
+  },
   postcss: {
     plugins: {
       tailwindcss: {},
