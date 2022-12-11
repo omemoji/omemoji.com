@@ -3,7 +3,7 @@
 export default defineNuxtConfig({
 
   app: {
-    baseURL: "/omemoji.com/",
+    baseURL: "/",
     head: {
       titleTemplate: "創作物紹介",
       link: [
