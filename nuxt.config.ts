@@ -46,6 +46,7 @@ export default defineNuxtConfig({
           content: "https://omemoji.com/omemoji.png",
         },
         { name: "twitter:card", content: "summary" },
+        { name: "twitter:image", content: "https://omemoji.com/omemoji.png" },
       ],
     },
   },
