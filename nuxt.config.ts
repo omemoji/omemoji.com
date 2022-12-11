@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   app: {
-    baseURL: "/omemoji.com/",
+    baseURL: "/",
     head: {
   
       titleTemplate: "%s | 創作物紹介",
