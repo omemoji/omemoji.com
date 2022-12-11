@@ -1,0 +1,1 @@
+export default {data:{"content-query-G4KSYx3jc5":{_path:"\u002Fabout\u002Freadme"}},prerenderedAt:1670752243090}
