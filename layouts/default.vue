@@ -1,10 +1,6 @@
 <template>
   <div class="flex justify-center bg-white">
-
-    <Head>
-      <Title>Home</Title>
-    </Head>
-
+    <Head> </Head>
 
     <div
       id="menu"

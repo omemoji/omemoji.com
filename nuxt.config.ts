@@ -5,9 +5,8 @@ export default defineNuxtConfig({
     baseURL: "/",
     head: {
       titleTemplate: "%s | 創作物紹介",
-
       link: [
-        { rel: "icon", type: "image/png", href: "/favicon.png" },
+        { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
         {
           rel: "apple-touch-icon",
           href: "https://omemoji.com/omemoji.png",
