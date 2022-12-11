@@ -18,7 +18,7 @@
       content="omemoji's profile"
     />
   </Head>
-  <div class="card card-shadow p-10 m-3">
+  <div class="card card-shadow p-6 m-3">
     <ContentDoc path="/about" class="markdown-body" />
   </div>
 </template>
