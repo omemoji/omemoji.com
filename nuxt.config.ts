@@ -1,16 +1,16 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-
 export default defineNuxtConfig({
-
   app: {
     baseURL: "/",
     head: {
-      titleTemplate: "創作物紹介",
+  
+      titleTemplate: "%s | 創作物紹介",
+      
       link: [
         { rel: "icon", type: "image/png", href: "/favicon.png" },
         {
           rel: "apple-touch-icon",
-          href: "https://omemoji.dev/omemoji.png",
+          href: "https://omemoji.com/omemoji.png",
         },
       ],
       htmlAttrs: {

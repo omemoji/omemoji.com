@@ -1,4 +1,7 @@
 <template>
+  <Head>
+    <Title>Home</Title>
+  </Head>
   <div class="card card-shadow m-3 p-3">
     <div class="card">
       <nuxt-img
@@ -13,8 +16,5 @@
       創作物紹介 is omemoji's portfolio website.
     </div>
   </div>
-
 </template>
-<script>
-export default {};
-</script>
+<script></script>

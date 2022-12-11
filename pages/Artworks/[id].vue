@@ -1,13 +1,18 @@
 <template>
+  <Head
+    ><Title>{{ artwork.title }}</Title></Head
+  >
   <div class="card card-shadow m-3 p-3">
     <div class="card bg-white/40 p-3">
       <div class="card">
-        <nuxt-img
-          width="800"
-          class="content-image"
-          :src="artwork.image"
-          :alt="artwork.id"
-        />
+        <a :href="artwork.image">
+          <nuxt-img
+            width="800"
+            class="content-image"
+            :src="artwork.image"
+            :alt="artwork.id"
+          />
+        </a>
       </div>
       <div class="my-3 p-3">
         <h1 class="text-center">{{ artwork.title }}</h1>
@@ -27,7 +32,7 @@
         </li>
         <li>
           <h3>Link</h3>
-          <a :href="artwork.href">{{ artwork.href }}</a>
+          <a :href="artwork.href" class="text-blue-700">{{ artwork.href }} </a>
         </li>
       </ul>
     </div>
@@ -35,20 +40,53 @@
 </template>
 <script>
 import jsonData from "@/assets/json/artworks.json";
+
 export default {
   data() {
     return {
-      jsonArray: JSON.parse(JSON.stringify(jsonData)),
+      // jsonArray: JSON.parse(JSON.stringify(jsonData)),
+      artwork: JSON.parse(JSON.stringify(jsonData)).filter((artwork) => {
+        return artwork.id === this.$route.params.id;
+      })[0],
     };
   },
-  mounted() {},
-  computed: {
-    artwork() {
-      const artwork = this.jsonArray.filter((artwork) => {
-        return artwork.id === this.$route.params.id;
-      });
-      return artwork[0];
-    },
+
+  head() {
+    return {
+      meta: [
+        {
+          hid: "description",
+          name: "description",
+          content: this.artwork.caption,
+        },
+        {
+          hid: "og:site_name",
+          property: "og:site_name",
+          content: "創作物紹介",
+        },
+        { hid: "og:type", property: "og:type", content: "website" },
+        {
+          hid: "og:url",
+          content: "https://omemoji.com/" + `${this.$route.path}`,
+        },
+        {
+          hid: "og:title",
+          property: "og:title",
+          content: this.artwork.title + " | 創作物紹介",
+        },
+        {
+          hid: "og:description",
+          property: "og:description",
+          content: this.artwork.caption,
+        },
+        {
+          hid: "og:image",
+          property: "og:image",
+          content: "https://omemoji.com/omemoji.png",
+        },
+        { name: "twitter:card", content: "summary" },
+      ],
+    };
   },
 };
 </script>

@@ -1,6 +1,11 @@
 <template>
   <div class="flex justify-center bg-white">
 
+    <Head>
+      <Title>Home</Title>
+    </Head>
+
+
     <div
       id="menu"
       class="hidden laptop:mr-60 laptop:inline-block laptop:opacity-100 z-40 transition-opacity duration-300"
