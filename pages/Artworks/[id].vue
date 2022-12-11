@@ -4,7 +4,7 @@
     <Meta name="description" :content="`${artwork.caption}`" />
     <Meta property="og:site_name" content="創作物紹介" />
     <Meta property="og:type" content="website" />
-    <Meta property="og:url" :content="`https://omemoji.com/${$route.path}`" />
+    <Meta property="og:url" :content="`https://omemoji.com/Artworks/${artwork.id}`" />
     <Meta property="og:title" :content="`${artwork.title}`"/>
     <Meta property="og:description" :content="`${artwork.caption}`"/>
     <Meta property="og:image" :content="`https://omemoji.com${artwork.image}`"/>
