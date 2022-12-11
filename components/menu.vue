@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="fixed text-center overflow-y-auto h-full w-60">
+    <div class="fixed text-center overflow-y-auto h-full bg-white w-60">
       <div class="py-3 m-3">
         <div class="">
           <nuxt-img

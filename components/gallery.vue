@@ -11,15 +11,14 @@
           <nuxt-link v-if="i <= 8" :to="'/Artworks/' + artwork.id">
             <nuxt-img
               :src="artwork.image"
-              quality="30"
-              width="300"
+              width="250"
               class="object-cover aspect-square"
             />
           </nuxt-link>
           <nuxt-link v-if="i > 8" :to="'/Artworks/' + artwork.id">
             <nuxt-img
               :src="artwork.image"
-              width="300"
+              width="250"
               class="object-cover aspect-square"
               loading="lazy"
             />

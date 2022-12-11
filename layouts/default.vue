@@ -1,9 +1,42 @@
 <template>
   <div class="flex justify-center bg-white">
-    <Menu
+
+    <div
       id="menu"
-      class="hidden opacity-0 laptop:mr-60 laptop:inline-block laptop:opacity-100 z-40 transition-opacity duration-300"
-    />
+      class="hidden laptop:mr-60 laptop:inline-block laptop:opacity-100 z-40 transition-opacity duration-300"
+    >
+      <div class="fixed text-center overflow-y-auto h-full bg-white w-60">
+        <div class="py-3 m-3">
+          <div class="">
+            <nuxt-img
+              width="160"
+              :modifiers="{}"
+              src="/omemoji.png"
+              class="rounded-full m-auto"
+              alt="omemoji"
+            />
+          </div>
+        </div>
+        <h2 class="my-3">Menu</h2>
+        <ul class="">
+          <li id="home" class="transition-colors hover:bg-black/10 border-y">
+            <NuxtLink to="/">
+              <h3 class="py-2">Home</h3>
+            </NuxtLink>
+          </li>
+          <li id="about" class="transition-colors hover:bg-black/10 border-b">
+            <NuxtLink to="/About">
+              <h3 class="py-2">About</h3>
+            </NuxtLink>
+          </li>
+        </ul>
+        <h2 class="mt-9">Link</h2>
+        <LinkCard />
+
+        <!-- <LinkCard /> -->
+      </div>
+    </div>
+
     <div
       id="screen"
       class="hidden opacity-0 fixed w-full h-full z-30 bg-black/40 backdrop-blur-md transition-opacity duration-300"
@@ -43,6 +76,8 @@ export default {
     const menu = document.querySelector("#menu");
     const nav = document.querySelector("#nav");
     const screen = document.querySelector("#screen");
+    const home = document.querySelector("#home");
+    const about = document.querySelector("#about");
 
     function openMenu() {
       screen.classList.remove("hidden");
@@ -68,6 +103,8 @@ export default {
 
     nav.addEventListener("click", openMenu);
     screen.addEventListener("click", closeMenu);
+    home.addEventListener("click", closeMenu);
+    about.addEventListener("click", closeMenu);
   },
 };
 </script>
