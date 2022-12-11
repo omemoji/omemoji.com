@@ -37,7 +37,7 @@
             width="760"
             class="content-image"
             :src="artwork.image"
-            :alt="artwork.id"
+            :alt="artwork.title"
           />
         </a>
       </div>
