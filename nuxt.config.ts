@@ -49,6 +49,10 @@ export default defineNuxtConfig({
           name: "twitter:image",
           content: "https://omemoji.com/omemoji.png",
         },
+        {
+          name: "twitter:site",
+          content: "@omemoji_itf",
+        }
       ],
     },
   },
