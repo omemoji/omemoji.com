@@ -33,7 +33,7 @@ export default defineNuxtConfig({
           content: "創作物紹介",
         },
         { hid: "og:type", property: "og:type", content: "website" },
-        { hid: "og:url", content: "https://omemoji.com/" },
+        { property: "og:url", content: "https://omemoji.com/" },
         { hid: "og:title", property: "og:title", content: "創作物紹介" },
         {
           hid: "og:description",

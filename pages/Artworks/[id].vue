@@ -7,9 +7,9 @@
     <Meta property="og:url" :content="`https://omemoji.com/${$route.path}`" />
     <Meta property="og:title" :content="`${artwork.title}`"/>
     <Meta property="og:description" :content="`${artwork.caption}`"/>
-    <Meta property="og:image" :content="`https://omemoji.com/${artwork.image}`"/>
+    <Meta property="og:image" :content="`https://omemoji.com${artwork.image}`"/>
     <Meta name="twitter:card" content="summary" />
-    <Meta name="twitter:image" :content="`https://omemoji.com/${artwork.image}`" />
+    <Meta name="twitter:image" :content="`https://omemoji.com${artwork.image}`" />
   </Head>
 
   <div class="card card-shadow m-3 p-3">
