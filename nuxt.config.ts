@@ -1,6 +1,9 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+
 export default defineNuxtConfig({
+
   app: {
+    baseURL: "/omemoji.com/",
     head: {
       titleTemplate: "創作物紹介",
       link: [
@@ -56,4 +59,5 @@ export default defineNuxtConfig({
       autoprefixer: {},
     },
   },
+
 });
