@@ -3,8 +3,8 @@
 ## Profile
 
 - Name: omemoji
-- Education: College of Information Science, University of Tsukuba
-- Interest: 🌐Web , 🎨Painting
+- Education: College of Information Science, University of Tsukuba.
+- Interest: 🌐Web, 🎨Painting
 
 ## Stats
 
