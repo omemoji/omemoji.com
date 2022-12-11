@@ -31,7 +31,7 @@ export default {
         {
           icon: github,
           name: "GitHub",
-          href: "https://github.com/Omemoji",
+          href: "https://github.com/omemoji",
         },
         {
           icon: twitter,
