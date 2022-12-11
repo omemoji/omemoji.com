@@ -4,9 +4,8 @@ export default defineNuxtConfig({
   app: {
     baseURL: "/",
     head: {
-  
       titleTemplate: "%s | 創作物紹介",
-      
+
       link: [
         { rel: "icon", type: "image/png", href: "/favicon.png" },
         {
@@ -28,12 +27,11 @@ export default defineNuxtConfig({
           content: "omemoji's portfolio website",
         },
         {
-          hid: "og:site_name",
           property: "og:site_name",
           content: "創作物紹介",
         },
         { hid: "og:type", property: "og:type", content: "website" },
-        { property: "og:url", content: "https://omemoji.com/" },
+        { hid: "og:url", property: "og:url", content: "https://omemoji.com/" },
         { hid: "og:title", property: "og:title", content: "創作物紹介" },
         {
           hid: "og:description",
@@ -46,20 +44,21 @@ export default defineNuxtConfig({
           content: "https://omemoji.com/omemoji.png",
         },
         { name: "twitter:card", content: "summary" },
-        { name: "twitter:image", content: "https://omemoji.com/omemoji.png" },
+        {
+          hid: "twitter:image",
+          name: "twitter:image",
+          content: "https://omemoji.com/omemoji.png",
+        },
       ],
     },
   },
   modules: ["@nuxt/image-edge", "@nuxt/content"],
-  css: ["~/assets/css/main.css",
-  'github-markdown-css'],
-  image:{
-  },
+  css: ["~/assets/css/main.css", "github-markdown-css"],
+  image: {},
   postcss: {
     plugins: {
       tailwindcss: {},
       autoprefixer: {},
     },
   },
-
 });

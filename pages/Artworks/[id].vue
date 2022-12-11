@@ -1,15 +1,32 @@
 <template>
   <Head
     ><Title>{{ artwork.title }}</Title>
-    <Meta name="description" :content="`${artwork.caption}`" />
-    <Meta property="og:site_name" content="創作物紹介" />
-    <Meta property="og:type" content="website" />
-    <Meta property="og:url" :content="`https://omemoji.com/Artworks/${artwork.id}`" />
-    <Meta property="og:title" :content="`${artwork.title}`"/>
-    <Meta property="og:description" :content="`${artwork.caption}`"/>
-    <Meta property="og:image" :content="`https://omemoji.com${artwork.image}`"/>
-    <Meta name="twitter:card" content="summary" />
-    <Meta name="twitter:image" :content="`https://omemoji.com${artwork.image}`" />
+    <Meta
+      hid="description"
+      name="description"
+      :content="`${artwork.caption}`"
+    />
+    <Meta
+      hid="url"
+      property="og:url"
+      :content="`https://omemoji.com/Artworks/${artwork.id}`"
+    />
+    <Meta hid="og:title" property="og:title" :content="`${artwork.title}`" />
+    <Meta
+      hid="og:description"
+      property="og:description"
+      :content="`${artwork.caption}`"
+    />
+    <Meta
+      hid="og:image"
+      property="og:image"
+      :content="`https://omemoji.com${artwork.image}`"
+    />
+    <Meta
+      hid="twitter:image"
+      name="twitter:image"
+      :content="`https://omemoji.com${artwork.image}`"
+    />
   </Head>
 
   <div class="card card-shadow m-3 p-3">
@@ -64,44 +81,6 @@ export default {
       artwork: JSON.parse(JSON.stringify(jsonData)).filter((artwork) => {
         return artwork.id === this.$route.params.id;
       })[0],
-    };
-  },
-
-  head() {
-    return {
-      meta: [
-        {
-          hid: "description",
-          name: "description",
-          content: this.artwork.caption,
-        },
-        {
-          hid: "og:site_name",
-          property: "og:site_name",
-          content: "創作物紹介",
-        },
-        { hid: "og:type", property: "og:type", content: "website" },
-        {
-          hid: "og:url",
-          content: "https://omemoji.com/" + `${this.$route.path}`,
-        },
-        {
-          hid: "og:title",
-          property: "og:title",
-          content: this.artwork.title + " | 創作物紹介",
-        },
-        {
-          hid: "og:description",
-          property: "og:description",
-          content: this.artwork.caption,
-        },
-        {
-          hid: "og:image",
-          property: "og:image",
-          content: "https://omemoji.com/omemoji.png",
-        },
-        { name: "twitter:card", content: "summary" },
-      ],
     };
   },
 };
