@@ -14,6 +14,8 @@
 
 ![Top Languages Card](https://github-readme-stats.vercel.app/api/top-langs/?username=omemoji&layout=compact)
 
+[<img src="https://grass-graph.appspot.com/images/omemoji.png" style="border-radius:4px; border-style:solid; border-width:1px ;border-color:#e3e3e3;">](https://github.com/omemoji)
+
 ## Env
 
 [<img src="https://img.shields.io/badge/OS-Ubuntu-E95420.svg?logo=ubuntu&logoColor=E95420&style=flat">](https://ubuntu.com/)
