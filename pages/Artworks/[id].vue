@@ -32,14 +32,12 @@
   <div class="card card-shadow m-3 p-3">
     <div class="card bg-white/40 p-3">
       <div class="card">
-        <a :href="artwork.image">
-          <nuxt-img
-            width="760"
-            class="content-image"
-            :src="artwork.image"
-            :alt="artwork.title"
-          />
-        </a>
+        <nuxt-img
+          width="760"
+          class="content-image"
+          :src="artwork.image"
+          :alt="artwork.title"
+        />
       </div>
       <div class="my-3 p-3">
         <h1 class="text-center">{{ artwork.title }}</h1>
