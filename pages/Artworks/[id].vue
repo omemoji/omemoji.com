@@ -1,13 +1,22 @@
 <template>
   <Head
-    ><Title>{{ artwork.title }}</Title></Head
-  >
+    ><Title>{{ artwork.title }}</Title>
+    <Meta name="description" :content="`${artwork.caption}`" />
+    <Meta property="og:site_name" content="創作物紹介" />
+    <Meta property="og:type" content="website" />
+    <Meta property="og:url" :content="`https://omemoji.com/${$route.path}`" />
+    <Meta property="og:title" :content="`${artwork.title}`"/>
+    <Meta property="og:description" :content="`${artwork.caption}`"/>
+    <Meta property="og:image" :content="`${artwork.image}`"/>
+    <Meta name="twitter:card" content="summary" />
+  </Head>
+
   <div class="card card-shadow m-3 p-3">
     <div class="card bg-white/40 p-3">
       <div class="card">
         <a :href="artwork.image">
           <nuxt-img
-            width="800"
+            width="760"
             class="content-image"
             :src="artwork.image"
             :alt="artwork.id"
@@ -32,7 +41,13 @@
         </li>
         <li>
           <h3>Link</h3>
-          <a :href="artwork.href" class="text-blue-700">{{ artwork.href }} </a>
+          <a
+            :href="artwork.href"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-blue-700 break-all"
+            >{{ artwork.href }}
+          </a>
         </li>
       </ul>
     </div>

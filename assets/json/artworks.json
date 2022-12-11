@@ -12,7 +12,7 @@
     "image": "/artworks/rainbow_dragon.png",
     "title": "虹龍",
     "tool": "Krita",
-    "href": "",
+    "href": "https://www.instagram.com/p/Cb1wksDvX-i/",
     "caption": "極彩色の龍"
   },
   {
@@ -20,7 +20,7 @@
     "image": "/artworks/harvest.png",
     "title": "やまぶどう",
     "tool": "Krita",
-    "href": "",
+    "href": "https://www.instagram.com/p/CbeI9z3v0HT/",
     "caption": "秋のやまぶどうとカラス"
   },
   {
@@ -28,7 +28,7 @@
     "image": "/artworks/2022.png",
     "title": "2022 Happy New Year! ",
     "tool": "Krita",
-    "href": "",
+    "href": "https://www.instagram.com/p/CYJtB4bP9LA/",
     "caption": "年賀状"
   },
   {
@@ -44,7 +44,7 @@
     "image": "/artworks/tower_girl.png",
     "title": "鉄塔少女",
     "tool": "Inkscape",
-    "href": "",
+    "href": "https://inkscape.org/~omemoji/%E2%98%85+29",
     "caption": "夕暮れの鉄塔に佇む少女"
   },
   {
@@ -52,7 +52,7 @@
     "image": "/artworks/the_end_of_fall.png",
     "title": "The end of fall",
     "tool": "Inkscape",
-    "href": "",
+    "href": "https://inkscape.org/~omemoji/%E2%98%85the-end-of-fall",
     "caption": "紅葉と透き通った湖面"
   },
   {
@@ -60,8 +60,16 @@
     "image": "/artworks/RGBdragon.png",
     "title": "RGBdragon",
     "tool": "Inkscape",
-    "href": "",
+    "href": "https://inkscape.org/~omemoji/%E2%98%85rgbdragon",
     "caption": "光の三原色に彩られた龍"
+  },
+  {
+    "id": "shinkan-cover",
+    "image": "/artworks/shinkan-cover.png",
+    "title": "SHINKAN Booklet 2021",
+    "tool": "Adobe Illustrator",
+    "href": "",
+    "caption": "2021年度情報科学類新歓パンフレットの表紙"
   },
   {
     "id": "skyblue",
@@ -76,7 +84,7 @@
     "image": "/artworks/asoblock_dragon.jpg",
     "title": "自在龍",
     "tool": "アソブロック",
-    "href": "",
+    "href": "https://www.asoblock.jp/webzukan/detail.php?id=160",
     "caption": "アソブロックで作成した龍"
   },
   {

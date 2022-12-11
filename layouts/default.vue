@@ -52,7 +52,7 @@
           <div class="w-8 h-5 my-auto laptop:hidden cursor-pointer" id="nav">
             <img
               src="@/assets/logo/nav-bar.svg"
-              class=""
+              class="w-8 h-5"
               alt="navigation bar"
             />
           </div>

@@ -1,5 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  ssr: true,
   app: {
     baseURL: "/",
     head: {
@@ -33,7 +34,7 @@ export default defineNuxtConfig({
         },
         { hid: "og:type", property: "og:type", content: "website" },
         { hid: "og:url", content: "https://omemoji.com/" },
-        { hid: "og:title", property: "og:title", content: "omemoji" },
+        { hid: "og:title", property: "og:title", content: "創作物紹介" },
         {
           hid: "og:description",
           property: "og:description",
