@@ -16,6 +16,7 @@
     "tailwindcss": "^3.2.4"
   },
   "dependencies": {
-    "github-markdown-css": "^5.1.0"
+    "github-markdown-css": "^5.1.0",
+    "vue-gtag": "^2.0.1"
   }
 }
