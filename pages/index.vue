@@ -15,6 +15,7 @@
       創作物紹介 is omemoji's portfolio website.
     </div>
   </div>
+  <Gallery/>
 </template>
 
 <script setup>

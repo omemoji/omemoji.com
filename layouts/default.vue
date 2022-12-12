@@ -40,7 +40,7 @@
       id="screen"
       class="hidden opacity-0 fixed w-full h-full z-30 bg-black/40 backdrop-blur-md transition-opacity duration-300"
     ></div>
-    <div class="max-w-screen-laptop border-r border-l bg-black/10">
+    <div class="max-w-screen-laptop border-r border-l w-full bg-black/10">
       <header
         class="top-0 flex justify-center sticky backdrop-blur-md bg-white/80 h-16 header-shadow border-b"
       >
@@ -64,7 +64,6 @@
       </header>
 
       <slot />
-      <Gallery />
       <Footer />
     </div>
   </div>

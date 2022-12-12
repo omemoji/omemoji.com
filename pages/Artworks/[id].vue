@@ -68,6 +68,7 @@
       </ul>
     </div>
   </div>
+  <Gallery/>
 </template>
 <script>
 import jsonData from "@/assets/json/artworks.json";
