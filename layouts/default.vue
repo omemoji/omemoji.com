@@ -13,7 +13,7 @@
               width="160"
               :modifiers="{}"
               src="/omemoji.png"
-              class="rounded-full m-auto w-40"
+              class="rounded-full m-auto w-40 h-40"
               alt="omemoji"
             />
           </div>
