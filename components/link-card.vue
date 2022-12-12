@@ -10,20 +10,19 @@
           :href="item.href"
           class="card w-12 h-12 flex justify-center transition-colors hover:bg-black/10 bg-white/80 p-2 m-1"
         >
-          <img :src="item.icon" class="w-8 my-auto" :alt="item.name" />
+          <img :src="item.icon" class="w-8" :alt="item.name" />
         </a>
       </li>
-      
     </ul>
   </div>
 </template>
 <script>
 import github from "@/assets/logo/github.svg";
 import twitter from "@/assets/logo/twitter.svg";
-import instagram from "@/assets/logo/instagram.svg";
+import instagram from "@/assets/logo/instagram.png";
 import inkscape from "@/assets/logo/inkscape.svg";
 import zenn from "@/assets/logo/zenn.svg";
-import krita from "@/assets/logo/krita.svg";
+import krita from "@/assets/logo/krita.png";
 export default {
   data() {
     return {
