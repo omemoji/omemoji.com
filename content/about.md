@@ -16,14 +16,14 @@
 
 ## Env
 
-[<img src="https://img.shields.io/badge/OS-Ubuntu-E95420.svg?logo=ubuntu&logoColor=E95420&style=flat">](https://ubuntu.com/)
+![Ubuntu](https://img.shields.io/badge/OS-Ubuntu-E95420.svg?logo=ubuntu&logoColor=E95420&style=flat)
 
-[<img src="https://img.shields.io/badge/DE-i3-7ca7c2.svg?&style=flat">](https://i3wm.org/)
+![i3](https://img.shields.io/badge/DE-i3-7ca7c2.svg?&style=flat)
 
-[<img src="https://img.shields.io/badge/Browser-Google Chrome-4285F4.svg?logo=googlechrome&logoColor=fff&style=flat">](https://www.google.com/intl/en_us/chrome/)
+![Chrome](https://img.shields.io/badge/Browser-Google%20Chrome-4285F4.svg?logo=googlechrome&logoColor=fff&style=flat)
 
-[<img src="https://img.shields.io/badge/Editor-Visual Studio Code-007ACC.svg?logo=visualstudiocode&logoColor=007ACC&style=flat">](https://code.visualstudio.com/)
+![VSCode](https://img.shields.io/badge/Editor-Visual%20Studio%20Code-007ACC.svg?logo=visualstudiocode&logoColor=007ACC&style=flat)
 
-[<img src="https://img.shields.io/badge/Vector Graphics Editor-Inkscape-000.svg?logo=inkscape&logoColor=000&style=flat">](https://inkscape.org)
+![Inkscape](https://img.shields.io/badge/Vector%20Graphics%20Editor-Inkscape-000.svg?logo=inkscape&logoColor=000&style=flat)
 
-[<img src="https://img.shields.io/badge/Paint Tool-Krita-3BABFF.svg?logo=krita&logoColor=3BABFF&style=flat">](https://krita.org)
+![Krita](https://img.shields.io/badge/Paint%20Tool-Krita-ff1199.svg?logo=krita&logoColor=ff1199&style=flat)
