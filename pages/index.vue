@@ -1,5 +1,5 @@
 <template>
-  <Head><Title>Home</Title></Head>
+  <Head><Title>創作物紹介</Title></Head>
 
   <div class="card card-shadow m-3 p-3">
     <div class="card">
@@ -17,6 +17,8 @@
   </div>
 </template>
 
-<script>
-export default {};
+<script setup>
+useHead({
+  titleTemplate: "",
+});
 </script>
