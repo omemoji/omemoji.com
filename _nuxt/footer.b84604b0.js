@@ -1,1 +1,0 @@
-import{_ as e,o as t,d as o,a as c,t as s}from"./entry.a50275d9.js";const a={},r={class:"bg-white/40 bottom-0 w-full border-t backdrop-blur-md"},n={class:"text-white text-center m-0 p-2 bg-black"};function _(l,d){return t(),o("footer",r,[c("p",n," \xA9 "+s(new Date().getFullYear())+" omemoji ",1)])}const m=e(a,[["render",_]]);export{m as default};
