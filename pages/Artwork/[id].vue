@@ -34,7 +34,7 @@
       <div class="card">
         <nuxt-img
           width="760"
-          class="content-image"
+          class="w-full content-image"
           :src="artwork.image"
           :alt="artwork.title"
         />

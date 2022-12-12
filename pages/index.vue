@@ -5,7 +5,7 @@
     <div class="card">
       <nuxt-img
         width="760"
-        class="title-image"
+        class="title-image w-full"
         src="/title.png"
         alt="創作物紹介 omemoji"
       />
