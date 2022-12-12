@@ -1,9 +1,10 @@
 <template>
   <NuxtLayout>
+    <Head><Title>Error</Title></Head>
     <div class="card card-shadow m-3 p-3 bg-white">
       <div class="card">
         <nuxt-img
-          width="800"
+          width="760"
           class="title-image"
           src="/title.png"
           alt="創作物紹介 omemoji"
