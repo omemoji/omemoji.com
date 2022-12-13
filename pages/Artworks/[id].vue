@@ -13,7 +13,7 @@
   <div class="card card-shadow m-3 p-3">
 
     <div class="card">
-      <nuxt-img width="760" class="w-full content-image" :src="artwork.image" :alt="artwork.title" />
+      <nuxt-img width="720" class="w-full content-image" :src="artwork.image" :alt="artwork.title" />
     </div>
 
     <h1 class="text-center my-3 p-3">{{ artwork.title }}</h1>
