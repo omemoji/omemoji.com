@@ -1,7 +1,7 @@
 [
   {
     "id": "zugadanten2022",
-    "image": "/images/Artwork/zugadanten2022.jpg",
+    "image": "/images/Artworks/zugadanten2022.jpg",
     "title": "図画団展2022ポスター",
     "tool": "Krita",
     "href": "https://www.instagram.com/p/CkSHtqIBGFx/",
@@ -9,7 +9,7 @@
   },
   {
     "id": "rainbow_dragon",
-    "image": "/images/Artwork/rainbow_dragon.png",
+    "image": "/images/Artworks/rainbow_dragon.png",
     "title": "虹龍",
     "tool": "Krita",
     "href": "https://www.instagram.com/p/Cb1wksDvX-i/",
@@ -17,7 +17,7 @@
   },
   {
     "id": "harvest",
-    "image": "/images/Artwork/harvest.png",
+    "image": "/images/Artworks/harvest.png",
     "title": "やまぶどう",
     "tool": "Krita",
     "href": "https://www.instagram.com/p/CbeI9z3v0HT/",
@@ -25,7 +25,7 @@
   },
   {
     "id": "2022",
-    "image": "/images/Artwork/2022.png",
+    "image": "/images/Artworks/2022.png",
     "title": "2022 Happy New Year! ",
     "tool": "Krita",
     "href": "https://www.instagram.com/p/CYJtB4bP9LA/",
@@ -33,7 +33,7 @@
   },
   {
     "id": "god_of_swords",
-    "image": "/images/Artwork/god_of_swords.png",
+    "image": "/images/Artworks/god_of_swords.png",
     "title": "剣神",
     "tool": "Krita",
     "href": "https://www.instagram.com/p/CW18LCxvxYe/",
@@ -41,7 +41,7 @@
   },
   {
     "id": "tower_girl",
-    "image": "/images/Artwork/tower_girl.png",
+    "image": "/images/Artworks/tower_girl.png",
     "title": "鉄塔少女",
     "tool": "Inkscape",
     "href": "https://inkscape.org/~omemoji/%E2%98%85+29",
@@ -49,7 +49,7 @@
   },
   {
     "id": "the_end_of_fall",
-    "image": "/images/Artwork/the_end_of_fall.png",
+    "image": "/images/Artworks/the_end_of_fall.png",
     "title": "The end of fall",
     "tool": "Inkscape",
     "href": "https://inkscape.org/~omemoji/%E2%98%85the-end-of-fall",
@@ -57,7 +57,7 @@
   },
   {
     "id": "RGBdragon",
-    "image": "/images/Artwork/RGBdragon.png",
+    "image": "/images/Artworks/RGBdragon.png",
     "title": "RGBdragon",
     "tool": "Inkscape",
     "href": "https://inkscape.org/~omemoji/%E2%98%85rgbdragon",
@@ -65,7 +65,7 @@
   },
   {
     "id": "shinkan-cover",
-    "image": "/images/Artwork/shinkan-cover.png",
+    "image": "/images/Artworks/shinkan-cover.png",
     "title": "SHINKAN Booklet 2021",
     "tool": "Adobe Illustrator",
     "href": "",
@@ -73,7 +73,7 @@
   },
   {
     "id": "skyblue",
-    "image": "/images/Artwork/skyblue.png",
+    "image": "/images/Artworks/skyblue.png",
     "title": "skyblue",
     "tool": "Adobe Illustrator",
     "href": "",
@@ -81,7 +81,7 @@
   },
   {
     "id": "asoblock_dragon",
-    "image": "/images/Artwork/asoblock_dragon.jpg",
+    "image": "/images/Artworks/asoblock_dragon.jpg",
     "title": "自在龍",
     "tool": "アソブロック",
     "href": "https://www.asoblock.jp/webzukan/detail.php?id=160",
@@ -89,7 +89,7 @@
   },
   {
     "id": "blazing_leaves",
-    "image": "/images/Artwork/blazing_leaves.jpeg",
+    "image": "/images/Artworks/blazing_leaves.jpeg",
     "title": "Blazing leaves",
     "tool": "アクリルガッシュ",
     "href": "",
