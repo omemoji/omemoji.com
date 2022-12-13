@@ -5,12 +5,12 @@
       <div class="aspect-square overflow-y-auto over-contain card">
         <div v-for="(artwork, i) in artworks" :key="i" class="w-1/3 inline-block mb-0 border border-white">
           <nuxt-link v-if="i <= 8" :to="'/Artworks/' + artwork.id" :title="artwork.title">
-            <nuxt-img :alt="artwork.title" :src="artwork.image" width="250"
-              class="object-cover aspect-square w-full h-auto" />
+            <nuxt-img :alt="artwork.title" :src="artwork.image" width="250" height="250"
+              class="object-cover aspect-square w-full" />
           </nuxt-link>
           <nuxt-link v-if="i > 8" :to="'/Artworks/' + artwork.id" :title="artwork.title">
-            <nuxt-img :alt="artwork.title" :src="artwork.image" width="250"
-              class="object-cover aspect-square w-full h-auto" loading="lazy" />
+            <nuxt-img :alt="artwork.title" :src="artwork.image" width="250" height="250"
+              class="object-cover aspect-square w-full" loading="lazy" />
           </nuxt-link>
         </div>
       </div>
