@@ -57,7 +57,7 @@ export default defineNuxtConfig({
     },
   },
   modules: ["@nuxt/image-edge", "@nuxt/content"],
-  css: ["~/assets/css/main.css", "github-markdown-css"],
+  css: ["~/assets/css/main.css", "github-markdown-css/github-markdown-light.css"],
   image: {},
   postcss: {
     plugins: {
