@@ -4,8 +4,9 @@
     <div class="card card-shadow m-3 p-3 bg-white">
       <div class="card">
         <nuxt-img
-          width="760"
-          class="title-image"
+          width="720"
+          height="450"
+          class="title-image w-full h-auto"
           src="/title.png"
           alt="創作物紹介 omemoji"
         />
