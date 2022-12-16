@@ -33,7 +33,12 @@
     <div class="card">
       <nuxt-img
         provider="ipx_fixed"
-        width="720"
+        :width="
+          Math.min(720, Math.floor((720 * artwork.aspect_w) / artwork.aspect_h))
+        "
+        :height="
+          Math.min(720, Math.floor((720 * artwork.aspect_h) / artwork.aspect_w))
+        "
         quality="100"
         class="w-full content-image"
         :src="artwork.image"
