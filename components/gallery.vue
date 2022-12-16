@@ -11,7 +11,26 @@
         :key="i"
         class="w-1/3 inline-block mb-0 border border-white"
       >
-        <nuxt-link :to="'/Artworks/' + artwork.id" :title="artwork.title">
+        <nuxt-link
+          v-if="i <= 8"
+          :to="'/Artworks/' + artwork.id"
+          :title="artwork.title"
+        >
+          <nuxt-img
+            :alt="artwork.title"
+            :src="artwork.image"
+            provider="ipx_fixed"
+            width="240"
+            height="240"
+            quality="25"
+            class="object-cover aspect-square w-full"
+          />
+        </nuxt-link>
+        <nuxt-link
+          v-else
+          :to="'/Artworks/' + artwork.id"
+          :title="artwork.title"
+        >
           <nuxt-img
             :alt="artwork.title"
             :src="artwork.image"
