@@ -58,7 +58,16 @@ export default defineNuxtConfig({
   },
   modules: ["@nuxt/image-edge", "@nuxt/content"],
   css: ["~/assets/css/main.css", "github-markdown-css/github-markdown-light.css"],
-  image: {},
+  image: {
+    providers: {
+      customProvider: {
+        name: 'ipx_fixed', // optional value to overrider provider name
+        provider: '~/providers/custom/ipx_fixed.ts', // Path to custom provider
+        options: {
+
+        }
+      }}
+  },
   postcss: {
     plugins: {
       tailwindcss: {},

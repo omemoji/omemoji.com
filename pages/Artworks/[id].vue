@@ -1,19 +1,45 @@
 <template>
-
   <Head>
     <Title>{{ artwork.title }}</Title>
-    <Meta hid="description" name="description" :content="`${artwork.caption}`" />
-    <Meta hid="url" property="og:url" :content="`https://omemoji.com/Artworks/${artwork.id}`" />
+    <Meta
+      hid="description"
+      name="description"
+      :content="`${artwork.caption}`"
+    />
+    <Meta
+      hid="url"
+      property="og:url"
+      :content="`https://omemoji.com/Artworks/${artwork.id}`"
+    />
     <Meta hid="og:title" property="og:title" :content="`${artwork.title}`" />
-    <Meta hid="og:description" property="og:description" :content="`${artwork.caption}`" />
-    <Meta hid="og:image" property="og:image" :content="`https://omemoji.com${artwork.image}`" />
-    <Meta hid="twitter:image" name="twitter:image" :content="`https://omemoji.com${artwork.image}`" />
+    <Meta
+      hid="og:description"
+      property="og:description"
+      :content="`${artwork.caption}`"
+    />
+    <Meta
+      hid="og:image"
+      property="og:image"
+      :content="`https://omemoji.com${artwork.image}`"
+    />
+    <Meta
+      hid="twitter:image"
+      name="twitter:image"
+      :content="`https://omemoji.com${artwork.image}`"
+    />
   </Head>
 
   <div class="card card-shadow m-3 p-3">
-
     <div class="card">
-      <nuxt-img width="720" class="w-full content-image h-auto" :src="artwork.image" :alt="artwork.title" />
+      <nuxt-img
+        provider="ipx_fixed"
+        width="720"
+        height="450"
+        fit="inside"
+        class="w-full content-image"
+        :src="artwork.image"
+        :alt="artwork.title"
+      />
     </div>
 
     <h1 class="text-center my-3 p-3">{{ artwork.title }}</h1>
@@ -33,9 +59,12 @@
       </li>
       <li>
         <h3>Link</h3>
-        <a :href="artwork.href" target="_blank" rel="noopener noreferrer" class="text-blue-700 break-all">{{
-            artwork.href
-        }}
+        <a
+          :href="artwork.href"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-blue-700 break-all"
+          >{{ artwork.href }}
         </a>
       </li>
     </ul>
