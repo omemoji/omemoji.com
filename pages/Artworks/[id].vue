@@ -34,12 +34,12 @@
       <nuxt-img
         provider="ipx_fixed"
         :width="
-          Math.min(720, Math.floor((720 * artwork.aspect_w) / artwork.aspect_h))
+          Math.min(720, Math.floor((500 * artwork.aspect_w) / artwork.aspect_h))
         "
         :height="
-          Math.min(720, Math.floor((720 * artwork.aspect_h) / artwork.aspect_w))
+          Math.min(500, Math.floor((720 * artwork.aspect_h) / artwork.aspect_w))
         "
-        quality="100"
+        quality="80"
         class="w-full content-image"
         :src="artwork.image"
         :alt="artwork.title"
