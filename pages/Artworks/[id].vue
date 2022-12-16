@@ -34,8 +34,6 @@
       <nuxt-img
         provider="ipx_fixed"
         width="720"
-        height="720"
-        fit="inside"
         quality="100"
         class="w-full content-image"
         :src="artwork.image"
