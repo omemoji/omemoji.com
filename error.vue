@@ -11,11 +11,9 @@
           alt="創作物紹介 omemoji"
         />
       </div>
-      <h1 v-if="error.statusCode === 404" class="text-center my-3">
-        {{ pageNotFound }}
-      </h1>
-      <h1 v-else class="text-center my-3">
-        {{ otherError }}
+
+      <h1 class="text-center my-3">
+        {{ error.statusCode }} {{ error.message }}
       </h1>
       <NuxtLink to="/" class="flex justify-center">
         <p
@@ -39,17 +37,10 @@ export default {
     },
   },
   data() {
-    return {
-      pageNotFound: "404 Not Found",
-      otherError: "An error occurred",
-    };
+    return {};
   },
   head() {
-    const title =
-      this.error.statusCode === 404 ? this.pageNotFound : this.otherError;
-    return {
-      title,
-    };
+    return {};
   },
 };
 </script>
