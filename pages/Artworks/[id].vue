@@ -47,19 +47,19 @@
 
     <ul class="p-3 pl-6 card">
       <li>
-        <h3>Category</h3>
+        <p style="font-size: 21px; font-weight: 500">Category</p>
         Artwork
       </li>
       <li>
-        <h3>Tools</h3>
+        <p style="font-size: 21px; font-weight: 500">Tools</p>
         {{ artwork.tool }}
       </li>
       <li>
-        <h3>Description</h3>
+        <p style="font-size: 21px; font-weight: 500">Description</p>
         <p>{{ artwork.caption }}</p>
       </li>
       <li>
-        <h3>Link</h3>
+        <p style="font-size: 21px; font-weight: 500">Link</p>
         <a
           :href="artwork.href"
           target="_blank"
