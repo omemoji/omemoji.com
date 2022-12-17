@@ -9,7 +9,7 @@
     <Meta
       hid="url"
       property="og:url"
-      :content="`https://omemoji.com/Artworks/${artwork.id}`"
+      :content="`https://omemoji.com/artworks/${artwork.id}`"
     />
     <Meta hid="og:title" property="og:title" :content="`${artwork.title}`" />
     <Meta

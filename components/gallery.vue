@@ -13,7 +13,7 @@
       >
         <nuxt-link
           v-if="i <= 8"
-          :to="'/Artworks/' + artwork.id"
+          :to="'/artworks/' + artwork.id"
           :title="artwork.title"
         >
           <nuxt-img
@@ -28,7 +28,7 @@
         </nuxt-link>
         <nuxt-link
           v-else
-          :to="'/Artworks/' + artwork.id"
+          :to="'/artworks/' + artwork.id"
           :title="artwork.title"
         >
           <nuxt-img
