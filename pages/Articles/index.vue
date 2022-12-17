@@ -21,7 +21,7 @@
       >/<nuxt-link to="/articles" class="color-md">articles</nuxt-link>
     </p>
     <h1 class="text-center">Articles</h1>
-    <p class="text-center mt-3">記事は予告なく変更される可能性がある。</p>
+    <p class="text-center mt-3">This articles are subject to change without notice. </p>
     <main>
       <ContentList path="/articles">
         <div
