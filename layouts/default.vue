@@ -1,7 +1,7 @@
 <template>
   <div class="flex justify-center bg-white">
     <Menu />
-    <div class="max-w-screen-laptop border-r border-l w-full bg-black/10">
+    <div class="max-w-screen-laptop border-r  w-full bg-black/10">
       <Header />
       <slot />
       <Footer />
@@ -18,6 +18,7 @@ export default {
     const screen = document.querySelector("#screen");
     const home = document.querySelector("#home");
     const about = document.querySelector("#about");
+    const articles = document.querySelector("#articles");
     //function
     function openMenu() {
       screen.classList.remove("hidden");
@@ -44,6 +45,7 @@ export default {
     screen.addEventListener("click", closeMenu);
     home.addEventListener("click", closeMenu);
     about.addEventListener("click", closeMenu);
+    articles.addEventListener("click", closeMenu);
   },
 };
 </script>

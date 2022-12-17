@@ -57,6 +57,9 @@ export default defineNuxtConfig({
     },
   },
   modules: ["@nuxt/image-edge", "@nuxt/content"],
+  content: {
+    // https://content.nuxtjs.org/api/configuration
+  },
   css: ["~/assets/css/main.css", "github-markdown-css/github-markdown-light.css"],
   image: {
     providers: {

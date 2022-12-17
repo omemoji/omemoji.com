@@ -8,7 +8,7 @@
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
-    "@nuxt/content": "^2.2.2",
+    "@nuxt/content": "^2.3.0",
     "@nuxt/image-edge": "^1.0.0-27840416.dc1ed65",
     "autoprefixer": "^10.4.13",
     "nuxt": "3.0.0",

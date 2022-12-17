@@ -4,15 +4,17 @@
     <div class="card card-shadow m-3 p-3 bg-white">
       <div class="card">
         <nuxt-img
+          provider="ipx_fixed"
           width="720"
           height="450"
+          quality="100"
           class="title-image w-full h-auto"
           src="/title.png"
           alt="創作物紹介 omemoji"
         />
       </div>
 
-      <h1 class="text-center my-3">
+      <h1 class="text-center my-3 break-all">
         {{ error.statusCode }} {{ error.message }}
       </h1>
       <NuxtLink to="/" class="flex justify-center">
