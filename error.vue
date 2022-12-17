@@ -1,7 +1,7 @@
 <template>
   <NuxtLayout>
     <Head><Title>Error</Title></Head>
-    <div class="card card-shadow m-3 p-3 bg-white">
+    <div class="card card-shadow m-3 p-6 bg-white">
       <div class="card">
         <nuxt-img
           provider="ipx_fixed"

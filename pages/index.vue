@@ -3,7 +3,7 @@
     <Title>創作物紹介</Title>
   </Head>
 
-  <div class="card card-shadow m-3 p-3">
+  <div class="card card-shadow m-3 p-6">
     <div class="card">
       <nuxt-img
         provider="ipx_fixed"

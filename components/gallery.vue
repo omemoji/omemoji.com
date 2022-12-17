@@ -1,5 +1,5 @@
 <template>
-  <div class="card card-shadow bg-white m-3 p-3">
+  <div class="card card-shadow bg-white m-3 p-6 pt-3">
     <h2 class="text-center mb-3">Gallery</h2>
 
     <div
