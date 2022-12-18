@@ -12,7 +12,7 @@
         alt="創作物紹介 omemoji"
       />
 
-      <h1 class="text-center my-3 break-all">
+      <h1 class="text-center my-3 break-all mx-6">
         {{ error.statusCode }} {{ error.message }}
       </h1>
       <NuxtLink to="/" class="flex justify-center">
