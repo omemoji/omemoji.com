@@ -8,12 +8,12 @@
   }
   .title-image {
     background-color: #ccc;
-    border-radius: 5px;
+    border-radius: 6px;
   }
 
   .content-image {
     background-color: #ccc;
-    border-radius: 5px;
+    border-radius: 6px;
     object-fit: contain;
     max-height: 500px;
   }
@@ -29,14 +29,14 @@
   .card {
     max-width: 100%;
     border-style: solid;
-    border-radius: 5px;
+    border-radius: 6px;
     border-width: 1px;
     background-color: white;
   }
 
   .card-shadow {
     border-style: none;
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
   }
 }
 

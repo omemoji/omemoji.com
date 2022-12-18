@@ -1,9 +1,9 @@
 <template>
-  <div class="card card-shadow bg-white m-3 p-6 pt-3">
+  <div class="card card-shadow bg-white m-3 pt-3">
     <h2 class="text-center mb-3">Gallery</h2>
 
     <div
-      class="aspect-square overflow-y-auto over-contain card"
+      class="aspect-square overflow-y-auto over-contain rounded-b-md border-t"
       style="font-size: 0"
     >
       <div

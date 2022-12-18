@@ -29,26 +29,24 @@
     />
   </Head>
 
-  <div class="card card-shadow m-3 p-6">
-    <div class="card">
-      <nuxt-img
-        provider="ipx_fixed"
-        :width="
-          Math.min(720, Math.floor((500 * artwork.aspect_w) / artwork.aspect_h))
-        "
-        :height="
-          Math.min(500, Math.floor((720 * artwork.aspect_h) / artwork.aspect_w))
-        "
-        quality="80"
-        class="w-full content-image"
-        :src="artwork.image"
-        :alt="artwork.title"
-      />
-    </div>
+  <div class="card card-shadow m-3 pb-6">
+    <nuxt-img
+      provider="ipx_fixed"
+      :width="
+        Math.min(768, Math.floor((500 * artwork.aspect_w) / artwork.aspect_h))
+      "
+      :height="
+        Math.min(500, Math.floor((768 * artwork.aspect_h) / artwork.aspect_w))
+      "
+      quality="80"
+      class="w-full content-image rounded-b-none border-b"
+      :src="artwork.image"
+      :alt="artwork.title"
+    />
 
-    <h1 class="text-center my-3 p-3">{{ artwork.title }}</h1>
+    <h1 class="text-center m-6">{{ artwork.title }}</h1>
 
-    <ul class="p-3 pl-6 card">
+    <ul class="m-6 mb-0 p-6 card">
       <li>
         <p style="font-size: 21px; font-weight: 500">Category</p>
         Artwork
