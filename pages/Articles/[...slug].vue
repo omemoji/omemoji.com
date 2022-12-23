@@ -2,8 +2,9 @@
   <Head>
     <Title>{{ data.title }}</Title>
     <Meta hid="description" name="description" :content="data.description" />
+    <Meta hid="og:type" property="og:type" content="article" />
     <Meta
-      hid="url"
+      hid="og:url"
       property="og:url"
       :content="'https://omemoji.com' + data._path"
     />

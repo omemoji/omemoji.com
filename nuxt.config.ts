@@ -60,6 +60,8 @@ export default defineNuxtConfig({
   content: {
     // https://content.nuxtjs.org/api/configuration
   },
+  // components: true,
+  components: true,
   css: ["~/assets/css/main.css", "github-markdown-css/github-markdown-light.css"],
   image: {
     providers: {

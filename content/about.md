@@ -8,6 +8,10 @@
 - Education: College of Information Science, University of Tsukuba.
 - Interest: 🌐Web, 🎨Illustration
 
+## Contact
+
+- <Contact ></Contact>
+
 ## Stats
 
 ![GitHub Stats](https://github-readme-stats.vercel.app/api?username=omemoji&show_icons=true)

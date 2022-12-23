@@ -6,8 +6,9 @@
       name="description"
       :content="`${artwork.caption}`"
     />
+    <Meta hid="og:type" property="og:type" content="article" />
     <Meta
-      hid="url"
+      hid="og:url"
       property="og:url"
       :content="`https://omemoji.com/artworks/${artwork.id}`"
     />
