@@ -33,8 +33,7 @@
           </NuxtLink>
         </li>
       </ul>
-      <h2 class="mt-9">Link</h2>
-      <LinkCard />
+      <LinkCard class="mt-9" />
     </div>
   </div>
   <div

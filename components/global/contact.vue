@@ -20,7 +20,7 @@ export default {
     function exe() {
       openMailer(email);
       setInterval(() => {
-        email.setAttribute("href", "");
+        email.setAttribute("href", " ");
       }, 0);
     }
     email.addEventListener("click", exe);
