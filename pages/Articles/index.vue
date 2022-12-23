@@ -23,20 +23,20 @@
     <h1 class="text-center">Articles</h1>
     <main>
       <ContentList path="/articles">
-        <div
-          class="card mt-6 p-3 transition-colors hover:bg-black/10"
+        <nuxt-link
+          :to="article._path"
           v-for="article in limitContent"
           :key="article._path"
         >
-          <nuxt-link :to="article._path">
+          <div class="card mt-6 p-3 transition-colors hover:bg-black/10">
             <div class="flex">
-              <h2 class="mr-auto">{{ article.title }}</h2>
+              <h2 class="mr-auto mb-3">{{ article.title }}</h2>
               <div class="" style="margin-top: 9px">{{ article.date }}</div>
             </div>
 
             <p>{{ article.description }}</p>
-          </nuxt-link>
-        </div>
+          </div>
+        </nuxt-link>
       </ContentList>
     </main>
   </div>
