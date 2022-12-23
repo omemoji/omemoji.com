@@ -1,0 +1,56 @@
+==================================================================
+https://keybase.io/omemoji
+--------------------------------------------------------------------
+
+I hereby claim:
+
+  * I am an admin of https://omemoji.com
+  * I am omemoji (https://keybase.io/omemoji) on keybase.
+  * I have a public key ASBhW9pQPXt-XGmsZfBUQnLyItKYK4YZit7ogwWja9pldgo
+
+To do so, I am signing this object:
+
+{
+  "body": {
+    "key": {
+      "eldest_kid": "0120615bda503d7b7e5c69ac65f0544272f222d2982b86198adee88305a36bda65760a",
+      "host": "keybase.io",
+      "kid": "0120615bda503d7b7e5c69ac65f0544272f222d2982b86198adee88305a36bda65760a",
+      "uid": "f58af74e13fd59685c1df1b8aee82f19",
+      "username": "omemoji"
+    },
+    "merkle_root": {
+      "ctime": 1671809490,
+      "hash": "3911f265c3e8f0290734bc3115780e90e1e8e650f5b6f2a0a8f9f962d326e8461459cf4917a68aef3e5d954caf30fed01f4cf8e0a4a944da673f440669624f7f",
+      "hash_meta": "ee86e9d17ed486eba8d594c079b380420973d389f9987513b371acd17bc8dde0",
+      "seqno": 23759318
+    },
+    "service": {
+      "entropy": "ywC3pCMqXfqE17ewgwtzEFxT",
+      "hostname": "omemoji.com",
+      "protocol": "https:"
+    },
+    "type": "web_service_binding",
+    "version": 2
+  },
+  "client": {
+    "name": "keybase.io go client",
+    "version": "6.0.2"
+  },
+  "ctime": 1671809578,
+  "expire_in": 504576000,
+  "prev": "477e8c8faca09cd3d3fcb83977645e0de364258fb9f274a01a8b9cf072f8913e",
+  "seqno": 16,
+  "tag": "signature"
+}
+
+which yields the signature:
+
+hKRib2R5hqhkZXRhY2hlZMOpaGFzaF90eXBlCqNrZXnEIwEgYVvaUD17flxprGXwVEJy8iLSmCuGGYre6IMFo2vaZXYKp3BheWxvYWTESpcCEMQgR36Mj6ygnNPT/Lg5d2ReDeNkJY+58nSgGouc8HL4kT7EINWRT0hWHKZOaB9ZXXhxrwpuJnaiyz6bnEfQvz80wQ5zAgHCo3NpZ8RAG5KtJWlUmGpTefO441R6dFuJCvMAqkWTa6YjV9NszXCvOKNTVupkPr5m8o+C+8yCwAlJWuvDDY16Qnss2Xz1A6hzaWdfdHlwZSCkaGFzaIKkdHlwZQildmFsdWXEILjAInadLKC12x5TQa90q9oH63s8MEa4lmhewKy2k8s+o3RhZ80CAqd2ZXJzaW9uAQ==
+
+And finally, I am proving ownership of this host by posting or
+appending to this document.
+
+View my publicly-auditable identity here: https://keybase.io/omemoji
+
+==================================================================
