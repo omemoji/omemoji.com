@@ -2,7 +2,7 @@
 title: "About"
 ---
 
-# About
+# omemoji
 
 ![omemoji](https://user-images.githubusercontent.com/68148226/206836600-84cfacc6-c2d6-4946-82fe-db48d5838e19.png)
 
@@ -10,7 +10,7 @@ title: "About"
 
 - Name: omemoji
 - Education: College of Information Science, University of Tsukuba.
-- Interest: 🌐Web, 🎨Illustration
+- Interests: 🌐Web, 🎨Illustration
 
 ## Contact
 
