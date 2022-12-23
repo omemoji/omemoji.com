@@ -16,9 +16,10 @@
             :alt="artwork.title"
             :src="artwork.image"
             provider="ipx_fixed"
+            format="webp"
+            quality="50"
             width="250"
             height="250"
-            quality="25"
             loading="lazy"
             class="object-cover aspect-square w-full"
           />
