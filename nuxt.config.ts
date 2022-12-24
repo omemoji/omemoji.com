@@ -1,6 +1,10 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+
 export default defineNuxtConfig({
   ssr: true,
+  experimental: {
+    payloadExtraction: false,
+  },
   app: {
     baseURL: "/",
     head: {
@@ -14,7 +18,7 @@ export default defineNuxtConfig({
         },
       ],
       htmlAttrs: {
-        lang: "en",
+        lang: "ja",
         prefix: "og: http://ogp.me/ns#",
       },
       meta: [
@@ -52,7 +56,7 @@ export default defineNuxtConfig({
         {
           name: "twitter:site",
           content: "@omemoji_itf",
-        }
+        },
       ],
     },
   },
@@ -62,17 +66,20 @@ export default defineNuxtConfig({
   },
   // components: true,
   components: true,
-  css: ["~/assets/css/main.css", "github-markdown-css/github-markdown-light.css"],
+  css: [
+    "~/assets/css/main.css",
+    "github-markdown-css/github-markdown-light.css",
+  ],
   image: {
     providers: {
       customProvider: {
-        name: 'ipx_fixed', // optional value to overrider provider name
-        provider: '~/providers/custom/ipx_fixed.ts', // Path to custom provider
-        options: {
-
-        }
-      }}
+        name: "ipx_fixed", // optional value to overrider provider name
+        provider: "~/providers/custom/ipx_fixed.ts", // Path to custom provider
+        options: {},
+      },
+    },
   },
+
   postcss: {
     plugins: {
       tailwindcss: {},
