@@ -17,14 +17,11 @@ title: "About"
 - <Contact ></Contact>
 
 ## Accounts
-### Tech
 - [GitHub](https://github.com/omemoji){:target="\_blank"}
-- [Zenn](https://zenn.dev/omemoji){:target="\_blank"}
-- [Keybase](https://keybase.io/omemoji){:target="\_blank"}
-### Social
 - [Twitter](https://twitter.com/omemoji_itf){:target="\_blank"}
 - [Instagram](https://instagram.com/omemoji){:target="\_blank"}
-### Artworks
+- [Zenn](https://zenn.dev/omemoji){:target="\_blank"}
+- [Keybase](https://keybase.io/omemoji){:target="\_blank"}
 - [Inkscape](https://inkscape.org/~omemoji){:target="\_blank"}
 - [Krita](https://krita-artists.org/u/omemoji/summary){:target="\_blank"}
 
