@@ -3,11 +3,14 @@
     id="menu"
     class="hidden laptop:mr-60 laptop:inline-block laptop:opacity-100 z-40 transition-opacity duration-300"
   >
-    <div class="fixed text-center overflow-y-auto h-full bg-white w-60 border-r">
+    <div
+      class="fixed text-center overflow-y-auto h-full bg-white w-60 border-r"
+    >
       <div class="py-3 m-3">
         <div class="">
           <nuxt-img
             width="160"
+            height="160"
             :modifiers="{}"
             src="/omemoji.png"
             class="rounded-full m-auto w-40 h-40"

@@ -4,7 +4,7 @@ title: "About"
 
 # omemoji
 
-![omemoji](https://user-images.githubusercontent.com/68148226/206836600-84cfacc6-c2d6-4946-82fe-db48d5838e19.png)
+<img src="https://user-images.githubusercontent.com/68148226/206836600-84cfacc6-c2d6-4946-82fe-db48d5838e19.png" width=150 height="150" />
 
 ## Profile
 
@@ -14,9 +14,10 @@ title: "About"
 
 ## Contact
 
-- <Contact ></Contact>
+- <Contact></Contact>
 
 ## Accounts
+
 - [GitHub](https://github.com/omemoji){:target="\_blank"}
 - [Twitter](https://twitter.com/omemoji_itf){:target="\_blank"}
 - [Instagram](https://instagram.com/omemoji){:target="\_blank"}
@@ -37,9 +38,9 @@ title: "About"
 
 ## Env
 
-[<img src="https://img.shields.io/badge/OS-Ubuntu-E95420.svg?logo=ubuntu&logoColor=E95420&style=flat" alt="Ubuntu" class="inline-block" >](https://ubuntu.com/){:target="\_blank"}<br>
-[<img src="https://img.shields.io/badge/DE-i3-7ca7c2.svg?&style=flat" alt="i3" class="inline-block" >](https://i3wm.org){:target="\_blank"} <br>
-[<img src="https://img.shields.io/badge/Browser-Google%20Chrome-4285F4.svg?logo=googlechrome&logoColor=fff&style=flat" alt="Chrome" class="inline-block" >](https://www.google.com/intl/en_us/chrome/){:target="\_blank"} <br>
-[<img src="https://img.shields.io/badge/Editor-Visual%20Studio%20Code-007ACC.svg?logo=visualstudiocode&logoColor=007ACC&style=flat" alt="VSCode" class="inline-block" >](https://code.visualstudio.com/){:target="\_blank"} <br>
-[<img src="https://img.shields.io/badge/Vector%20Graphics%20Editor-Inkscape-000.svg?logo=inkscape&logoColor=000&style=flat" alt="Inkscape" class="inline-block" >](https://inkscape.org){:target="\_blank"} <br>
-[<img src="https://img.shields.io/badge/Paint%20Tool-Krita-ff1199.svg?logo=krita&logoColor=ff1199&style=flat" alt="Krita" class="inline-block" >](https://krita.org){:target="\_blank"}<br>
+- OS: [Ubuntu](https://ubuntu.com/){:target="\_blank"}
+- DE: [i3](https://i3wm.org){:target="\_blank"}
+- Browser: [Google Chrome](https://www.google.com/intl/en_us/chrome/){:target="\_blank"}
+- Editor: [Visual Studio Code](https://code.visualstudio.com/){:target="\_blank"}
+- Vector Graphics Editor: [Inkscape](https://inkscape.org){:target="\_blank"}
+- Paint Tool: [Krita](https://krita.org){:target="\_blank"}
