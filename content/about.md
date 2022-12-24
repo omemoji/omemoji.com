@@ -32,9 +32,9 @@ title: "About"
 
 ## Stats
 
-![GitHub Stats](https://github-readme-stats.vercel.app/api?username=omemoji&show_icons=true)
+<img src="https://github-readme-stats.vercel.app/api?username=omemoji&show_icons=true" width="495" height="195">
 
-![Top Languages Card](https://github-readme-stats.vercel.app/api/top-langs/?username=omemoji&layout=compact)
+<img src="https://github-readme-stats.vercel.app/api/top-langs/?username=omemoji&layout=compact" width="350" height="165">
 
 ## Env
 
