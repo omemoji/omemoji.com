@@ -30,11 +30,11 @@
         >
           <div class="card mt-6 p-3 transition-colors hover:bg-black/10">
             <div class="flex">
-              <h2 class="mr-auto mb-3">{{ article.title }}</h2>
-              <div class="" style="margin-top: 9px">{{ article.date }}</div>
+              <h2 class=" mb-3">{{ article.title }}</h2>
             </div>
-
-            <p>{{ article.description }}</p>
+            <div class="flex">
+            <p class="mr-6">{{ article.description }}</p><p class="ml-auto">{{ article.date }}</p>
+          </div>
           </div>
         </nuxt-link>
       </ContentList>
