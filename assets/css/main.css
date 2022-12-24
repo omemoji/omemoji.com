@@ -77,7 +77,6 @@ ul {
 .markdown-body h4 a {
   color: #24292f;
 }
-
-.markdown-body li a{
-  padding:12px 0;
+.markdown-body a{
+  padding: 15px 15px  15px 0;
 }
