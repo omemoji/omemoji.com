@@ -4,7 +4,7 @@ title: "About"
 
 # omemoji
 
-<img src="/omemoji_about.png" width=150 height="150" />
+<img src="/omemoji_about.webp" width=160 height="160" />
 
 ## Profile
 
