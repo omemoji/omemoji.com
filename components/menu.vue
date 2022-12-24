@@ -12,7 +12,7 @@
             provider="ipx_fixed"
             width="160"
             height="160"
-            quality="80"
+            quality="100"
             format="webp"
             src="/omemoji.png"
             class="rounded-full m-auto w-40 h-40"
