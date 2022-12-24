@@ -1,10 +1,11 @@
 <template>
   <a id="email" href="/">Email</a>
 </template>
-<script async>
+<script>
 export default {
   mounted() {
     const email = document.querySelector("#email");
+
     function decode(a) {
       return a.replace(/[a-zA-Z]/g, function (c) {
         return String.fromCharCode(

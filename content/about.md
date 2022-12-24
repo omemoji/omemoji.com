@@ -14,7 +14,7 @@ title: "About"
 
 ## Contact
 
-- <Contact></Contact>
+- <Contact ></Contact>
 
 ## Accounts
 
