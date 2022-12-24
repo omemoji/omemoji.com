@@ -36,7 +36,7 @@
 </template>
 <script setup>
 const { path } = useRoute();
-const { data } = await useAsyncData("articles", () => {
+const { data } = useAsyncData("articles", () => {
   return queryContent("/articles")
     .where({ _path: path })
     .only(["title", "_path", "description", "date"])
