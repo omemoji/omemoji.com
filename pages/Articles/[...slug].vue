@@ -27,7 +27,7 @@
         }}</nuxt-link>
       </p>
 
-      <p class="mb-3 text-xl break-all text-black/40">
+      <p class="mb-3 text-xl break-all color-md">
         {{ data.date }}
       </p>
       <ContentRenderer class="markdown-body" :value="doc" />
@@ -36,7 +36,7 @@
 </template>
 <script setup>
 const { path } = useRoute();
-const { data } = await useAsyncData("articles", () => {
+const { data } = useAsyncData("articles", () => {
   return queryContent("/articles")
     .where({ _path: path })
     .only(["title", "_path", "description", "date"])
