@@ -20,6 +20,3 @@
     <ContentDoc path="/about" class="markdown-body" />
   </div>
 </template>
-<script>
-export default {};
-</script>

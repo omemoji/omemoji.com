@@ -118,7 +118,6 @@ Section "Device"
   Option "TearFree" "true"
 
 EndSection
-
 ```
 
 </details>
@@ -140,9 +139,7 @@ Section "Device"
   Option "TearFree" "true"
 
 EndSection
-
 ```
-
 </details>
 
 ### 音が出るようにする

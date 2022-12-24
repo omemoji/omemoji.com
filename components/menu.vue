@@ -46,10 +46,3 @@
     class="hidden opacity-0 fixed w-full h-full z-30 bg-black/40 backdrop-blur-md transition-opacity duration-300"
   ></div>
 </template>
-<script>
-export default {
-  data() {
-    return {};
-  },
-};
-</script>
