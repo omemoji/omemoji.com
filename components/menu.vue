@@ -9,9 +9,10 @@
       <div class="py-3 m-3">
         <div class="">
           <nuxt-img
+            provider="ipx_fixed"
             width="160"
             height="160"
-            :modifiers="{}"
+            quality="80"
             src="/omemoji.png"
             class="rounded-full m-auto w-40 h-40"
             alt="omemoji"
