@@ -6,7 +6,7 @@ date: "2022-12-24"
 
 # Ubuntu Server を普段使いしてみよう
 
-![](https://user-images.githubusercontent.com/68148226/209416666-211e9a21-3de8-4637-82be-49170b053647.png)
+<img src="https://user-images.githubusercontent.com/68148226/209416666-211e9a21-3de8-4637-82be-49170b053647.png" width="720" height="405" >
 
 ## はじめに
 
