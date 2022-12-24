@@ -4,7 +4,7 @@ title: "About"
 
 # omemoji
 
-<img src="https://user-images.githubusercontent.com/68148226/209423894-c6b9c9b6-6424-42df-a810-10c07540d673.png" width=150 height="150" />
+<img src="/omemoji_about.png" width=150 height="150" />
 
 ## Profile
 
