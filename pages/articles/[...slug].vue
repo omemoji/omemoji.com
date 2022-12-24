@@ -34,7 +34,7 @@
     </ContentDoc>
   </div>
 </template>
-<script setup>
+<script setup async>
 const { path } = useRoute();
 const { data } = await useAsyncData("articles", () => {
   return queryContent("/articles")

@@ -1,7 +1,7 @@
 <template>
   <a id="email" href="/">Email</a>
 </template>
-<script defer>
+<script async>
 export default {
   mounted() {
     const email = document.querySelector("#email");
