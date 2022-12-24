@@ -15,7 +15,7 @@
     />
   </Head>
   <div class="card card-shadow p-6 m-3">
-    <p class="mb-3 text-xl break-all text-black/40">
+    <p class="mb-3 text-xl break-all text-black/60">
       <nuxt-link class="hover:color-md transition-colors" to="/"
         >omemoji.com</nuxt-link
       >/<nuxt-link to="/articles" class="color-md">articles</nuxt-link>
