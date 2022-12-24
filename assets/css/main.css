@@ -66,18 +66,17 @@ ul {
   list-style: none;
 }
 .markdown-body h2 a {
+  padding: 0;
   color: #24292f;
 }
 .markdown-body ul {
   list-style-type: disc;
 }
 .markdown-body h3 a {
+  padding: 0;
   color: #24292f;
 }
 .markdown-body h4 a {
+  padding: 0;
   color: #24292f;
 }
-.markdown-body a {
-  padding: 16px 16px 16px 0;
-}
-
