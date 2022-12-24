@@ -10,7 +10,13 @@
           :href="item.href"
           class="card w-12 h-12 flex justify-center transition-colors hover:bg-black/10 bg-white/80 p-2 m-1"
         >
-          <img :src="item.icon" width="32" height="32" class="w-8 h-auto" :alt="item.name" />
+          <img
+            :src="item.icon"
+            width="32"
+            height="32"
+            class="w-8 h-auto"
+            :alt="item.name"
+          />
         </a>
       </li>
     </ul>

@@ -80,6 +80,6 @@ ul {
   padding: 0;
   color: #24292f;
 }
-.markdown-body ul li a {
-  padding: 16px 0;
+.markdown-body .a-link ul li a {
+  padding: 16px 16px 16px 0;
 }

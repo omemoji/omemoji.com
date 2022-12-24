@@ -38,7 +38,7 @@
           </NuxtLink>
         </li>
       </ul>
-      <!-- <LinkCard class="mt-9" /> -->
+      <LinkCard class="mt-9" />
     </div>
   </div>
   <div

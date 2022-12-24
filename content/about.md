@@ -18,6 +18,8 @@ title: "About"
 
 ## Accounts
 
+<div class="a-link">
+
 - [GitHub](https://github.com/omemoji)
 - [Twitter](https://twitter.com/omemoji_itf)
 - [Instagram](https://instagram.com/omemoji)
@@ -25,6 +27,7 @@ title: "About"
 - [Keybase](https://keybase.io/omemoji)
 - [Inkscape](https://inkscape.org/~omemoji)
 - [Krita](https://krita-artists.org/u/omemoji/summary)
+</div>
 
 ## Qualification
 
