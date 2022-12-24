@@ -1,4 +1,3 @@
-import { defineNuxtPlugin } from "#app";
 import VueGtag from "vue-gtag";
 
 // Nuxtプラグインの登録
@@ -11,9 +10,8 @@ export default defineNuxtPlugin((nuxtApp) => {
     VueGtag,
     {
       deferScriptLoad: true,
-      appName: '創作物紹介',                 // サイトの名称
-      pageTrackerScreenviewEnabled: true, // ページトラッキングスクリーンビューを有効
-      config: { id: `G-16EGCD4LQV` },     // GoogleAnalytics(GA4)の測定IDを指定する
+      appName: "創作物紹介", // サイトの名称
+      config: { id: `G-16EGCD4LQV` }, // GoogleAnalytics(GA4)の測定IDを指定する
     },
     router
   );
