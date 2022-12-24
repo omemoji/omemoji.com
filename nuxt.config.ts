@@ -2,9 +2,9 @@
 
 export default defineNuxtConfig({
   ssr: true,
-  experimental: {
-    payloadExtraction: false,
-  },
+  // experimental: {
+  //   payloadExtraction: false,
+  // },
   app: {
     baseURL: "/",
     head: {
