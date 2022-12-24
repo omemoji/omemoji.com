@@ -23,7 +23,7 @@
         >/<nuxt-link class="hover:color-md transition-colors" to="/articles"
           >articles</nuxt-link
         >/<nuxt-link class="color-md" :to="data._path">{{
-          data._path.substr(data._path.indexOf("/articles") + 10)
+          path_fixed
         }}</nuxt-link>
       </p>
 
@@ -42,4 +42,5 @@ const { data } = await useAsyncData("articles", () => {
     .only(["title", "_path", "description", "date"])
     .findOne();
 });
+const path_fixed = path.substring(10);
 </script>
