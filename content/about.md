@@ -38,9 +38,4 @@ title: "About"
 
 ## Env
 
-- <img href="https://ubuntu.com" src="https://img.shields.io/badge/OS-Ubuntu-E95420.svg?logo=ubuntu&logoColor=E95420&style=flat" width="95" height="20">
-- <img src="https://img.shields.io/badge/DE-i3-7ca7c2.svg?&style=flat" width="46" height="20">
-- <img src="https://img.shields.io/badge/Browser-Google%20Chrome-4285F4.svg?logo=googlechrome&logoColor=fff&style=flat" width="167" height="20">
-- <img src="https://img.shields.io/badge/Editor-Visual%20Studio%20Code-007ACC.svg?logo=visualstudiocode&logoColor=007ACC&style=flat" width="173" height="20">
-- <img src="https://img.shields.io/badge/Vector%20Graphics%20Editor-Inkscape-000.svg?logo=inkscape&logoColor=000&style=flat" width="209" height="20">
-- <img src="https://img.shields.io/badge/Paint%20Tool-Krita-ff1199.svg?logo=krita&logoColor=ff1199&style=flat" width="119" height="20">
+<img href="https://ubuntu.com" src="https://img.shields.io/badge/OS-Ubuntu-E95420.svg?logo=ubuntu&logoColor=E95420&style=flat" width="95" height="20" style="display:inline-block"> <img src="https://img.shields.io/badge/DE-i3-7ca7c2.svg?&style=flat" width="46" height="20" style="display:inline-block"> <img src="https://img.shields.io/badge/Browser-Google%20Chrome-4285F4.svg?logo=googlechrome&logoColor=fff&style=flat" width="167" height="20" style="display:inline-block"> <img src="https://img.shields.io/badge/Editor-Visual%20Studio%20Code-007ACC.svg?logo=visualstudiocode&logoColor=007ACC&style=flat" width="173" height="20" style="display:inline-block"> <img src="https://img.shields.io/badge/Vector%20Graphics%20Editor-Inkscape-000.svg?logo=inkscape&logoColor=000&style=flat" width="209" height="20" style="display:inline-block"> <img src="https://img.shields.io/badge/Paint%20Tool-Krita-ff1199.svg?logo=krita&logoColor=ff1199&style=flat" width="119" height="20" style="display:inline-block">

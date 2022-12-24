@@ -15,10 +15,9 @@
     />
   </Head>
   <div class="card card-shadow p-6 m-3">
-    <p class="mb-3 text-xl break-all text-black/60">
-      <nuxt-link class="hover:color-md transition-colors" to="/"
-        >omemoji.com</nuxt-link
-      >/<nuxt-link to="/articles" class="color-md">articles</nuxt-link>
+    <p class="mb-3 text-xl break-all color-md">
+      <nuxt-link class="hover:underline" to="/">omemoji.com</nuxt-link
+      >/<nuxt-link to="/articles" class="underline">articles</nuxt-link>
     </p>
     <h1 class="text-center">Articles</h1>
     <main>
@@ -30,11 +29,12 @@
         >
           <div class="card mt-6 p-3 transition-colors hover:bg-black/10">
             <div class="flex">
-              <h2 class=" mb-3">{{ article.title }}</h2>
+              <h2 class="mb-3">{{ article.title }}</h2>
             </div>
             <div class="flex">
-            <p class="mr-6">{{ article.description }}</p><p class="ml-auto">{{ article.date }}</p>
-          </div>
+              <p class="mr-6">{{ article.description }}</p>
+              <p class="ml-auto">{{ article.date }}</p>
+            </div>
           </div>
         </nuxt-link>
       </ContentList>

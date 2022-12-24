@@ -17,12 +17,10 @@
   </Head>
   <div class="card card-shadow p-6 m-3">
     <ContentDoc v-slot="{ doc }">
-      <p class="mb-3 text-xl break-all text-black/60">
-        <nuxt-link class="hover:color-md transition-colors" to="/"
-          >omemoji.com</nuxt-link
-        >/<nuxt-link class="hover:color-md transition-colors" to="/articles"
-          >articles</nuxt-link
-        >/<nuxt-link class="color-md" :to="data._path">{{
+      <p class="mb-3 text-xl break-all color-md">
+        <nuxt-link class="hover:underline" to="/">omemoji.com</nuxt-link
+        >/<nuxt-link class="hover:underline" to="/articles">articles</nuxt-link
+        >/<nuxt-link class="underline" :to="data._path">{{
           path_fixed
         }}</nuxt-link>
       </p>
