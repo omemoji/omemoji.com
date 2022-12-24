@@ -13,6 +13,7 @@
             width="160"
             height="160"
             quality="80"
+            loading="lazy"
             src="/omemoji.png"
             class="rounded-full m-auto w-40 h-40"
             alt="omemoji"
