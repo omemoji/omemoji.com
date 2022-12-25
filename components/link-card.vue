@@ -16,6 +16,7 @@
             height="32"
             class="w-8 h-auto"
             :alt="item.name"
+            loading="lazy"
           />
         </a>
       </li>

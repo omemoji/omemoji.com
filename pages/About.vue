@@ -19,4 +19,5 @@
     </p>
     <ContentDoc path="/about" class="markdown-body" />
   </div>
+  <Gallery />
 </template>

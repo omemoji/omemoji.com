@@ -4,6 +4,7 @@ export default defineNuxtConfig({
   // experimental: {
   //   payloadExtraction: false,
   // },
+
   app: {
     baseURL: "/",
     head: {
@@ -82,4 +83,5 @@ export default defineNuxtConfig({
       autoprefixer: {},
     },
   },
+
 });

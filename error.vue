@@ -1,7 +1,7 @@
 <template>
   <NuxtLayout>
     <Head><Title>Error</Title></Head>
-    <div class="card card-shadow m-3 pb-6 bg-white">
+    <div class="card card-shadow m-3 pb-6 bg-white text-center">
       <nuxt-img
         provider="ipx_fixed"
         width="768"
@@ -11,16 +11,13 @@
         src="/title.png"
         alt="創作物紹介 omemoji"
       />
-
-      <h1 class="text-center my-3 break-all mx-6">
-        {{ error.statusCode }} {{ error.message }}
-      </h1>
-      <NuxtLink to="/" class="flex justify-center">
-        <p
-          class="card text-center p-2 inline transition-colors hover:bg-black/10"
-        >
-          Home
-        </p>
+      <h1 class="my-3 p-3 px-6">{{ error.statusCode }} {{ error.message }}</h1>
+      <hr class="mx-6 mb-3" />
+      <NuxtLink
+        to="/"
+        class="card p-2 mt-3 inline-block transition-colors hover:bg-black/10"
+      >
+        <p class="transition-colors">Home</p>
       </NuxtLink>
     </div>
   </NuxtLayout>
