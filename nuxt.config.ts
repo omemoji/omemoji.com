@@ -14,7 +14,7 @@ export default defineNuxtConfig({
         { rel: "icon", type: "image/png", href: "/favicon.png" },
         {
           rel: "apple-touch-icon",
-          href: "https://omemoji.com/omemoji.png",
+          href: "https://omemoji.com/apple-touch-icon.png",
         },
       ],
       htmlAttrs: {
