@@ -9,6 +9,7 @@ export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.vueApp.use(
     VueGtag,
     {
+      bootstrap: false,
       deferScriptLoad: true,
       appName: "創作物紹介", // サイトの名称
       pageTrackerScreenviewEnabled: true, // ページトラッキングスクリーンビューを有効
