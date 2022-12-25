@@ -60,11 +60,6 @@ export default defineNuxtConfig({
     },
   },
   modules: ["@nuxt/image-edge", "@nuxt/content"],
-  content: {
-    // https://content.nuxtjs.org/api/configuration
-  },
-  // components: true,
-  components: true,
   css: [
     "~/assets/css/main.css",
     "github-markdown-css/github-markdown-light.css",
@@ -78,7 +73,6 @@ export default defineNuxtConfig({
       },
     },
   },
-
   postcss: {
     plugins: {
       tailwindcss: {},
