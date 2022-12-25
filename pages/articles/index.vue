@@ -43,7 +43,6 @@
 </template>
 <script lang="ts" setup>
 const limitContent = await queryContent("/articles")
-  .only(["title", "_path", "description", "date"])
   .sort({ date: -1 })
   .find();
 </script>
