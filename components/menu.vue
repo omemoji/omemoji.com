@@ -10,9 +10,9 @@
         <div class="">
           <nuxt-img
             provider="ipx_fixed"
-            width="160"
-            height="160"
-            quality="100"
+            width="300"
+            height="300"
+            quality="80"
             format="webp"
             src="/omemoji.png"
             class="rounded-full m-auto w-40 h-40"
