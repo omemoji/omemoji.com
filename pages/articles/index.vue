@@ -6,7 +6,7 @@
       name="description"
       content="Articles in omemoji.com"
     />
-    <Meta hid="url" property="og:url" content="https://omemoji.com/Articles" />
+    <Meta hid="url" property="og:url" content="https://omemoji.com/articles" />
     <Meta hid="og:title" property="og:title" content="Articles" />
     <Meta
       hid="og:description"
