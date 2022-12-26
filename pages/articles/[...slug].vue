@@ -33,8 +33,8 @@
   </div>
 </template>
 <script setup>
-const { path } = await useRoute();
-const { data } =  await useAsyncData("articles", () => {
+const { path } = useRoute();
+const { data } = await useAsyncData(`articles-${path}`, () => {
   return queryContent("/articles")
     .where({ _path: path })
     .only(["title", "_path", "description", "date"])
