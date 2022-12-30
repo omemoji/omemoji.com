@@ -20,11 +20,11 @@ title: "About"
 
 <div class="a-link">
 
-- [GitHub](https://github.com/omemoji)
-- [Twitter](https://twitter.com/omemoji_itf)
-- [Instagram](https://instagram.com/omemoji)
-- [Zenn](https://zenn.dev/omemoji)
-- [Keybase](https://keybase.io/omemoji)
+- [GitHub](https://github.com/omemoji){target="\_blank"}
+- [Twitter](https://twitter.com/omemoji_itf){target="\_blank"}
+- [Instagram](https://instagram.com/omemoji){target="\_blank"}
+- [Zenn](https://zenn.dev/omemoji){target="\_blank"}
+- [Keybase](https://keybase.io/omemoji){target="\_blank"}
 </div>
 
 ## Qualification

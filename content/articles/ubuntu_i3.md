@@ -63,9 +63,9 @@ date: "2022-12-24"
 「軽量で自由度の高い」デスクトップ環境といえば、ある程度 Linux に慣れ親しんだ人は「Arch Linux を使えばいいのではないか」と考えるかもしれない。
 また、パッケージ管理に apt を使いたいという場合は
 
-- [Debian](https://debian.org) (デスクトップ環境なしでのインストールが可能)
-- [Xubuntu](https://xubuntu.org/)、[Lubuntu](https://lubuntu.me) (Ubuntu ベース、軽量デスクトップ環境)
-- [Regolith Linux](https://regolith-linux.org/) (Ubuntu ベース、i3 をウィンドウマネージャとして用いる)
+- [Debian](https://debian.org){target="\_blank"} (デスクトップ環境なしでのインストールが可能)
+- [Xubuntu](https://xubuntu.org/){target="\_blank"}、[Lubuntu](https://lubuntu.me){target="\_blank"} (Ubuntu ベース、軽量デスクトップ環境)
+- [Regolith Linux](https://regolith-linux.org/){target="\_blank"} (Ubuntu ベース、i3 をウィンドウマネージャとして用いる)
 
 も候補として挙げられるだろう。しかしながら、Ubuntu Server をあえて GUI 環境で使うことには以下のメリットがある:
 
@@ -147,7 +147,7 @@ EndSection
 
 サーバ用なので当然だが、Ubuntu Server からは音が出ない。そのため、自分でサウンドシステムをインストールする必要がある。
 
-Linux 用のサウンドシステムとしては PulseAudio がよく知られているが、私は [PipeWire](https://wiki.archlinux.jp/index.php/PipeWire) をインストールした。
+Linux 用のサウンドシステムとしては PulseAudio がよく知られているが、私は [PipeWire](https://wiki.archlinux.jp/index.php/PipeWire){target="\_blank"} をインストールした。
 PipeWire は PulseAudio と互換性があり、AAC codec に対応しているなどのメリットがある。
 
 <details>

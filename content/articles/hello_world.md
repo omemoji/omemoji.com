@@ -35,7 +35,7 @@ date: "2022-12-17"
 - 今後描いてみたいもの: 楽曲のアートワーク、漫画、上手い絵
 
 #### 音楽
-- 一応作曲をしたことがある→[YouTube](https://www.youtube.com/channel/UCe1R2Wcu50u9Nm_HkZO6llA)
+- 一応作曲をしたことがある→[YouTube](https://www.youtube.com/channel/UCe1R2Wcu50u9Nm_HkZO6llA){target="\_blank"}
 - ゲーム音楽をよく聞く
   - 東方Project、Toby Foxの楽曲など
 - YouTube Musicで良いと思ったものをつまみ食いして聞いている
