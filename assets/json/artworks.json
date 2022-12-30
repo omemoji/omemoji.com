@@ -1,5 +1,15 @@
 [
   {
+    "id": "lux",
+    "image": "/images/artworks/lux.png",
+    "title": "Lux",
+    "tool": "Krita",
+    "href": "https://www.instagram.com/p/CmwruKfvP-v",
+    "caption": "がらくたで構成された、かわいい猫の姫",
+    "aspect_h": 1,
+    "aspect_w": 1
+  },
+  {
     "id": "zugadanten2022",
     "image": "/images/artworks/zugadanten2022.jpg",
     "title": "図画団展2022ポスター",

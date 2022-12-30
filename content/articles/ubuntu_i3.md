@@ -6,7 +6,7 @@ date: "2022-12-24"
 
 # Ubuntu Server を普段使いしてみよう
 
-<img src="/images/content/ubuntu_i3/ubuntu_i3_01.webp" width="720" height="405" >
+<img src="/images/articles/ubuntu_i3/ubuntu_i3_01.webp" width="720" height="405" >
 
 ## はじめに
 

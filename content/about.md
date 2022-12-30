@@ -25,8 +25,6 @@ title: "About"
 - [Instagram](https://instagram.com/omemoji)
 - [Zenn](https://zenn.dev/omemoji)
 - [Keybase](https://keybase.io/omemoji)
-- [Inkscape](https://inkscape.org/~omemoji)
-- [Krita](https://krita-artists.org/u/omemoji/summary)
 </div>
 
 ## Qualification
