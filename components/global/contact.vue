@@ -1,5 +1,5 @@
 <template>
-  <a id="email" href="/">Email</a>
+  <a id="email" href="/">✉Email</a>
 </template>
 <script>
 export default {
