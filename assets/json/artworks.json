@@ -1,5 +1,15 @@
 [
   {
+    "id": "2023",
+    "image": "/images/artworks/2023.png",
+    "title": "2023 Happy New Year! ",
+    "tool": "Inkscape",
+    "href": "https://inkscape.org/~omemoji/%E2%98%85moon",
+    "caption": "2023年の年賀状。今年もよろしくお願いします。",
+    "aspect_h": 1,
+    "aspect_w": 1
+  },
+  {
     "id": "lux",
     "image": "/images/artworks/lux.png",
     "title": "Lux",
