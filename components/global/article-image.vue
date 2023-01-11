@@ -5,12 +5,13 @@
     :width="width"
     :height="height"
     :src="src"
-    class="mb-4"
+    :alt="alt"
+    class="article-image"
     format="webp"
   ></nuxt-img>
 </template>
 <script>
 export default {
-  props: ["width", "height", "src"],
+  props: ["width", "height", "src","alt"],
 };
 </script>

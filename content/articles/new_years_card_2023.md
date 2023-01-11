@@ -6,8 +6,9 @@ date: "2023-01-01"
 
 # 2023 年の年賀状イラストを作る
 
-<ArticleImage width="400" height="400" src="/images/artworks/2023.png"></ArticleImage>
+<ArticleImage width="574" height="574" alt="2023" src="/images/artworks/2023.png" ></ArticleImage>
 
+## はじめに
 私は絵や大学の課題など何事においても取り掛かるのが遅い方で、中々作業を始められない。そこで、「今年中」というこれ以上なく分かりやすい締切を持つ年賀状イラストの作成を通して、自分で期限を決めて計画的に進捗を出す習慣を身に着けようと考えた。
 
 ## 計画の概要

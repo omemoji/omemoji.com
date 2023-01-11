@@ -81,6 +81,10 @@ ul {
   padding: 0;
   color: #24292f;
 }
+.article-image {
+  max-height: 350px;
+  width: auto;
+}
 .blogcard {
   width: 100%;
   height: 175px;
