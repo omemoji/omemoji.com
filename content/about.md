@@ -2,7 +2,7 @@
 title: "About"
 ---
 
-# omemoji
+# About
 
 <img src="/omemoji_about.webp" width=160 height="160" />
 
