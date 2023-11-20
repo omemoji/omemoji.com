@@ -1,0 +1,2 @@
+User-agent: *
+Disallow: /_ipx/f_webp&q_50&s_250x250/

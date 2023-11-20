@@ -1,0 +1,212 @@
+[
+  {
+    "id": "ink_drop",
+    "image": "/images/artworks/ink_drop.png",
+    "title": "Ink drop",
+    "tool": "Krita",
+    "href": "https://www.instagram.com/p/Cy86MEcvrdo/",
+    "caption": "水中に垂らされていく、金魚の形を成した墨滴",
+    "aspect_h": 1,
+    "aspect_w": 1
+  },
+  {
+    "id": "helios",
+    "image": "/images/artworks/helios.png",
+    "title": "Helios",
+    "tool": "Krita",
+    "href": "https://www.instagram.com/p/Cvlk3miR3NH/",
+    "caption": "Warrior of the Sun",
+    "aspect_h": 1,
+    "aspect_w": 1
+  },
+  {
+    "id": "medusa",
+    "image": "/images/artworks/medusa.png",
+    "title": "Medusa",
+    "tool": "Krita",
+    "href": "https://www.instagram.com/p/CvW-p4zvlll/",
+    "caption": "黒蛇使いの少女",
+    "aspect_h": 1.414,
+    "aspect_w": 1
+  },
+  {
+    "id": "eagle",
+    "image": "/images/artworks/eagle.png",
+    "title": "ワシの戦士",
+    "tool": "Krita",
+    "href": "https://www.instagram.com/p/Cqknaevvhac/",
+    "caption": "ジェットエンジンを背負った空の戦士",
+    "aspect_h": 1,
+    "aspect_w": 1
+  },
+  {
+    "id": "masterpiece",
+    "image": "/images/artworks/masterpiece.png",
+    "title": "The Creator",
+    "tool": "Krita",
+    "href": "https://twitter.com/omemoji_art/status/1641262352556519424",
+    "caption": "絵筆を持った神",
+    "aspect_h": 1,
+    "aspect_w": 1
+  },
+  {
+    "id": "celestial_maiden",
+    "image": "/images/artworks/celestial_maiden.png",
+    "title": "天女",
+    "tool": "Krita",
+    "href": "https://www.instagram.com/p/Cp7uUD9vlLD/",
+    "caption": "絵の具を自在に操る天女",
+    "aspect_h": 1,
+    "aspect_w": 1
+  },
+  {
+    "id": "white_snake",
+    "image": "/images/artworks/white_snake.png",
+    "title": "白蛇",
+    "tool": "Krita",
+    "href": "https://www.instagram.com/p/CpvBorxPl-x/",
+    "caption": "A Japanese white snake",
+    "aspect_h": 1.414,
+    "aspect_w": 1
+  },
+  {
+    "id": "2023",
+    "image": "/images/artworks/2023.png",
+    "title": "2023 Happy New Year! ",
+    "tool": "Inkscape",
+    "href": "https://inkscape.org/~omemoji/%E2%98%85moon",
+    "caption": "2023年の年賀状",
+    "aspect_h": 1,
+    "aspect_w": 1
+  },
+  {
+    "id": "lux",
+    "image": "/images/artworks/lux.png",
+    "title": "Lux",
+    "tool": "Krita",
+    "href": "https://www.instagram.com/p/CmwruKfvP-v",
+    "caption": "がらくたで構成された、かわいい猫の姫",
+    "aspect_h": 1,
+    "aspect_w": 1
+  },
+  {
+    "id": "zugadanten2022",
+    "image": "/images/artworks/zugadanten2022.jpg",
+    "title": "図画団展2022",
+    "tool": "Krita",
+    "href": "https://www.instagram.com/p/CkSHtqIBGFx/",
+    "caption": "2022年度図画団展のポスター",
+    "aspect_h": 1.414,
+    "aspect_w": 1
+  },
+  {
+    "id": "rainbow_dragon",
+    "image": "/images/artworks/rainbow_dragon.png",
+    "title": "虹龍",
+    "tool": "Krita",
+    "href": "https://www.instagram.com/p/Cb1wksDvX-i/",
+    "caption": "極彩色の龍",
+    "aspect_h": 9,
+    "aspect_w": 16
+  },
+  {
+    "id": "harvest",
+    "image": "/images/artworks/harvest.png",
+    "title": "やまぶどう",
+    "tool": "Krita",
+    "href": "https://www.instagram.com/p/CbeI9z3v0HT/",
+    "caption": "秋のやまぶどうとカラス",
+    "aspect_h": 1,
+    "aspect_w": 1
+  },
+  {
+    "id": "2022",
+    "image": "/images/artworks/2022.png",
+    "title": "2022 Happy New Year! ",
+    "tool": "Krita",
+    "href": "https://www.instagram.com/p/CYJtB4bP9LA/",
+    "caption": "年賀状",
+    "aspect_h": 1.414,
+    "aspect_w": 1
+  },
+  {
+    "id": "god_of_swords",
+    "image": "/images/artworks/god_of_swords.png",
+    "title": "剣神",
+    "tool": "Krita",
+    "href": "https://www.instagram.com/p/CW18LCxvxYe/",
+    "caption": "虹の剣を持つ神",
+    "aspect_h": 1.414,
+    "aspect_w": 1
+  },
+  {
+    "id": "tower_girl",
+    "image": "/images/artworks/tower_girl.png",
+    "title": "鉄塔少女",
+    "tool": "Inkscape",
+    "href": "https://inkscape.org/~omemoji/%E2%98%85+29",
+    "caption": "夕暮れの鉄塔に佇む少女",
+    "aspect_h": 9,
+    "aspect_w": 16
+  },
+  {
+    "id": "the_end_of_fall",
+    "image": "/images/artworks/the_end_of_fall.png",
+    "title": "The end of fall",
+    "tool": "Inkscape",
+    "href": "https://inkscape.org/~omemoji/%E2%98%85the-end-of-fall",
+    "caption": "紅葉と透き通った湖面",
+    "aspect_h": 5,
+    "aspect_w": 8
+  },
+  {
+    "id": "RGBdragon",
+    "image": "/images/artworks/RGBdragon.png",
+    "title": "RGBdragon",
+    "tool": "Inkscape",
+    "href": "https://inkscape.org/~omemoji/%E2%98%85rgbdragon",
+    "caption": "光の三原色に彩られた龍",
+    "aspect_h": 9,
+    "aspect_w": 16
+  },
+  {
+    "id": "shinkan-cover",
+    "image": "/images/artworks/shinkan-cover.png",
+    "title": "SHINKAN Booklet 2021",
+    "tool": "Adobe Illustrator",
+    "href": "",
+    "caption": "2021年度情報科学類新歓パンフレットの表紙",
+    "aspect_h": 1.414,
+    "aspect_w": 1
+  },
+  {
+    "id": "skyblue",
+    "image": "/images/artworks/skyblue.png",
+    "title": "skyblue",
+    "tool": "Adobe Illustrator",
+    "href": "",
+    "caption": "音楽を奏でるクジラと少女",
+    "aspect_h": 9,
+    "aspect_w": 16
+  },
+  {
+    "id": "asoblock_dragon",
+    "image": "/images/artworks/asoblock_dragon.jpg",
+    "title": "自在龍",
+    "tool": "アソブロック",
+    "href": "https://www.asoblock.jp/webzukan/detail.php?id=160",
+    "caption": "アソブロックで作成した龍",
+    "aspect_h": 4,
+    "aspect_w": 5
+  },
+  {
+    "id": "blazing_leaves",
+    "image": "/images/artworks/blazing_leaves.jpeg",
+    "title": "Blazing leaves",
+    "tool": "アクリルガッシュ",
+    "href": "",
+    "caption": "高校生国際美術展に応募したもの",
+    "aspect_h": 7,
+    "aspect_w": 6
+  }
+]
