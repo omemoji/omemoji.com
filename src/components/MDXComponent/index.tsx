@@ -1,10 +1,10 @@
 import LinkCard from "components/LinkCard";
 import NextImage from "components/NextImage";
-import Link from "next/link";
+// import Link from "next/link";
 
 import type { LinkCardProps } from "components/LinkCard";
 import type { NextImageProps } from "components/NextImage";
-import type { LinkProps } from "next/link";
+// import type { LinkProps } from "next/link";
 import type { MDXComponents } from "mdx/types";
 
 type ProvidedComponents = MDXComponents & {
