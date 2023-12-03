@@ -1,0 +1,71 @@
+import Top from "components/Top";
+import { getArticlesData } from "lib/fs";
+import ArticlesList from "components/ArticlesList";
+import type { Metadata } from "next";
+export async function generateMetadata({
+  params,
+}: {
+  params: { tag: string };
+}): Promise<Metadata> {
+  const { tag } = params;
+  return {
+    title: `Articles: ${tag} | 創作物紹介`,
+    description: `articles with tag ${tag}`,
+    openGraph: {
+      title: `Articles: "${tag}" | 創作物紹介`,
+      description: `articles with tag ${tag}`,
+      url: `/articles/${tag}`,
+      type: "website",
+      images: {
+        url: `/omemoji.png`,
+        width: 512,
+        height: 512,
+      },
+    },
+    twitter: {
+      card: "summary",
+      title: `Articles: ${tag} | 創作物紹介`,
+      description: `articles with tag ${tag}`,
+      images: `/omemoji.png`,
+      site: "@omemoji_art",
+      creator: "@omemoji_art",
+    },
+  };
+}
+
+export default async function ArticlesTag({
+  params,
+}: {
+  params: { tag: string };
+}) {
+  const { tag } = params;
+  const articles = await getArticlesData("content/articles");
+  const tagged_articles = articles.filter((article) =>
+    article.tags.includes(tag)
+  );
+
+  return (
+    <>
+      <Top
+        src="/omemoji.png"
+        title={"#" + tag}
+        category="Articles"
+        description={"Tag: " + tag}
+      />
+      <ArticlesList articles={tagged_articles} />
+    </>
+  );
+}
+export const dynamicParams = false;
+
+export async function generateStaticParams() {
+  const articles = await getArticlesData("content/articles");
+  const data = Array.from(
+    new Set(articles.flatMap((d) => d.tags ?? []))
+  ).sort();
+  return data.map((tag) => {
+    return {
+      tag,
+    };
+  });
+}

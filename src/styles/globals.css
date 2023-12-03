@@ -1,0 +1,193 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    line-height: 1.8rem;
+  }
+  html {
+    color: var(--fg);
+    background: var(--bg);
+    font-size: 18px;
+    font-family: "Helvetica Neue", -apple-system, BlinkMacSystemFont, Arial,
+      "Segoe UI", Roboto, "Noto Sans", sans-serif, "Apple Color Emoji",
+      "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  }
+  body {
+    @apply leading-8 max-w-screen-md mx-auto;
+
+    -webkit-text-size-adjust: 100%;
+  }
+
+  main article {
+    @apply px-4 md:px-0 py-0 mb-8;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-bold;
+  }
+
+  h1 {
+    @apply my-2 px-4 py-2 text-3xl  text-center;
+  }
+  h2 {
+    @apply mt-8 mb-4 py-[6px] text-2xl;
+    border-bottom: solid 1px var(--border);
+    font-size: 1.7rem;
+    line-height: 2rem;
+  }
+
+  article h2 a {
+    color: var(--fg);
+  }
+  article h3 a {
+    color: var(--fg);
+  }
+  article h4 a {
+    color: var(--fg);
+  }
+  article h5 a {
+    color: var(--fg);
+  }
+  article h6 a {
+    color: var(--fg);
+  }
+  h3 {
+    @apply my-4;
+
+    font-size: 1.3rem; /* 20px */
+    line-height: 1.75rem; /* 28px */
+  }
+  h4 {
+    @apply text-lg my-4;
+  }
+  h5 {
+    @apply text-base;
+  }
+  h6 {
+    @apply text-base;
+  }
+}
+
+@layer utilities {
+  /**/
+  main article img {
+    @apply my-4;
+  }
+
+  main article p {
+    @apply my-4;
+  }
+  /* Table */
+  table {
+    @apply my-4;
+  }
+  table,
+  thead,
+  th,
+  tbody,
+  tr,
+  td {
+    @apply p-1 px-2;
+    border: solid 1px var(--border);
+  }
+
+  /* List */
+  main article ul {
+    @apply pl-4 my-4;
+  }
+  main article ul li {
+    @apply list-disc;
+  }
+  main article ul li ul {
+    @apply my-0;
+  }
+  main article ul li p {
+    @apply my-0;
+  }
+
+  /* Link */
+  article a {
+    @apply hover:underline;
+    word-break: break-all;
+    color: var(--link);
+  }
+
+  footer {
+    border-top: solid 1px var(--border);
+  }
+
+  pre {
+    @apply mb-4 py-4 px-8 overflow-auto rounded-lg;
+  }
+
+  blockquote {
+    @apply m-4 px-4;
+    color: var(--quote);
+    border-left: solid 4px var(--quote);
+  }
+}
+
+@layer components {
+  .strong-color {
+    color: var(--link);
+  }
+
+  .gallery {
+    @apply w-full h-auto inline-block;
+    line-height: 0;
+    font-size: 0px;
+  }
+  .content-image {
+    @apply w-full h-auto;
+    max-height: 540px;
+    background-color: var(--bg-artwork);
+  }
+  .caption {
+    border-top: solid 4px var(--link);
+  }
+  .tag {
+    @apply inline-block mx-1 hover:underline;
+    color: var(--link);
+  }
+
+  .emoji {
+    height: 120px;
+    font-size: 100px;
+  }
+  .top-article {
+    border-bottom: solid 1px var(--border);
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --fg: #000000;
+    --bg: #ffffff;
+    --bg-artwork: #dddddd;
+    --border: #b0b0b0;
+    --link: #ff8822;
+    --quote: #a0a0a0;
+    --linkcard: #aaaaaa;
+
+    /* --link: #4070ff; */
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fg: #ffffff;
+    --bg: #000000;
+    --bg-artwork: #222222;
+    --border: #aaaaaa;
+    --link: #ff8822;
+    --quote: #888888;
+    --linkcard: #666666;
+  }
+}
