@@ -21,6 +21,7 @@ const replaceComponents = {
         {...props}
         className="content-image"
         alt={props.alt.substring(8)}
+        priority={true}
       />
     ) : !props.src.startsWith("http") ? (
       <NextImage {...props} classNameCaption="hidden" />
