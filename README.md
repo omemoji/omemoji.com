@@ -1,10 +1,13 @@
 # 創作物紹介
 
+![omemoji](https://github.com/omemoji/omemoji.com/assets/68148226/11ebcc2b-a4ce-4c62-a3fc-3f26fae5e7c6)
+
 ## 使用技術
 
 - Next.js
 - Tailwind CSS
 - TypeScript
+- Cloudflare Pages
 
 ## 実装する機能
 
