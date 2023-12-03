@@ -91,7 +91,7 @@ https://internship.team-lab.com/
 
 パエリアがとても美味しい。
 
-https://g095632.gorp.jp/
+https://tabelog.com/tokyo/A1310/A131002/13040507/
 
 #### 魚と酒 つりや
 
