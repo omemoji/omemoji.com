@@ -8,6 +8,7 @@
 - ドメイン: https://omemoji.com
 - リポジトリ: https://github.com/omemoji/omemoji.com
 - Zenn: https://zenn.dev/omemoji/articles/41c1bd8a69ebce
+- Nuxt.js + Tailwind CSS で実装
 
 ## 機能
 
