@@ -19,6 +19,7 @@ const NextImage: React.FC<NextImageProps> = async ({
   category,
   className,
   classNameCaption,
+  priority,
 }: NextImageProps) => {
   //detect width and height
 
@@ -41,6 +42,7 @@ const NextImage: React.FC<NextImageProps> = async ({
           src={src}
           alt={alt || src}
           quality={70}
+          priority={priority ?? false}
           className={className + " object-contain"}
         />
         {category != "artwork" && (

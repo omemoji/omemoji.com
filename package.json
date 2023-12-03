@@ -1,11 +1,10 @@
 {
-  "name": "omemoji-next",
-  "version": "0.1.0",
-  "private": true,
+  "name": "omemoji.com",
+  "version": "1.0.0",
   "scripts": {
     "dev": "next dev",
     "build": "next build  && next-export-optimize-images",
-    "ssg": "yarn build && http-server ./out",
+    "ssg": "npm run build && http-server ./out",
     "start": "next start",
     "lint": "next lint",
     "ts-check": "tsc --noEmit",

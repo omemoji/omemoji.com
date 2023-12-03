@@ -13,28 +13,27 @@ const iconSize = "24px";
 
 const linklist = [
   {
-    name: "Github",
-    icon: <FaGithub className={iconClass} size={iconSize} />,
+    icon: <FaGithub className={iconClass} size={iconSize} title="GitHub" />,
     href: "https://github.com/omemoji",
   },
   {
-    name: "Instagram",
-    icon: <FaInstagram className={iconClass} size={iconSize} />,
+    icon: (
+      <FaInstagram className={iconClass} size={iconSize} title="Instagram" />
+    ),
     href: "https://instagram.com/omemoji",
   },
   {
-    name: "X(Twitter)",
-    icon: <FaXTwitter className={iconClass} size={iconSize} />,
+    icon: (
+      <FaXTwitter className={iconClass} size={iconSize} title="X (Twitter)" />
+    ),
     href: "https://twitter.com/omemoji_art",
   },
   {
-    name: "Zenn",
-    icon: <SiZenn className={iconClass} size={iconSize} />,
+    icon: <SiZenn className={iconClass} size={iconSize} title="Zenn" />,
     href: "https://zenn.dev/omemoji",
   },
   {
-    name: "Pixiv",
-    icon: <SiPixiv className={iconClass} size={iconSize} />,
+    icon: <SiPixiv className={iconClass} size={iconSize} title="Pixiv" />,
     href: "https://www.pixiv.net/users/65949346",
   },
 ];
@@ -47,7 +46,7 @@ export default function LinkList({ className }: Props) {
   return (
     <div className={className + " " + "flex"}>
       {linklist.map((link) => (
-        <div key={link.name}>
+        <div key={link.href}>
           <Link className="w-8" href={link.href}>
             {link.icon}
           </Link>

@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     { rel: "icon", url: "/images/Metadata/favicon.ico" },
     { rel: "apple-touch-icon", url: "/images/Metadata/apple-touch-icon.png" },
   ],
-  viewport: "width=device-width, initial-scale=1, maximum-scale=1",
+  viewport: "width=device-width, initial-scale=1",
 };
 
 export default function RootLayout({

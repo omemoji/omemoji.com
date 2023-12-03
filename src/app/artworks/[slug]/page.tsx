@@ -46,8 +46,7 @@ export async function generateMetadata({
 }
 
 export default function Artwork({ params }: { params: { slug: string } }) {
-  const { slug } = params;
-  const artwork = artworks.find((artwork) => artwork.slug === slug) ?? {
+  const artwork = artworks.find((artwork) => artwork.slug === params.slug) ?? {
     slug: "not_found",
     src: "/images/not_found",
     title: "Not Found",
@@ -64,7 +63,7 @@ export default function Artwork({ params }: { params: { slug: string } }) {
           src={artwork.src}
           category="artwork"
           className="content-image"
-          priority
+          priority={true}
         />
       </Link>
 
@@ -100,5 +99,7 @@ export default function Artwork({ params }: { params: { slug: string } }) {
 export const dynamicParams = false;
 
 export function generateStaticParams() {
-  return artworks;
+  return artworks.map((artwork) => ({
+    slug: artwork.slug,
+  }));
 }
