@@ -46,7 +46,8 @@ export async function generateMetadata({
 }
 
 export default function Artwork({ params }: { params: { slug: string } }) {
-  const artwork = artworks.find((artwork) => artwork.slug === params.slug) ?? {
+  const { slug } = params;
+  const artwork = artworks.find((artwork) => artwork.slug === slug) ?? {
     slug: "not_found",
     src: "/no-image.png",
     title: "Not Found",
@@ -57,7 +58,7 @@ export default function Artwork({ params }: { params: { slug: string } }) {
 
   return (
     <>
-      <Link href={artwork.src}>
+      <a href={artwork.src}>
         <NextImage
           alt={artwork.title}
           src={artwork.src}
@@ -65,7 +66,7 @@ export default function Artwork({ params }: { params: { slug: string } }) {
           className="content-image"
           priority={true}
         />
-      </Link>
+      </a>
 
       <div className="pt-4 pb-8 caption">
         <div className="">
@@ -99,7 +100,5 @@ export default function Artwork({ params }: { params: { slug: string } }) {
 export const dynamicParams = false;
 
 export function generateStaticParams() {
-  return artworks.map((artwork) => ({
-    slug: artwork.slug,
-  }));
+  return artworks;
 }
