@@ -30,9 +30,7 @@
     "remark-unwrap-images": "^4.0.0",
     "sharp": "^0.32.6",
     "shiki": "0.14.4",
-    "strip-markdown": "^6.0.0",
-    "util": "^0.12.5",
-    "yet-another-react-lightbox": "^3.15.2"
+    "strip-markdown": "^6.0.0"
   },
   "devDependencies": {
     "@types/jsdom": "^21.1.6",

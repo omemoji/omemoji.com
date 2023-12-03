@@ -48,7 +48,7 @@ export async function generateMetadata({
 export default function Artwork({ params }: { params: { slug: string } }) {
   const artwork = artworks.find((artwork) => artwork.slug === params.slug) ?? {
     slug: "not_found",
-    src: "/images/not_found",
+    src: "/no-image.png",
     title: "Not Found",
     tag: [],
     href: "",
