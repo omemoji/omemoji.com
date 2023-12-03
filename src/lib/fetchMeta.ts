@@ -35,8 +35,8 @@ const detectImage = ($: CheerioAPI, url: string) => {
 
 const detectDescription = ($: CheerioAPI) => {
   let t =
-    $('meta[property="og:description"]').attr("content") ||
-    $('meta[name="description"]').attr("content") ||
+    $('meta[property="og:description"]').attr("content") ??
+    $('meta[name="description"]').attr("content") ??
     "";
 
   return t;
