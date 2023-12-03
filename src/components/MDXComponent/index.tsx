@@ -8,13 +8,11 @@ import type { LinkProps } from "next/link";
 import type { MDXComponents } from "mdx/types";
 
 type ProvidedComponents = MDXComponents & {
-  a: typeof Link;
   img: typeof NextImage;
   linkcard: typeof LinkCard;
 };
 
 const replaceComponents = {
-  a: (props: LinkProps) => <Link {...props} />,
   img: (props: NextImageProps) =>
     props.alt.startsWith("caption:") ? (
       <NextImage
