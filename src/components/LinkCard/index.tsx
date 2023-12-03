@@ -22,8 +22,8 @@ export default function LinkCard({
   return (
     <div className="my-4">
       <a href={url} className=" hover:no-underline ">
-        <div className=" hover:bg-gray-400/30 transition-colors w-full h-28 xs:h-[120px] rounded-lg border-solid border border-[color:var(--border)] flex shrink grow-[6] basis-44">
-          <div className="p-4 pr-0 flex overflow-hidden flex-col  shrink-1 ">
+        <div className=" hover:bg-gray-400/30 transition-colors w-full h-[120px] rounded-lg border-solid border border-[color:var(--border)] flex ">
+          <div className="p-4 pr-0 flex overflow-hidden flex-col  ">
             <div className="text-[color:var(--fg)] whitespace-nowrap xs:text-lg font-bold overflow-hidden text-ellipsis">
               {title}{" "}
             </div>
