@@ -7,7 +7,7 @@
     line-height: 1.8rem;
   }
   html {
-    font-size: 18px;
+    font-size: 17px;
     font-family: "Helvetica Neue", -apple-system, BlinkMacSystemFont, Arial,
       "Segoe UI", Roboto, "Noto Sans", sans-serif, "Apple Color Emoji",
       "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
@@ -173,7 +173,7 @@
     --bg-artwork: #dddddd;
     --border: #b0b0b0;
     --link: #d50000;
-    --quote: #a0a0a0;
+    --quote: #666666;
     --linkcard: #aaaaaa;
     --menu: #666666;
 
@@ -188,7 +188,7 @@
     --bg-artwork: #222222;
     --border: #aaaaaa;
     --link: #88c0dd;
-    --quote: #888888;
+    --quote: #9c9c9c;
     --linkcard: #666666;
     --menu: #9c9c9c;
   }

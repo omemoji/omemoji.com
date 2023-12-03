@@ -69,11 +69,6 @@ https://internship.team-lab.com/
 - 記事は[こちら](/articles/teamlab)
 - フロントエンドエンジニアとして参加
 
-## Stats
-
-![GitHub Stats](https://github-readme-stats.vercel.app/api?username=omemoji&theme=transparent&show_icons=true)
-![Language](https://github-readme-stats.vercel.app/api/top-langs/?username=omemoji&theme=transparent&layout=compact)
-
 ## Music
 
 https://music.youtube.com/playlist?list=PLsM3Uav97Gd0SrfKqQ86_eodZCH1xnKTu&si=akkXNMkHpQ2nVHDG
