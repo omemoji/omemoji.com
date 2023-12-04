@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   keywords: ["創作物紹介", "omemoji"],
 
   icons: [
-    { rel: "icon", url: "/images/Metadata/favicon.ico" },
+    { rel: "icon", url: "/favicon.ico" },
     { rel: "apple-touch-icon", url: "/images/Metadata/apple-touch-icon.png" },
   ],
   viewport: "width=device-width, initial-scale=1",

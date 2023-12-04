@@ -69,6 +69,6 @@ https://internship.team-lab.com/
 - 記事は[こちら](/articles/teamlab)
 - フロントエンドエンジニアとして参加
 
-## Music
+<!-- ## Music
 
-https://music.youtube.com/playlist?list=PLsM3Uav97Gd0SrfKqQ86_eodZCH1xnKTu&si=akkXNMkHpQ2nVHDG
+https://music.youtube.com/playlist?list=PLsM3Uav97Gd0SrfKqQ86_eodZCH1xnKTu&si=akkXNMkHpQ2nVHDG -->
