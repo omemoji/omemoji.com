@@ -100,7 +100,7 @@
 
   /* List */
   main article ul {
-    @apply pl-4 my-4;
+    @apply pl-6 my-4;
   }
   main article ul li {
     @apply list-disc;
@@ -109,6 +109,18 @@
     @apply my-0;
   }
   main article ul li p {
+    @apply my-0;
+  }
+  main article ol {
+    @apply pl-6 my-4;
+  }
+  main article ol li {
+    @apply list-decimal;
+  }
+  main article ol li ol {
+    @apply my-0;
+  }
+  main article ol li p {
     @apply my-0;
   }
 
