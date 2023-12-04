@@ -15,6 +15,7 @@ const detectImage = ($: CheerioAPI, url: string) => {
   let tmp =
     $('meta[property="og:image"]').attr("content") ??
     $('meta[property="og:image:url"]').attr("content") ??
+    $('meta[itemprop="image"]').attr("content") ??
     $('meta[name="twitter:image"]').attr("content") ??
     "";
 
