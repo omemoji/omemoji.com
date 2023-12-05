@@ -8,11 +8,10 @@ export const getArticleDir = (path: string) => join(process.cwd(), "src", path);
 const getPaths = (path: string) => {
   const files = fs.readdirSync(getArticleDir(path), {
     withFileTypes: true,
+    recursive: true,
   });
   return files.flatMap((file) =>
-    file.isFile() && file.name.endsWith(".md")
-      ? join(getArticleDir(path), file.name)
-      : []
+    file.isFile() && file.name.endsWith(".md") ? join(file.path, file.name) : []
   );
 };
 
@@ -39,7 +38,9 @@ export const getTaggedArticlesData = async (path: string, tag: string) => {
 };
 
 export const getArticleContent = async (path: string) => {
-  const p = "./src/content/articles/" + path + ".md";
+  const p =
+    getPaths("content/articles").find((file) => file.endsWith(`${path}.md`)) ??
+    "";
   const file = fs.readFileSync(p, "utf-8");
   const file_sliced = file
     .slice(4)
