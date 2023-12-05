@@ -3,6 +3,7 @@ import { artworks } from "lib/data";
 import Top from "components/Top";
 import type { Metadata } from "next";
 import { ARTWORKS_NUMBER } from "lib/constant";
+import { pageIdGen } from "lib/fs";
 import PageBar from "components/PageBar";
 export async function generateMetadata({
   params,
@@ -38,17 +39,20 @@ export async function generateMetadata({
 export default async function ArtworksTag({
   params,
 }: {
-  params: { tag: string };
+  params: { tag: string; id: string };
 }) {
-  const { tag } = params;
+  const { tag, id } = params;
   const tagged_artworks = artworks.filter((artwork) =>
     artwork.tag.includes(tag)
   );
+  const id_number = Number(id);
+
   const artworks_shown = tagged_artworks.filter(
     (artwork) =>
-      0 <= tagged_artworks.indexOf(artwork) &&
-      tagged_artworks.indexOf(artwork) < ARTWORKS_NUMBER
+      ARTWORKS_NUMBER * (id_number - 1) <= tagged_artworks.indexOf(artwork) &&
+      tagged_artworks.indexOf(artwork) < ARTWORKS_NUMBER * id_number
   );
+
   return (
     <>
       <Top
@@ -60,7 +64,7 @@ export default async function ArtworksTag({
 
       <Gallery className="" artworks={artworks_shown} />
       <PageBar
-        current={1}
+        current={id_number}
         pages={[
           ...Array(Math.ceil(tagged_artworks.length / ARTWORKS_NUMBER)),
         ].map((_, i) => i + 1)}
@@ -73,10 +77,24 @@ export default async function ArtworksTag({
 export const dynamicParams = false;
 
 export async function generateStaticParams() {
-  const data = Array.from(new Set(artworks.flatMap((d) => d.tag ?? []))).sort();
-  return data.map((tag) => {
-    return {
-      tag,
-    };
-  });
+  const tagData = Array.from(
+    new Set(artworks.flatMap((d) => d.tag ?? []))
+  ).sort();
+  const paths = await Promise.all(
+    tagData.map(async (tag) => {
+      const tagged_artworks = artworks.filter((artwork) =>
+        artwork.tag.includes(tag)
+      );
+
+      const data = pageIdGen(
+        Math.ceil(tagged_artworks.length / ARTWORKS_NUMBER)
+      );
+
+      return data.map((id) => ({
+        tag,
+        id: `${id}`,
+      }));
+    })
+  );
+  return paths.flat();
 }

@@ -39,6 +39,11 @@ export const getArticlesData = async (path: string) => {
   });
 };
 
+export const getTaggedArticlesData = async (path: string, tag: string) => {
+  const articlesData = await getArticlesData(path);
+  return articlesData.filter((article) => article.tags.includes(tag));
+};
+
 export const getArticleContent = async (path: string) => {
   const p = "./src/content/articles/" + path + ".md";
   const file = fs.readFileSync(p, "utf-8");

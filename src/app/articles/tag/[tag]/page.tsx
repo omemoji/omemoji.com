@@ -1,6 +1,8 @@
 import Top from "components/Top";
-import { getArticlesData } from "lib/fs";
+import PageBar from "components/PageBar";
+import { getTaggedArticlesData, getArticlesData } from "lib/fs";
 import ArticlesList from "components/ArticlesList";
+import { COUNT_PER_PAGE } from "lib/constant";
 import type { Metadata } from "next";
 export async function generateMetadata({
   params,
@@ -14,7 +16,7 @@ export async function generateMetadata({
     openGraph: {
       title: `Articles: "${tag}" | 創作物紹介`,
       description: `articles with tag ${tag}`,
-      url: `/articles/${tag}`,
+      url: `/articles/tag/${tag}`,
       type: "website",
       images: {
         url: `/omemoji.png`,
@@ -39,9 +41,12 @@ export default async function ArticlesTag({
   params: { tag: string };
 }) {
   const { tag } = params;
-  const articles = await getArticlesData("content/articles");
-  const tagged_articles = articles.filter((article) =>
-    article.tags.includes(tag)
+  const tagged_articles = await getTaggedArticlesData("content/articles", tag);
+
+  const articles_shown = tagged_articles.filter(
+    (article) =>
+      0 <= tagged_articles.indexOf(article) &&
+      tagged_articles.indexOf(article) < COUNT_PER_PAGE
   );
 
   return (
@@ -52,7 +57,14 @@ export default async function ArticlesTag({
         category="Articles"
         description={"Tag: " + tag}
       />
-      <ArticlesList articles={tagged_articles} />
+      <ArticlesList articles={articles_shown} />
+      <PageBar
+        current={1}
+        pages={[
+          ...Array(Math.ceil(tagged_articles.length / COUNT_PER_PAGE)),
+        ].map((_, i) => i + 1)}
+        category={`articles/tag/${tag}`}
+      />
     </>
   );
 }
