@@ -80,8 +80,10 @@ export async function generateStaticParams() {
     (_, i) => (i + 1).toString()
   );
   return data.map((slug) => {
-    return {
-      slug,
-    };
+    if (Number(slug) !== 1) {
+      return {
+        slug,
+      };
+    }
   });
 }
