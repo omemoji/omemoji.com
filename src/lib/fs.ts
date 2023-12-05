@@ -5,12 +5,6 @@ import { mdInfo } from "lib/parser";
 
 export const getArticleDir = (path: string) => join(process.cwd(), "src", path);
 
-export const getArticle = (slug: string, path: string) => {
-  const filePath = join(getArticleDir(path), `${slug}.md`);
-  const content = fs.readFileSync(filePath, "utf-8");
-  return content;
-};
-
 const getPaths = (path: string) => {
   const files = fs.readdirSync(getArticleDir(path), {
     withFileTypes: true,
