@@ -56,3 +56,7 @@ export const getTags = async (path: string) => {
   ).sort();
   return taglists;
 };
+
+export const pageIdGen = (stop: number) => {
+  return [...Array(stop)].map((_, i) => (i + 1).toString()).slice(1);
+};

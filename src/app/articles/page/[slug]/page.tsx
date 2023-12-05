@@ -3,7 +3,7 @@ import ArticlesList from "components/ArticlesList";
 import Top from "components/Top";
 import type { Metadata } from "next";
 import { COUNT_PER_PAGE } from "lib/constant";
-import { getArticlesData } from "lib/fs";
+import { getArticlesData, pageIdGen } from "lib/fs";
 
 export async function generateMetadata({
   params,
@@ -76,14 +76,10 @@ export const dynamicParams = false;
 
 export async function generateStaticParams() {
   const articlesData = await getArticlesData("content/articles");
-  const data = [...Array(Math.ceil(articlesData.length / COUNT_PER_PAGE))].map(
-    (_, i) => (i + 1).toString()
-  );
+  const data = pageIdGen(Math.ceil(articlesData.length / COUNT_PER_PAGE));
   return data.map((slug) => {
-    if (Number(slug) !== 1) {
-      return {
-        slug,
-      };
-    }
+    return {
+      slug,
+    };
   });
 }

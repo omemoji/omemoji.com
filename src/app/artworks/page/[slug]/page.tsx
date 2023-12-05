@@ -4,7 +4,7 @@ import { artworks } from "lib/data";
 import Top from "components/Top";
 import type { Metadata } from "next";
 import { ARTWORKS_NUMBER } from "lib/constant";
-
+import { pageIdGen } from "lib/fs";
 export async function generateMetadata({
   params,
 }: {
@@ -74,14 +74,10 @@ export default async function ArtworksPage({
 export const dynamicParams = false;
 
 export async function generateStaticParams() {
-  const data = [...Array(Math.ceil(artworks.length / ARTWORKS_NUMBER))].map(
-    (_, i) => (i + 1).toString()
-  );
+  const data = pageIdGen(Math.ceil(artworks.length / ARTWORKS_NUMBER));
   return data.map((slug) => {
-    if (Number(slug) !== 1) {
-      return {
-        slug,
-      };
-    }
+    return {
+      slug,
+    };
   });
 }
