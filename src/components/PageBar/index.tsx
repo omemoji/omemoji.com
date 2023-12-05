@@ -15,10 +15,18 @@ export default function PageBar({ current, pages, category }: Props) {
           <li className="my-auto mx-2">
             {current !== 1 ? (
               <Link href={`/${category}/` + slug}>
-                <IoIosArrowBack size={40} color="var(--fg)" />
+                <IoIosArrowBack
+                  size={40}
+                  title="Arrow Back"
+                  color="var(--fg)"
+                />
               </Link>
             ) : (
-              <IoIosArrowBack size={40} color="var(--bg-artwork)" />
+              <IoIosArrowBack
+                size={40}
+                title="Arrow Back"
+                color="var(--bg-artwork)"
+              />
             )}
           </li>
 
@@ -29,10 +37,18 @@ export default function PageBar({ current, pages, category }: Props) {
           <li className="my-auto mx-2">
             {current !== pages.slice(-1)[0] ? (
               <Link href={`/${category}/` + `page/${current + 1}`}>
-                <IoIosArrowForward size={40} color="var(--fg)" />
+                <IoIosArrowForward
+                  size={40}
+                  title="Arrow Forward"
+                  color="var(--fg)"
+                />
               </Link>
             ) : (
-              <IoIosArrowForward size={40} color="var(--bg-artwork)" />
+              <IoIosArrowForward
+                size={40}
+                title="Arrow Forward"
+                color="var(--bg-artwork)"
+              />
             )}
           </li>
         </ul>
