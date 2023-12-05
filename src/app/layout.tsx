@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
-
+import { HOST } from "lib/constant";
 import Header from "components/Header";
 import Footer from "components/Footer";
 import "../styles/globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://omemoji.com"),
+  metadataBase: new URL(`https://${HOST}`),
   creator: "omemoji",
   publisher: "omemoji",
-  authors: [{ name: "omemoji", url: "https://omemoji.com" }],
+  authors: [{ name: "omemoji", url: `https://${HOST}` }],
   generator: "Next.js",
   applicationName: "omemoji",
   openGraph: {
