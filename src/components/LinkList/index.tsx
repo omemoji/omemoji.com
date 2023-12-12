@@ -47,9 +47,9 @@ export default function LinkList({ className }: Props) {
     <div className={className + " " + "flex"}>
       {linklist.map((link) => (
         <div key={link.href}>
-          <Link className="w-8" href={link.href}>
+          <a className="w-8" href={link.href} target="_blank" rel="noopener">
             {link.icon}
-          </Link>
+          </a>
         </div>
       ))}
     </div>

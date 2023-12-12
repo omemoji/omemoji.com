@@ -32,11 +32,10 @@ const compiler = async (source: string) => {
           remarkLinkCard,
         ],
         rehypePlugins: [
+          rehypeRaw,
           [rehypePrettyCode, { theme: "monokai", grid: true }],
           rehypeSlug,
           [rehypeAutolinkHeadings, { behavior: "wrap" }],
-
-          rehypeRaw,
         ],
 
         remarkRehypeOptions: {
