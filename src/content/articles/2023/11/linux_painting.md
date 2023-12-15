@@ -7,7 +7,7 @@ date: "2023-11-21"
 tags: ["Illustration", "Linux", "Krita"]
 ---
 
-![caption:Linux 上で Krita を使用して描いた絵。アステカ神話の「鷲の戦士」をモデルとしている](/images/artworks/eagle.png)
+![top:Linux 上で Krita を使用して描いた絵。アステカ神話の「鷲の戦士」をモデルとしている](/images/artworks/eagle.png)
 
 ## はじめに
 

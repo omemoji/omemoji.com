@@ -14,12 +14,19 @@ type ProvidedComponents = MDXComponents & {
 
 const replaceComponents = {
   img: (props: NextImageProps) =>
-    props.alt.startsWith("caption:") ? (
+    props.alt.startsWith("top:") ? (
+      <NextImage
+        {...props}
+        className="content-image"
+        alt={props.alt.substring(4)}
+        priority={true}
+      />
+    ) : props.alt.startsWith("caption:") ? (
       <NextImage
         {...props}
         className="content-image"
         alt={props.alt.substring(8)}
-        priority={true}
+        priority={false}
       />
     ) : !props.src.startsWith("http") ? (
       <NextImage {...props} classNameCaption="hidden" />

@@ -7,7 +7,7 @@ date: "2023-07-24"
 tags: ["Tech", "Linux", "Void"]
 ---
 
-![caption:Void Linux with i3](/images/articles/void_linux/void_linux.jpeg)
+![top:Void Linux with i3](/images/articles/void_linux/void_linux.jpeg)
 
 ## はじめに
 

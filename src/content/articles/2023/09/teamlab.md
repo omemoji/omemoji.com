@@ -11,7 +11,7 @@ tags:
   - "Job"
 ---
 
-![caption:最終日に撮影した写真](/images/articles/teamlab/teamlab.jpg)
+![top:最終日に撮影した写真](/images/articles/teamlab/teamlab.jpg)
 
 ## はじめに
 

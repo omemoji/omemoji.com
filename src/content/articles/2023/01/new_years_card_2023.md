@@ -9,7 +9,7 @@ tags:
   - "Inkscape"
 ---
 
-![caption:うさぎ年](/images/artworks/2023.png)
+![top:うさぎ年](/images/artworks/2023.png)
 
 ## はじめに
 

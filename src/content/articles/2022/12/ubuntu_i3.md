@@ -7,7 +7,7 @@ date: "2022-12-24"
 tags: ["Tech", "Linux", "Ubuntu"]
 ---
 
-![caption:Ubuntu Server with i3](/images/articles/ubuntu_i3/ubuntu_i3.png)
+![top:Ubuntu Server with i3](/images/articles/ubuntu_i3/ubuntu_i3.png)
 
 ## はじめに
 
