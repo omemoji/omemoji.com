@@ -1,5 +1,4 @@
 import Top from "components/Top";
-import fs from "fs";
 import compiler from "lib/compiler";
 import { Metadata } from "next";
 
@@ -28,8 +27,13 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const file = fs.readFileSync("./src/content/about.md", "utf-8");
-  const { content } = await compiler(file);
+  const md = await fetch(
+    "https://raw.githubusercontent.com/omemoji/omemoji/main/README.md"
+  )
+    .then((res) => res.text())
+    .then((text) => text.substring(text.indexOf("## Profile")));
+
+  const { content } = await compiler(md);
   return (
     <>
       <Top
