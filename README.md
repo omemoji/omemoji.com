@@ -6,12 +6,17 @@
 
 omemoji のポートフォリオ
 
-## 使用技術
+### リンク
+
+https://omemoji.com
+
+## 使用している技術
 
 - Next.js
 - Tailwind CSS
 - TypeScript
 - Cloudflare Pages
+- GitHub Actions
 
 ## Todo
 
@@ -27,6 +32,8 @@ omemoji のポートフォリオ
 ### About
 
 - [x] 自分のプロフィールやアカウント、実績などを載せる
+- [x] [https://github.com/omemoji/omemoji](https://github.com/omemoji/omemoji)の内容と同期する
+  - [x] [https://github.com/omemoji/omemoji](https://github.com/omemoji/omemoji)が更新されたとき Cloudflare Pages でデプロイを行う
 
 ### Artworks
 
@@ -42,7 +49,6 @@ omemoji のポートフォリオ
 - [x] Tag 機能
 - [x] リンクカード
   - [x] 画像を base64 形式に圧縮して埋め込むようにする
-- [x] Zenn 風
 
 ## 備考
 
