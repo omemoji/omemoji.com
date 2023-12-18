@@ -18,10 +18,10 @@ export default async function Articles({ articles }: Props) {
               {article.emoji}
             </div>
             <div>
-              <h2 className="mt-0 text-xl">
+              <h2 className="mt-0 text-xl mb-4">
                 <Link href={"/articles/" + article.slug}>{article.title}</Link>
               </h2>
-              <p className="mb-0">
+              <p className="my-0">
                 {article.description}
                 <br />
                 {article.date}

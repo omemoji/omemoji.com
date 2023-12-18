@@ -8,7 +8,7 @@
   }
   html {
     font-size: 17px;
-    font-family: "Helvetica Neue", -apple-system, BlinkMacSystemFont, Arial,
+    font-family: -apple-system, "Helvetica Neue", BlinkMacSystemFont, Arial,
       "Segoe UI", Roboto, "Noto Sans", sans-serif, "Apple Color Emoji",
       "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   }
@@ -37,7 +37,7 @@
     @apply my-2 px-4 py-2 text-3xl  text-center;
   }
   h2 {
-    @apply mt-8 mb-4 py-[6px] text-2xl;
+    @apply mt-8 mb-8 py-[6px] text-2xl;
     border-bottom: solid 1px var(--border);
     font-size: 1.7rem;
     line-height: 2rem;
@@ -59,13 +59,13 @@
     color: var(--fg);
   }
   h3 {
-    @apply my-4;
+    @apply my-6;
 
-    font-size: 1.3rem; /* 20px */
+    font-size: 1.35rem; /* 20px */
     line-height: 1.75rem; /* 28px */
   }
   h4 {
-    @apply text-lg my-4;
+    @apply my-4 text-lg;
   }
   h5 {
     @apply text-base;
@@ -77,16 +77,16 @@
 
 @layer utilities {
   /**/
-  main article img {
-    @apply my-4;
+  main article figure {
+    @apply my-6;
   }
 
   main article p {
-    @apply my-4;
+    @apply my-6;
   }
   /* Table */
   table {
-    @apply my-4;
+    @apply my-6;
   }
   table,
   thead,
@@ -99,8 +99,11 @@
   }
 
   /* List */
+  main article img {
+    @apply my-4;
+  }
   main article ul {
-    @apply pl-6 my-4;
+    @apply pl-6 my-6;
   }
   main article ul li {
     @apply list-disc;
@@ -112,7 +115,7 @@
     @apply my-0;
   }
   main article ol {
-    @apply pl-6 my-4;
+    @apply pl-6 my-6;
   }
   main article ol li {
     @apply list-decimal;
@@ -136,11 +139,18 @@
   }
 
   pre {
-    @apply mb-4 py-4 px-8 overflow-auto rounded-lg;
+    @apply mb-6 py-4 px-8 overflow-auto rounded-lg;
+    max-height: 540px;
+  }
+
+  code span {
+    @apply text-sm;
+    margin-top: 2px;
+    margin-bottom: 2px;
   }
 
   blockquote {
-    @apply m-4 px-4;
+    @apply m-6 px-4;
     color: var(--quote);
     border-left: solid 4px var(--quote);
   }
@@ -178,7 +188,7 @@
   }
 }
 
-@media (prefers-color-scheme: light) {
+@media {
   :root {
     --fg: #000000;
     --bg: #ffffff;

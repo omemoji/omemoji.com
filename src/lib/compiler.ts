@@ -8,7 +8,8 @@ import rehypeRaw from "rehype-raw";
 import remarkUnwrapImages from "remark-unwrap-images";
 import rehypePrettyCode from "rehype-pretty-code";
 import { remarkLinkCard, linkCardHandler } from "lib/remark-link-card";
-
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
 const compiler = async (source: string) => {
   const result: Promise<{
     content: JSX.Element;
@@ -30,12 +31,14 @@ const compiler = async (source: string) => {
           remarkGemoji,
           remarkUnwrapImages,
           remarkLinkCard,
+          remarkMath,
         ],
         rehypePlugins: [
-          rehypeRaw,
           [rehypePrettyCode, { theme: "monokai", grid: true }],
           rehypeSlug,
           [rehypeAutolinkHeadings, { behavior: "wrap" }],
+          rehypeKatex,
+          rehypeRaw,
         ],
 
         remarkRehypeOptions: {
@@ -43,8 +46,11 @@ const compiler = async (source: string) => {
           handlers: {
             linkCard: linkCardHandler,
           },
+          footnoteLabel: "脚注",
         },
+        format: "md",
       },
+      parseFrontmatter: true,
     },
   });
   return result;

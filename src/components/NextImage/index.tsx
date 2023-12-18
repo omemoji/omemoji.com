@@ -48,7 +48,9 @@ const NextImage: React.FC<NextImageProps> = async ({
         {category != "artwork" && (
           <figcaption
             className={
-              classNameCaption + " " + "text-center text-[color:var(--quote)]"
+              classNameCaption +
+              " " +
+              "text-center text-[color:var(--quote)] mt-4"
             }
           >
             {alt}
