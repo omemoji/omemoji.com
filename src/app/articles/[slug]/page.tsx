@@ -2,6 +2,7 @@ import TopArticle from "components/TopArticle";
 import { getArticleContent, getArticlesData } from "lib/fs";
 import type { Metadata } from "next";
 import Back from "components/Back";
+import "katex/dist/katex.min.css";
 
 export async function generateMetadata({
   params,
