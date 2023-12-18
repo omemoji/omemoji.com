@@ -7,7 +7,7 @@ date: "2023-09-14"
 tags:
   - "Life"
   - "Tech"
-  - "Nuxt"
+  - "Nuxt.js"
   - "Job"
 ---
 

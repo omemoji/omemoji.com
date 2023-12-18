@@ -145,7 +145,8 @@ exec dbus-run-session i3
 
 と記述しておく。`dbus-run-session`を書いておかないと Thunar (ファイルマネージャー) や fcitx5 が上手く動作しなかった。
 
-> To provide a session bus, you can start a given program (usually a window manager or interactive shell) with dbus-run-session(1). Most desktop environments, if launched through an adequate display manager, will launch a D-Bus session themselves.(https://docs.voidlinux.org/config/session-management.html#d-bus より引用)
+> To provide a session bus, you can start a given program (usually a window manager or interactive shell) with dbus-run-session(1). Most desktop environments, if launched through an adequate display manager, will launch a D-Bus session themselves. \
+> （[https://docs.voidlinux.org/config/session-management.html#d-bus](https://docs.voidlinux.org/config/session-management.html#d-bus) より引用）
 
 デスクトップ環境の起動時に D-Bus のセッションも同時に起動させるということらしい。
 
