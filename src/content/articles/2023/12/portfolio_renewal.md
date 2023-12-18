@@ -4,7 +4,7 @@ slug: "portfolio_renewal"
 title: "ポートフォリオをNext.jsでリニューアルする"
 description: "ポートフォリオをNext.jsで実装し直し、機能を改善する"
 date: "2023-12-19"
-tags: ["Tech", "Next.js", "Web", "Cloudflare"]
+tags: ["Tech", "Next", "Web", "Cloudflare"]
 ---
 
 https://adventar.org/calendars/8938
