@@ -34,7 +34,7 @@ export const getArticlesData = async (path: string) => {
 
 export const getTaggedArticlesData = async (path: string, tag: string) => {
   const articlesData = await getArticlesData(path);
-  return articlesData.filter((article) => article.tags.includes(tag));
+  return articlesData.filter((article) => article.tags?.includes(tag));
 };
 
 export const getArticleContent = async (path: string) => {
