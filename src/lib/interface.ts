@@ -5,6 +5,7 @@ export interface ArticleMeta {
   date?: string;
   description: string;
   tags: string[];
+  published?: boolean;
 }
 export interface ArticleData {
   preview: string;

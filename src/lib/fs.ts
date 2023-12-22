@@ -21,20 +21,22 @@ export const getArticlesData = async (path: string) => {
     files.map(async (file) => {
       const content = fs.readFileSync(file, "utf-8");
       const res = await mdInfo(content);
-      return res;
+      if (res.published !== false) {
+        return res;
+      }
     })
   );
 
   return posts.sort((a, b) => {
-    const dateA = Number(a.date?.replace(/-/g, ""));
-    const dateB = Number(b.date?.replace(/-/g, ""));
+    const dateA = Number(a?.date?.replace(/-/g, ""));
+    const dateB = Number(b?.date?.replace(/-/g, ""));
     return dateB - dateA;
   });
 };
 
 export const getTaggedArticlesData = async (path: string, tag: string) => {
   const articlesData = await getArticlesData(path);
-  return articlesData.filter((article) => article.tags?.includes(tag));
+  return articlesData.filter((article) => article?.tags?.includes(tag));
 };
 
 export const getArticleContent = async (path: string) => {
@@ -52,7 +54,7 @@ export const getArticleContent = async (path: string) => {
 
 export const getTags = async (path: string) => {
   const taglists = Array.from(
-    new Set((await getArticlesData(path)).flatMap((meta) => meta.tags ?? []))
+    new Set((await getArticlesData(path)).flatMap((meta) => meta?.tags ?? []))
   ).sort();
   return taglists;
 };
