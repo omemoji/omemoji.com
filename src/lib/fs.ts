@@ -23,6 +23,16 @@ export const getArticlesData = async (path: string) => {
       const res = await mdInfo(content);
       if (res.published !== false) {
         return res;
+      } else {
+        return {
+          emoji: "",
+          slug: "",
+          title: "Not Found",
+          tags: [],
+          date: "1970-01-01",
+          description: "",
+          published: false,
+        };
       }
     })
   );

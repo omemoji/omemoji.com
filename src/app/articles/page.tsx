@@ -28,7 +28,9 @@ export const metadata: Metadata = {
   },
 };
 export default async function Articles() {
-  const articlesData = await getArticlesData("content/articles");
+  const articlesData = (await getArticlesData("content/articles")).filter(
+    (article) => article.published !== false
+  );
   const articles_shown = articlesData.filter(
     (article) =>
       0 <= articlesData.indexOf(article) &&
