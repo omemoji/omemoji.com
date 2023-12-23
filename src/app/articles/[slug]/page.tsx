@@ -58,6 +58,7 @@ export default async function Article({
     tags: [],
     date: "1970-01-01",
     description: "",
+    published: false,
   };
 
   const content = await getArticleContent(article.slug);
@@ -80,5 +81,6 @@ export const dynamicParams = false;
 
 export async function generateStaticParams() {
   const articlesData = await getArticlesData("content/articles");
-  return articlesData;
+  const res = articlesData.filter((article) => article.published !== false);
+  return res;
 }
