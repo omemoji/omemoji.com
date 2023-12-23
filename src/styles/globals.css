@@ -61,8 +61,8 @@
   h3 {
     @apply my-6;
 
-    font-size: 1.35rem; /* 20px */
-    line-height: 1.75rem; /* 28px */
+    font-size: 1.4rem;
+    line-height: 1.75rem;
   }
   h4 {
     @apply my-4 text-lg;
