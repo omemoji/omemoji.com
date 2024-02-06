@@ -44,11 +44,11 @@ https://saiyou-org.www.mynavi.jp/saiyou/news/internship/2725/#development-progra
 
 ### 使用した技術
 
-**フロントエンド**: Next.js, TypeScript, Chakra UI , Emotion
-
-**バックエンド**: TypeScript, Prisma
-
-**インフラ**: Docker, AWS, AWS CDK , GitHub Actions
+| Layer    | Tools                                    |
+| -------- | ---------------------------------------- |
+| Frontend | Next.js, TypeScript, Chakra UI , Emotion |
+| Backend  | TypeScript, Prisma                       |
+| Infra    | Docker, AWS, AWS CDK , GitHub Actions    |
 
 ## 過程
 
