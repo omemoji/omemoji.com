@@ -9,7 +9,7 @@ export type Props = {
 
 export default async function TopArticle({ emoji, title, tags, date }: Props) {
   return (
-    <div className="top-article mb-8 text-center">
+    <div className="top-article mb-16 text-center">
       <p className="mb-4 mx-auto emoji leading-relaxed">{emoji}</p>
       <h1 className="text-2xl xs:text-3xl mt-8 mb-2">{title}</h1>
       <div className="inline-block  mb-4 ">

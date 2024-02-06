@@ -18,10 +18,10 @@ const detectImage = ($: CheerioAPI, url: string) => {
     $('meta[property="og:image:url"]').attr("content") ??
     $('meta[itemprop="image"]').attr("content") ??
     $('meta[name="twitter:image"]').attr("content") ??
-    undefined;
+    "";
 
   let imgurl = tmp;
-  if (imgurl != undefined && !imgurl.startsWith("http")) {
+  if (imgurl != "" && !imgurl.startsWith("http")) {
     let imgurl_minus_https = url.substring(url.indexOf("/") + 2);
     if (imgurl_minus_https.match("/")) {
       imgurl_minus_https = imgurl_minus_https.substring(

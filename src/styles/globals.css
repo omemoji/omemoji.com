@@ -37,7 +37,7 @@
     @apply my-2 px-4 py-2 text-3xl  text-center;
   }
   h2 {
-    @apply mt-8 mb-8 py-[6px] text-2xl;
+    @apply mt-16 mb-8 py-[6px] text-2xl;
     border-bottom: solid 1px var(--border);
     font-size: 1.7rem;
     line-height: 2rem;
