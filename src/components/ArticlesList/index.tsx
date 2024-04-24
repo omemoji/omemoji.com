@@ -9,7 +9,7 @@ export default async function Articles({ articles }: Props) {
   return (
     <>
       <article className="">
-        {articles.map((article) => (
+        {articles.map((article) => article.published !== false && (
           <div
             key={article.slug}
             className="border sm:flex w-full shadow-md px-8 py-4 rounded-lg my-8"
