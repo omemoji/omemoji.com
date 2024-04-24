@@ -2,7 +2,7 @@
 emoji: "🏃"
 slug: "mynavi_hackathon"
 title: "マイナビのハッカソンに参加しました"
-description: "株式会社マイナビの「フルスタック開発プログラム」に参加して優勝した"
+description: "株式会社マイナビの「フルスタック開発プログラム」に参加し優勝した"
 date: "2023-12-28"
 tags:
   - "Tech"
@@ -28,7 +28,7 @@ https://www.mynavi.jp/
 
 ## 「フルスタック開発プログラム」について
 
-https://saiyou-org.www.mynavi.jp/saiyou/news/internship/2725/#development-program
+https://web.archive.org/web/20230924201001/https://saiyou-org.www.mynavi.jp/saiyou/news/internship/2725
 
 マイナビが開催しているインターンシップの内、《IT コース》の「フルスタック開発プログラム」に参加した。
 
