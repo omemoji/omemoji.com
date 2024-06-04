@@ -3,10 +3,24 @@ export type artData = {
   src: string;
   title: string;
   tag: string[];
-  href: string;
+  href?: string;
   description: string;
 };
 export const artworks: Array<artData> = [
+  {
+    slug: "manken_poster_2024",
+    src: "/images/artworks/manken_poster_2024.png",
+    title: "漫画研究会新歓ポスター",
+    tag: ["Krita", "Manken"],
+    description: "漫画研究会の2024年度新歓ポスター",
+  },
+  {
+    slug: "zugadan_poster_2024",
+    src: "/images/artworks/zugadan_poster_2024.png",
+    title: "図画団新歓ポスター",
+    tag: ["Krita", "Zugadan"],
+    description: "筑波大学図画団の2024年度新歓ポスター",
+  },
   {
     slug: "ink_drop",
     src: "/images/artworks/ink_drop.png",
