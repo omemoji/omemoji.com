@@ -4,10 +4,10 @@ const config = {
   generateRobotsTxt: true,
   sitemapSize: 7000,
   exclude: [
-    "/artworks/tag/*",
-    "/artworks/page/*",
-    "/articles/tag/*",
-    "/articles/page/*",
+    "/artworks/tag/**/*",
+    "/artworks/page/**/*",
+    "/articles/tag/**/*",
+    "/articles/page/**/*",
   ],
   outDir: "./out",
 };
