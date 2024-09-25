@@ -15,13 +15,13 @@
   body {
     color: var(--fg);
     background: var(--bg);
-    @apply leading-8 max-w-screen-md mx-auto;
+    @apply px-4 leading-8 max-w-screen-md mx-auto;
 
     -webkit-text-size-adjust: 100%;
   }
 
   main article {
-    @apply px-4 md:px-0 py-0 mb-8;
+    @apply py-0 mb-8;
   }
 
   h1,
