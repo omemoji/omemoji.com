@@ -57,8 +57,7 @@ const getImg = async (
       const aspect = height / width;
       const w = transform?.width;
       const h = Math.round(w * aspect);
-      imgBuffer =
-        (await sharp(imgBuffer).resize(w, h).webp().toBuffer()) ?? undefined;
+      imgBuffer = (await sharp(imgBuffer).resize(w, h).toBuffer()) ?? undefined;
     }
     const base64 = imgBuffer
       ? "data:image/webp;base64," + Buffer.from(imgBuffer).toString("base64")
