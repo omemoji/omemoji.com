@@ -20,7 +20,7 @@
   }
 
   main article {
-    @apply py-0 mb-8 px-4;
+    @apply py-0 mb-8 px-4 md_article:px-0;
   }
 
   h1,
