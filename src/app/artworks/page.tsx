@@ -43,7 +43,7 @@ export default function Artworks() {
         description="omemoji's artworks"
       />
 
-      <Gallery className="" artworks={artworks_shown} />
+      <Gallery artworks={artworks_shown} />
       <PageBar
         current={1}
         pages={[...Array(Math.ceil(artworks.length / ARTWORKS_NUMBER))].map(

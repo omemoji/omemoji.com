@@ -160,11 +160,6 @@
     color: var(--link);
   }
 
-  .gallery {
-    @apply w-full h-auto inline-block;
-    line-height: 0;
-    font-size: 0px;
-  }
   .content-image {
     @apply w-full h-auto;
     max-height: 540px;

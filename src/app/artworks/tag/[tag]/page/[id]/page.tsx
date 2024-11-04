@@ -62,7 +62,7 @@ export default async function ArtworksTag({
         description={"Tag: " + tag}
       />
 
-      <Gallery className="" artworks={artworks_shown} />
+      <Gallery artworks={artworks_shown} />
       <PageBar
         current={id_number}
         pages={[

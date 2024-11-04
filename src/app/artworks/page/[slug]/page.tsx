@@ -59,7 +59,7 @@ export default async function ArtworksPage({
         description={"omemoji's artworks"}
       />
 
-      <Gallery className="" artworks={artworks_shown} />
+      <Gallery artworks={artworks_shown} />
       <PageBar
         current={slug_number}
         pages={[...Array(Math.ceil(artworks.length / ARTWORKS_NUMBER))].map(
