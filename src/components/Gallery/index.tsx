@@ -1,6 +1,6 @@
 import { artData } from "lib/data";
 import Link from "next/link";
-import Image from "next/image";
+import Image from "next-export-optimize-images/image";
 
 type Props = {
   className?: string;

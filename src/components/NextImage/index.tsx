@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "next-export-optimize-images/image";
 import getImageSize from "lib/getImageSize";
 import { w_md } from "../../../tailwind.config";
 
