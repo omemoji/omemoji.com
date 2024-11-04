@@ -8,6 +8,10 @@ const config = {
     "/artworks/page/**/*",
     "/articles/tag/**/*",
     "/articles/page/**/*",
+    "/artworks/tag/*",
+    "/artworks/page/*",
+    "/articles/tag/*",
+    "/articles/page/*",
   ],
   outDir: "./out",
 };
