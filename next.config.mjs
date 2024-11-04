@@ -6,6 +6,7 @@ import withExportImages from "next-export-optimize-images";
 
 const nextConfig = {
   output: "export",
+  reactStrictMode: true,
   trailingSlash: true,
 };
 
