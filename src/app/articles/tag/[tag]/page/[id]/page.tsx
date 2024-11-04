@@ -4,6 +4,7 @@ import Top from "components/Top";
 import type { Metadata } from "next";
 import { COUNT_PER_PAGE } from "lib/constant";
 import { getTaggedArticlesData, getTags, pageIdGen } from "lib/fs";
+import NotFound from "app/not-found";
 
 export async function generateMetadata({
   params,
@@ -41,6 +42,10 @@ export default async function ArticlesPage({
 }: {
   params: { tag: string; id: string };
 }) {
+  if (params.tag === "undefined") {
+    return NotFound();
+  }
+
   const { tag, id } = params;
   const slug_number = Number(id);
   const tagged_articlesData = await getTaggedArticlesData(
@@ -76,7 +81,7 @@ export default async function ArticlesPage({
   );
 }
 
-export const dynamicParams = false;
+// export const dynamicParams = false;
 
 export async function generateStaticParams() {
   const tagData = await getTags("content/articles");
@@ -89,11 +94,14 @@ export async function generateStaticParams() {
       const data = pageIdGen(
         Math.ceil(tagged_articlesData.length / COUNT_PER_PAGE)
       );
-
-      return data.map((id) => ({
-        tag,
-        id: `${id}`,
-      }));
+      if (data.length !== 0) {
+        return data.map((id) => ({
+          tag,
+          id: `${id}`,
+        }));
+      } else {
+        return [{ tag: "undefined", id: "9999" }];
+      }
     })
   );
   return paths.flat();

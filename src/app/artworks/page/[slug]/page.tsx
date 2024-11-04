@@ -71,7 +71,7 @@ export default async function ArtworksPage({
   );
 }
 
-export const dynamicParams = false;
+// export const dynamicParams = false;
 
 export async function generateStaticParams() {
   const data = pageIdGen(Math.ceil(artworks.length / ARTWORKS_NUMBER));

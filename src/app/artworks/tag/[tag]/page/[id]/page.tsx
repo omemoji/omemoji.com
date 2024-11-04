@@ -74,7 +74,7 @@ export default async function ArtworksTag({
   );
 }
 
-export const dynamicParams = false;
+// export const dynamicParams = false;
 
 export async function generateStaticParams() {
   const tagData = Array.from(

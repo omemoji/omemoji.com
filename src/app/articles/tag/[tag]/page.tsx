@@ -68,7 +68,7 @@ export default async function ArticlesTag({
     </>
   );
 }
-export const dynamicParams = false;
+// export const dynamicParams = false;
 
 export async function generateStaticParams() {
   const articles = await getArticlesData("content/articles");

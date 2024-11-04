@@ -77,10 +77,14 @@ export default async function Article({
   );
 }
 
-export const dynamicParams = false;
+// export const dynamicParams = false;
 
 export async function generateStaticParams() {
   const articlesData = await getArticlesData("content/articles");
-  const res = articlesData.filter((article) => article.published !== false);
-  return res;
+  const articles_publishing = articlesData.filter(
+    (article) => article.published !== false
+  );
+  return articles_publishing.map((article) => ({
+    slug: article.slug,
+  }));
 }

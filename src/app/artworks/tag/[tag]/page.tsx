@@ -70,7 +70,7 @@ export default async function ArtworksTag({
   );
 }
 
-export const dynamicParams = false;
+// export const dynamicParams = false;
 
 export async function generateStaticParams() {
   const data = Array.from(new Set(artworks.flatMap((d) => d.tag ?? []))).sort();
