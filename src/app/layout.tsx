@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { HOST } from "lib/constant";
 import Header from "components/Header";
 import Footer from "components/Footer";
@@ -23,7 +23,11 @@ export const metadata: Metadata = {
     { rel: "icon", url: "/favicon.ico" },
     { rel: "apple-touch-icon", url: "/images/Metadata/apple-touch-icon.png" },
   ],
-  viewport: "width=device-width, initial-scale=1",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({
