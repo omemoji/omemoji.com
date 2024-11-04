@@ -1,5 +1,6 @@
 import Image from "next/image";
 import getImageSize from "lib/getImageSize";
+import { w_md } from "../../../tailwind.config";
 
 export type NextImageProps = {
   src: string;
@@ -10,7 +11,7 @@ export type NextImageProps = {
   classNameCaption?: string;
 };
 
-const w_base = 752;
+const w_base = w_md;
 const h_base = 540;
 
 const NextImage: React.FC<NextImageProps> = async ({

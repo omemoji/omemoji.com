@@ -1,6 +1,5 @@
 import type { Config } from "tailwindcss";
-
-const w_md: number = 752;
+export const w_md: number = 720;
 
 const config: Config = {
   content: [
@@ -13,7 +12,7 @@ const config: Config = {
       xs: "480px",
       sm: "600px",
       md: w_md.toString() + "px",
-      md_article: (w_md+24).toString() + "px",
+      md_article: (w_md + 24).toString() + "px",
     },
     extend: {},
   },
