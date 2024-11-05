@@ -3,10 +3,11 @@
  */
 const config = {
   quality: 50,
-  convertFormat: [
-    ["png", "avif"],
-    ["jpg", "avif"],
-  ],
+  // convertFormat: [
+  //   ["png", "avif"],
+  //   ["jpg", "avif"],
+  // ],
+  generateFormats: ["avif"],
 };
 
 module.exports = config;

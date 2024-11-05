@@ -1,4 +1,4 @@
-import Image from "next-export-optimize-images/image";
+import Picture from "next-export-optimize-images/picture";
 
 export type Props = {
   src: string;
@@ -7,7 +7,7 @@ export type Props = {
 
 export default function Icon({ src, className }: Props) {
   return (
-    <Image
+    <Picture
       src={src}
       width={160}
       height={160}

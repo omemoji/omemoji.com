@@ -1,4 +1,4 @@
-import Image from "next-export-optimize-images/image";
+import Picture from "next-export-optimize-images/picture";
 import getImageSize from "lib/getImageSize";
 import { w_md } from "../../../tailwind.config";
 
@@ -37,7 +37,7 @@ const NextImage: React.FC<NextImageProps> = async ({
   return (
     <>
       <figure>
-        <Image
+        <Picture
           width={width}
           height={height}
           src={src}
