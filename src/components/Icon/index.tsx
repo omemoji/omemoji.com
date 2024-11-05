@@ -12,8 +12,9 @@ export default function Icon({ src, className }: Props) {
       width={160}
       height={160}
       className={className + " " + "rounded-full"}
-      quality={70}
+      quality={80}
       alt="omemoji"
+      priority={true}
     />
   );
 }
