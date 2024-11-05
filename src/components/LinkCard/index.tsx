@@ -4,6 +4,7 @@ export interface LinkCardProps {
   description: string;
   og: string | undefined;
 }
+import Picture from "next-export-optimize-images/picture";
 
 const shortenURL = (url: string) => {
   const starts = url.indexOf("/") + 2;
@@ -41,10 +42,11 @@ export default function LinkCard({
           </div>
           {og != "" && (
             /* eslint-disable-next-line @next/next/no-img-element */
-            <img
+            <Picture
               src={og}
               width={"auto"}
               height={120}
+              quote={30}
               alt=""
               loading="lazy"
               className="object-cover  max-w-[120px]  m-0 ml-auto  xs:max-w-[300px] rounded-r-lg"

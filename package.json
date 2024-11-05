@@ -11,6 +11,7 @@
     "lint-check": "next lint"
   },
   "dependencies": {
+    "@noble/hashes": "^1.5.0",
     "cheerio": "^1.0.0-rc.12",
     "image-size": "^1.0.2",
     "next": "^14",

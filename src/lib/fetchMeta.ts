@@ -2,6 +2,9 @@ import sharp from "sharp";
 import { load } from "cheerio";
 import type { CheerioAPI } from "cheerio";
 import getImageSize from "lib/getImageSize";
+import { sha256 } from "@noble/hashes/sha2";
+import fs from "fs";
+import path from "path";
 
 const detectTitle = ($: CheerioAPI, url: string) => {
   let t =
@@ -42,30 +45,37 @@ const getImg = async (
   useOptimize: boolean,
   transform: { width: number }
 ) => {
-  const cached = imgCache.get(src);
-  if (cached) {
-    return cached;
-  } else {
-    let imgBuffer: Buffer | undefined = await fetch(src).then(async (res) =>
-      res.ok ? Buffer.from(await res.arrayBuffer()) : undefined
-    );
+  // const cached = imgCache.get(src);
+  // if (cached) {
+  //   return cached;
+  // } else {
+  let imgBuffer: Buffer | undefined = await fetch(src).then(async (res) =>
+    res.ok ? Buffer.from(await res.arrayBuffer()) : undefined
+  );
 
-    const {
-      img: { height, width },
-    } = await getImageSize(src);
-    if (imgBuffer && useOptimize) {
-      const aspect = height / width;
-      const w = transform?.width;
-      const h = Math.round(w * aspect);
-      imgBuffer = (await sharp(imgBuffer).resize(w, h).toBuffer()) ?? undefined;
-    }
-    const base64 = imgBuffer
-      ? "data:image/webp;base64," + Buffer.from(imgBuffer).toString("base64")
-      : undefined;
-    imgCache.set(src, base64);
-    return base64;
+  const {
+    img: { height, width },
+  } = await getImageSize(src);
+  if (imgBuffer && useOptimize) {
+    const aspect = height / width;
+    const w = transform?.width;
+    const h = Math.round(w * aspect);
+    imgBuffer = (await sharp(imgBuffer).resize(w, h).toBuffer()) ?? undefined;
   }
+  const base64: string = imgBuffer
+    ? "data:image/png;base64," + Buffer.from(imgBuffer).toString("base64")
+    : "";
+  const imgUrl = `${path.join(
+    "./public/og",
+    `${sha256(src).toString().replace(/,/g, "") + ".png"}`
+  )}`;
+  fs.promises.writeFile(imgUrl, base64.replace("data:image/png;base64,", ""), {
+    encoding: "base64",
+  });
+  // imgCache.set(src, base64);
+  return imgUrl;
 };
+// };
 
 const detectDescription = ($: CheerioAPI) => {
   let t =
@@ -90,10 +100,7 @@ export default async function fetchMeta(url: string) {
 
       metaData.title = detectTitle($, url);
       metaData.description = detectDescription($);
-      const base64url = detectImage($, url)
-        ? await getImg(detectImage($, url) ?? "", true, { width: 240 })
-        : undefined;
-      const imgUrl = base64url ?? detectImage($, url);
+      const imgUrl = detectImage($, url);
 
       metaData.og = imgUrl ?? "";
 
