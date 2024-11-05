@@ -7,6 +7,9 @@ const config = {
   //   ["png", "avif"],
   //   ["jpg", "avif"],
   // ],
+  images: {
+    deviceWidths: [480, 720, 1200, 1920],
+  },
   generateFormats: ["avif"],
 };
 

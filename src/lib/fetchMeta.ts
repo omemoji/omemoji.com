@@ -43,7 +43,7 @@ const imgCache = new Map<string, string | undefined>();
 const getImg = async (
   src: string,
   useOptimize: boolean,
-  transform: { height: number }
+  transform: { width: number }
 ) => {
   // const cached = imgCache.get(src);
   // if (cached) {
@@ -54,12 +54,12 @@ const getImg = async (
   );
 
   const {
-    img: { height, width },
+    img: { width, height },
   } = await getImageSize(src);
   if (imgBuffer && useOptimize) {
-    const aspect = width / height;
-    const h = transform?.height;
-    const w = Math.round(h * aspect);
+    const aspect = height / width;
+    const w = transform?.width;
+    const h = Math.round(w * aspect);
     imgBuffer = (await sharp(imgBuffer).resize(w, h).toBuffer()) ?? undefined;
   }
   const base64: string = imgBuffer
@@ -100,9 +100,10 @@ export default async function fetchMeta(url: string) {
 
       metaData.title = detectTitle($, url);
       metaData.description = detectDescription($);
-      const imgUrl = getImg(detectImage($, url), true, { height: 120 });
+      const imgUrl = (
+        await getImg(detectImage($, url), true, { width: 300 })
+      ).replace("public", "");
       metaData.og = (await imgUrl) ?? "";
-
       return metaData;
     });
   return metas;
