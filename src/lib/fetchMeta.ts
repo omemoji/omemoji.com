@@ -38,17 +38,14 @@ const detectImage = ($: CheerioAPI, url: string) => {
   return imgurl;
 };
 
-const imgCache = new Map<string, string | undefined>();
-
 const getImg = async (
   src: string,
   useOptimize: boolean,
-  transform: { width: number }
+  transform: { height: number }
 ) => {
-  // const cached = imgCache.get(src);
-  // if (cached) {
-  //   return cached;
-  // } else {
+  if (src == "") {
+    return { imgUrl: "", w: 0, h: 0 };
+  }
   let imgBuffer: Buffer | undefined = await fetch(src).then(async (res) =>
     res.ok ? Buffer.from(await res.arrayBuffer()) : undefined
   );
@@ -56,10 +53,10 @@ const getImg = async (
   const {
     img: { width, height },
   } = await getImageSize(src);
+  const aspect = width / height;
+  const h = transform?.height ?? 0;
+  const w = Math.round(h * aspect) ?? 0;
   if (imgBuffer && useOptimize) {
-    const aspect = height / width;
-    const w = transform?.width;
-    const h = Math.round(w * aspect);
     imgBuffer = (await sharp(imgBuffer).resize(w, h).toBuffer()) ?? undefined;
   }
   const base64: string = imgBuffer
@@ -69,13 +66,13 @@ const getImg = async (
     "./public/og",
     `${sha256(src).toString().replace(/,/g, "") + ".png"}`
   )}`;
+
   fs.promises.writeFile(imgUrl, base64.replace("data:image/png;base64,", ""), {
     encoding: "base64",
   });
-  // imgCache.set(src, base64);
-  return imgUrl;
+
+  return { imgUrl, w, h }; // };
 };
-// };
 
 const detectDescription = ($: CheerioAPI) => {
   let t =
@@ -94,16 +91,15 @@ export default async function fetchMeta(url: string) {
         url: url,
         title: "",
         description: "",
-        og: "",
+        og: { imgUrl: "", w: 0, h: 0 },
       };
       const $ = load(text);
 
       metaData.title = detectTitle($, url);
       metaData.description = detectDescription($);
-      const imgUrl = (
-        await getImg(detectImage($, url), true, { width: 300 })
-      ).replace("public", "");
-      metaData.og = (await imgUrl) ?? "";
+      const og = await getImg(detectImage($, url), true, { height: 120 });
+      og.imgUrl = og.imgUrl.replace("public", "");
+      metaData.og = og;
       return metaData;
     });
   return metas;

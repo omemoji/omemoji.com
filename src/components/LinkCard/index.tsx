@@ -2,7 +2,9 @@ export interface LinkCardProps {
   url: string;
   title: string;
   description: string;
-  og: string | undefined;
+  og_imgUrl: string | undefined;
+  og_w: number | undefined;
+  og_h: number | undefined;
 }
 import Picture from "next-export-optimize-images/picture";
 
@@ -18,7 +20,9 @@ export default function LinkCard({
   url,
   title,
   description,
-  og,
+  og_imgUrl,
+  og_w,
+  og_h,
 }: LinkCardProps) {
   return (
     <div className="my-6">
@@ -40,16 +44,16 @@ export default function LinkCard({
               {shortenURL(url)}
             </div>
           </div>
-          {og != "" && (
+          {og_imgUrl != "" && (
             /* eslint-disable-next-line @next/next/no-img-element */
             <Picture
-              src={og}
-              width={300}
-              height={120}
+              src={og_imgUrl}
+              width={og_w}
+              height={og_h}
               quote={30}
               alt=""
               loading="lazy"
-              className="object-cover w-auto h-[118px] max-w-[120px]  m-0 xs:max-w-[300px] rounded-r-lg"
+              className="object-cover h-[118px] max-w-[120px] xs:max-w-[300px]  m-0 rounded-r-lg"
             />
           )}
         </div>

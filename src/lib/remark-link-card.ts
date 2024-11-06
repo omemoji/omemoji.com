@@ -14,7 +14,7 @@ interface LinkCard extends Parent, Resource {
     url: string;
     title: string;
     description: string;
-    og: string | undefined;
+    og: { imgUrl: string; w: number; h: number };
     icon: string | undefined;
   };
 }
@@ -88,7 +88,9 @@ export function linkCardHandler(_h: H, node: LinkCard) {
       url: node.meta.url,
       title: node.meta.title,
       description: node.meta.description,
-      og: node.meta.og,
+      og_imgUrl: node.meta.og.imgUrl,
+      og_w: node.meta.og.w,
+      og_h: node.meta.og.h,
     },
     children: [],
   };
