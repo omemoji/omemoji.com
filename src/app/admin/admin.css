@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    line-height: 1.8rem;
+  }
+  html {
+    font-size: 17px;
+    font-family: -apple-system, "Helvetica Neue", BlinkMacSystemFont, Arial,
+      "Segoe UI", Roboto, "Noto Sans", sans-serif, "Apple Color Emoji",
+      "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  }
+  body {
+    color: var(--fg);
+    background: var(--bg);
+    @apply leading-8 max-w-screen-md mx-auto;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  main {
+    @apply py-0 mb-8 px-4 md_article:px-0;
+  }
+}
+
+#root__title {
+  @apply my-2 px-4 py-2 text-3xl text-center font-bold;
+}
+#root .field {
+  @apply mt-4;
+}
+
+#root .field .control-label {
+  @apply text-xl font-bold py-1;
+}
+
+.field input {
+  @apply w-full p-1 border border-gray-300 rounded-md;
+}
+button {
+  @apply bg-blue-500 hover:bg-red-600 transition-colors  text-white px-4 py-2 mt-4 w-24 h-12 rounded-md;
+}
+
+.file-preview {
+  @apply w-1/2;
+}
