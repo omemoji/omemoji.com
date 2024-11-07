@@ -53,7 +53,7 @@ export default function LinkCard({
               quote={30}
               alt=""
               loading="lazy"
-              className="object-cover h-[118px] max-w-[120px] xs:max-w-[300px]  m-0 rounded-r-lg"
+              className="object-cover h-[118px] max-w-[120px] xs:max-w-[300px] w-auto  m-0 rounded-r-lg"
             />
           )}
         </div>
