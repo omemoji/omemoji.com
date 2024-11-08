@@ -1,10 +1,14 @@
 import Gallery from "components/Gallery";
-import { artworks } from "api/db.json";
+import artworks_json from "api/db.json";
 import Top from "components/Top";
 import type { Metadata } from "next";
 import { ARTWORKS_NUMBER } from "lib/constant";
 import { pageIdGen } from "lib/fs";
 import PageBar from "components/PageBar";
+import { ArtworkData } from "lib/interface";
+
+const { artworks } = JSON.parse(JSON.stringify(artworks_json));
+
 export async function generateMetadata({
   params,
 }: {
@@ -42,7 +46,7 @@ export default async function ArtworksTag({
   params: { tag: string; id: string };
 }) {
   const { tag, id } = params;
-  const artworks_reversed = artworks.toReversed();
+  const artworks_reversed: ArtworkData[] = artworks.toReversed();
   const tagged_artworks = artworks_reversed.filter((artwork) =>
     artwork.tag.includes(tag)
   );
@@ -75,16 +79,14 @@ export default async function ArtworksTag({
   );
 }
 
-// export const dynamicParams = false;
-
 export async function generateStaticParams() {
-  const tagData = Array.from(
-    new Set(artworks.flatMap((d) => d.tag ?? []))
+  const tagData: Array<any> = Array.from(
+    new Set(artworks.flatMap((artwork: ArtworkData) => artwork.tag ?? []))
   ).sort();
   const paths = await Promise.all(
     tagData.map(async (tag) => {
-      const tagged_artworks = artworks.filter((artwork) =>
-        artwork.tag.includes(tag)
+      const tagged_artworks: ArtworkData[] = artworks.filter(
+        (artwork: ArtworkData) => artwork.tag.includes(tag)
       );
 
       const data = pageIdGen(

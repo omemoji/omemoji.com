@@ -1,10 +1,12 @@
 // kkk
 import Link from "next/link";
-import { artworks } from "api/db.json";
+import artworks_json from "api/db.json";
 import NextImage from "components/NextImage";
 import { Metadata } from "next";
 import Back from "components/Back";
 import { ArtworkData } from "lib/interface";
+
+const { artworks } = JSON.parse(JSON.stringify(artworks_json));
 
 export async function generateMetadata({
   params,
@@ -12,7 +14,9 @@ export async function generateMetadata({
   params: { id: string };
 }): Promise<Metadata> {
   const { id } = params;
-  const artwork = artworks.find((artwork) => artwork.id === id) ?? {
+  const artwork = artworks.find(
+    (artwork: ArtworkData) => artwork.id === id
+  ) ?? {
     id: "not_found",
     src: "/no-image.png",
     title: "Not Found",
@@ -48,7 +52,7 @@ export async function generateMetadata({
 export default function Artwork({ params }: { params: { id: string } }) {
   const { id } = params;
   const artwork: ArtworkData = artworks.find(
-    (artwork) => artwork.id === id
+    (artwork: ArtworkData) => artwork.id === id
   ) ?? {
     id: "not_found",
     src: "/no-image.png",

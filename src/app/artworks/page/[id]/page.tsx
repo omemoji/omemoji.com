@@ -1,10 +1,14 @@
 import Gallery from "components/Gallery";
 import PageBar from "components/PageBar";
-import { artworks } from "api/db.json";
+import artworks_json from "api/db.json";
 import Top from "components/Top";
 import type { Metadata } from "next";
 import { ARTWORKS_NUMBER } from "lib/constant";
 import { pageIdGen } from "lib/fs";
+import { ArtworkData } from "lib/interface";
+
+const { artworks } = JSON.parse(JSON.stringify(artworks_json));
+
 export async function generateMetadata({
   params,
 }: {
@@ -46,7 +50,7 @@ export default async function ArtworksPage({
 }) {
   const { id } = params;
   const id_number = Number(id);
-  const artworks_reversed = artworks.toReversed();
+  const artworks_reversed: ArtworkData[] = artworks.toReversed();
   const artworks_shown = artworks_reversed.filter(
     (artwork) =>
       ARTWORKS_NUMBER * (id_number - 1) <= artworks_reversed.indexOf(artwork) &&
