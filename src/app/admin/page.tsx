@@ -191,6 +191,7 @@ export default function AdminPage() {
                 </a>
                 <img
                   src={artwork.src}
+                  alt={artwork.description}
                   className="h-20 mt-auto mb-auto mr-2 border"
                   loading="lazy"
                 />
