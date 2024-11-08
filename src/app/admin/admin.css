@@ -18,10 +18,6 @@
     @apply leading-8 max-w-screen-md mx-auto;
     -webkit-text-size-adjust: 100%;
   }
-
-  main {
-    @apply py-0 mb-8 px-4 md_article:px-0;
-  }
 }
 
 #root__title {
@@ -38,10 +34,15 @@
 .field input {
   @apply w-full p-1 border border-gray-300 rounded-md;
 }
+
 button {
-  @apply bg-blue-500 hover:bg-red-600 transition-colors  text-white px-4 py-2 mt-4 w-24 h-12 rounded-md;
+  @apply bg-blue-500 hover:bg-blue-300 transition-colors  text-white hover:text-black px-4 py-2 mt-4 w-24 h-12 rounded-md;
 }
 
 .file-preview {
-  @apply w-1/2;
+  @apply w-1/2 h-auto;
+}
+
+.btn-danger {
+  @apply bg-red-700 hover:bg-red-600 block transition-colors;
 }

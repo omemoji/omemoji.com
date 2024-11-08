@@ -2,7 +2,7 @@
   "name": "omemoji.com",
   "version": "1.0.0",
   "scripts": {
-    "db": "npx json-server --watch ./src/api/db.json --port 3001",
+    "db": "npx json-server --watch ./src/data/db.json --port 3001",
     "dev": "next dev",
     "build": "npx next build  && next-export-optimize-images && next-sitemap ",
     "ssg": "npm run build && http-server ./out",

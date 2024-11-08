@@ -72,3 +72,21 @@ export const getTags = async (path: string) => {
 export const pageIdGen = (stop: number) => {
   return [...Array(stop)].map((_, i) => (i + 1).toString()).slice(1);
 };
+
+export async function base64ToFile(base64: string, filePath: string) {
+  // Base64文字列からデータ部分のみを取得し、プレフィックス（データURI）を削除
+  const base64Data = base64.replace(/^data:image\/\w+;base64,/, "");
+  const buffer = Buffer.from(base64Data, "base64");
+
+  // 画像ファイルを生成
+  fs.writeFileSync(filePath, buffer);
+  console.log(`File has been saved to ${filePath}`);
+}
+
+export async function deleteFile(filePath: string) {
+  try {
+    fs.unlinkSync("./public/" + filePath);
+  } catch (err) {
+    console.error(err);
+  }
+}
