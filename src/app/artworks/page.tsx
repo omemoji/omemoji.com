@@ -1,9 +1,10 @@
 import Gallery from "components/Gallery";
 import Top from "components/Top";
-import { artworks } from "lib/data";
+import { artworks } from "api/db.json";
 import { Metadata } from "next";
 import PageBar from "components/PageBar";
 import { ARTWORKS_NUMBER } from "lib/constant";
+import { reverse } from "dns";
 export const metadata: Metadata = {
   title: "Artworks | 創作物紹介",
   description: "omemoji's artworks",
@@ -29,11 +30,15 @@ export const metadata: Metadata = {
 };
 
 export default function Artworks() {
-  const artworks_shown = artworks.filter(
-    (artwork) =>
-      0 <= artworks.indexOf(artwork) &&
-      artworks.indexOf(artwork) < ARTWORKS_NUMBER
-  );
+  // 降順に並び替え
+  const artworks_reversed = artworks.toReversed();
+  const artworks_shown = artworks
+    .toReversed()
+    .filter(
+      (artwork) =>
+        0 <= artworks_reversed.indexOf(artwork) &&
+        artworks_reversed.indexOf(artwork) < ARTWORKS_NUMBER
+    );
   return (
     <>
       <Top

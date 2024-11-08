@@ -1,20 +1,20 @@
 // kkk
 import Link from "next/link";
-import { artworks } from "lib/data";
-
+import { artworks } from "api/db.json";
 import NextImage from "components/NextImage";
 import { Metadata } from "next";
 import Back from "components/Back";
+import { ArtworkData } from "lib/interface";
 
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };
+  params: { id: string };
 }): Promise<Metadata> {
-  const { slug } = params;
-  const artwork = artworks.find((artwork) => artwork.slug === slug) ?? {
-    slug: "not_found",
-    src: "/images/not_found",
+  const { id } = params;
+  const artwork = artworks.find((artwork) => artwork.id === id) ?? {
+    id: "not_found",
+    src: "/no-image.png",
     title: "Not Found",
     tag: [],
     href: "",
@@ -26,7 +26,7 @@ export async function generateMetadata({
     openGraph: {
       title: `${artwork.title}  | 創作物紹介`,
       description: `${artwork.description}`,
-      url: `/artworks/${artwork.slug}`,
+      url: `/artworks/${artwork.id}`,
       type: "article",
       images: {
         url: `${artwork.src}`,
@@ -45,10 +45,12 @@ export async function generateMetadata({
   };
 }
 
-export default function Artwork({ params }: { params: { slug: string } }) {
-  const { slug } = params;
-  const artwork = artworks.find((artwork) => artwork.slug === slug) ?? {
-    slug: "not_found",
+export default function Artwork({ params }: { params: { id: string } }) {
+  const { id } = params;
+  const artwork: ArtworkData = artworks.find(
+    (artwork) => artwork.id === id
+  ) ?? {
+    id: "not_found",
     src: "/no-image.png",
     title: "Not Found",
     tag: [],

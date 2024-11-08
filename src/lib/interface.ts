@@ -12,6 +12,15 @@ export interface ArticleData {
   data: ArticleMeta | undefined;
 }
 
+export interface ArtworkData {
+  id: string;
+  src: string;
+  title: string;
+  tag: string[];
+  href?: string;
+  description?: string;
+}
+
 const PageType = {
   Article: "article",
   Website: "website",

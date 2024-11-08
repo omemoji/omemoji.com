@@ -1,6 +1,6 @@
 import Gallery from "components/Gallery";
 import PageBar from "components/PageBar";
-import { artworks } from "lib/data";
+import { artworks } from "api/db.json";
 import Top from "components/Top";
 import type { Metadata } from "next";
 import { ARTWORKS_NUMBER } from "lib/constant";
@@ -8,17 +8,17 @@ import { pageIdGen } from "lib/fs";
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };
+  params: { id: string };
 }): Promise<Metadata> {
-  const { slug } = params;
+  const { id } = params;
 
   return {
     title: `Artworks | 創作物紹介`,
-    description: `artworks: page=${slug}`,
+    description: `artworks: page=${id}`,
     openGraph: {
       title: `Artworks | 創作物紹介`,
-      description: `Page: ${slug}`,
-      url: `/artworks/page/${slug}`,
+      description: `Page: ${id}`,
+      url: `/artworks/page/${id}`,
       type: "website",
       images: {
         url: `/omemoji.png`,
@@ -29,7 +29,7 @@ export async function generateMetadata({
     twitter: {
       card: "summary",
       title: `Artworks | 創作物紹介`,
-      description: `Page: ${slug}`,
+      description: `Page: ${id}`,
       images: `/omemoji.png`,
       site: "@omemoji_art",
       creator: "@omemoji_art",
@@ -37,17 +37,20 @@ export async function generateMetadata({
   };
 }
 
+// 降順に並び替え
+
 export default async function ArtworksPage({
   params,
 }: {
-  params: { slug: string };
+  params: { id: string };
 }) {
-  const { slug } = params;
-  const slug_number = Number(slug);
-  const artworks_shown = artworks.filter(
+  const { id } = params;
+  const id_number = Number(id);
+  const artworks_reversed = artworks.toReversed();
+  const artworks_shown = artworks_reversed.filter(
     (artwork) =>
-      ARTWORKS_NUMBER * (slug_number - 1) <= artworks.indexOf(artwork) &&
-      artworks.indexOf(artwork) < ARTWORKS_NUMBER * slug_number
+      ARTWORKS_NUMBER * (id_number - 1) <= artworks_reversed.indexOf(artwork) &&
+      artworks_reversed.indexOf(artwork) < ARTWORKS_NUMBER * id_number
   );
 
   return (
@@ -58,10 +61,9 @@ export default async function ArtworksPage({
         category="Artworks"
         description={"omemoji's artworks"}
       />
-
       <Gallery artworks={artworks_shown} />
       <PageBar
-        current={slug_number}
+        current={id_number}
         pages={[...Array(Math.ceil(artworks.length / ARTWORKS_NUMBER))].map(
           (_, i) => i + 1
         )}
@@ -75,9 +77,9 @@ export default async function ArtworksPage({
 
 export async function generateStaticParams() {
   const data = pageIdGen(Math.ceil(artworks.length / ARTWORKS_NUMBER));
-  return data.map((slug) => {
+  return data.map((id) => {
     return {
-      slug,
+      id,
     };
   });
 }

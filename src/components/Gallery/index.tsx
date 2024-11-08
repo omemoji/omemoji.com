@@ -1,10 +1,10 @@
-import { artData } from "lib/data";
+import { ArtworkData } from "lib/interface";
 import Link from "next/link";
 import Picture from "next-export-optimize-images/picture";
 import { w_md } from "../../../tailwind.config";
 
 type Props = {
-  artworks: Array<artData>;
+  artworks: Array<ArtworkData>;
 };
 
 export default async function Gallery({ artworks }: Props) {
@@ -12,8 +12,8 @@ export default async function Gallery({ artworks }: Props) {
     <>
       <div className="grid grid-cols-3">
         {artworks.map((artwork) => (
-          <div key={artwork.slug}>
-            <Link href={"/artworks/" + artwork.slug}>
+          <div key={artwork.id}>
+            <Link href={"/artworks/" + artwork.id}>
               <Picture
                 className="m-0 aspect-square object-cover"
                 src={artwork.src}

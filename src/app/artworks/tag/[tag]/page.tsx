@@ -1,5 +1,5 @@
 import Gallery from "components/Gallery";
-import { artworks } from "lib/data";
+import { artworks } from "api/db.json";
 import Top from "components/Top";
 import type { Metadata } from "next";
 import { ARTWORKS_NUMBER } from "lib/constant";
@@ -41,7 +41,8 @@ export default async function ArtworksTag({
   params: { tag: string };
 }) {
   const { tag } = params;
-  const tagged_artworks = artworks.filter((artwork) =>
+  const artworks_reversed = artworks.toReversed();
+  const tagged_artworks = artworks_reversed.filter((artwork) =>
     artwork.tag.includes(tag)
   );
   const artworks_shown = tagged_artworks.filter(

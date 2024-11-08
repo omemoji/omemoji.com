@@ -1,18 +1,17 @@
 "use client";
 import "./admin.css";
-import Form from "@rjsf/core";
+import Form, { IChangeEvent } from "@rjsf/core";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
-import { title } from "process";
-import React from "react";
+import { ArtworkData } from "lib/interface";
+import React, { ChangeEvent } from "react";
 
 const IMAGE_PATH = "/images/artworks/";
 const ENDPOINT = "http://localhost:3001/artworks";
 
 const schema: RJSFSchema = {
-  title: "Artworks form",
+  title: "作品投稿フォーム",
   type: "object",
-  // required: ["id", "src", "title", "tag", "description"],
   required: ["id", "src", "title"],
   properties: {
     id: { type: "string", default: "" },
@@ -47,7 +46,7 @@ const uiSchema: UiSchema = {
   },
 };
 
-const newFormData = {
+const newArtworkData: ArtworkData = {
   id: "",
   src: "",
   title: "",
@@ -56,14 +55,45 @@ const newFormData = {
   description: "",
 };
 
+async function base64ToFile(base64: string, filename: string) {
+  const res = await fetch(base64);
+  const blob = await res.blob();
+  const file = new File([blob], filename, { type: blob.type });
+  return file;
+}
+
+async function addArtwork(e: IChangeEvent) {
+  const fileName = e.formData.src.split(";")[1].split("name=")[1];
+  e.formData.id = fileName.split(".")[0];
+  e.formData.src = IMAGE_PATH + fileName;
+  await fetch(ENDPOINT, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(e.formData),
+  });
+}
+
+async function deleteArtwork(e: any, artwork: ArtworkData) {
+  await fetch(ENDPOINT + "/" + artwork.id, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+}
+
 export default function AdminPage() {
-  const [formData, setFormData] = React.useState(newFormData);
-  const [artworks, setArtworks] = React.useState([newFormData]);
+  const [formData, setFormData] = React.useState(newArtworkData);
+  const [artworks, setArtworks] = React.useState([newArtworkData]);
+  const [page, setPage] = React.useState(1);
+  const perPage = 10;
   React.useEffect(() => {
     (async () => {
       const res = await fetch(ENDPOINT);
       const data = await res.json();
-      setArtworks(data);
+      setArtworks(data.reverse());
     })();
   }, []);
   return (
@@ -78,47 +108,61 @@ export default function AdminPage() {
           setFormData(e.formData);
         }}
         onSubmit={async (e) => {
-          const fileName = e.formData.src.split(";")[1].split("name=")[1];
-          e.formData.id = fileName.split(".")[0];
-          e.formData.src = IMAGE_PATH + fileName;
-          fetch(ENDPOINT, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(e.formData),
-          });
-          setArtworks([...artworks, e.formData]);
-          setFormData(newFormData);
-          alert(`Added ${e.formData.title}`);
+          addArtwork(e);
+          setArtworks([e.formData, ...artworks]);
+          setFormData(newArtworkData);
         }}
       />
-      <div id="root__title">Artworks</div>
-      <div>
+
+      <div id="root__title">作品一覧</div>
+      <select
+        onChange={(e: ChangeEvent) => {
+          setPage(parseInt((e.target as HTMLSelectElement).value));
+        }}
+      >
+        {Array.from(
+          { length: Math.ceil(artworks.length / perPage) },
+          (_, i) => i
+        ).map((i) => (
+          <option key={i} value={i + 1}>
+            {i * perPage + 1} - {Math.min((i + 1) * perPage, artworks.length)}
+          </option>
+        ))}
+      </select>
+      <div className="grid grid-cols-2">
         {artworks
+          .filter(
+            (artwork) =>
+              artworks.indexOf(artwork) / perPage < page &&
+              artworks.indexOf(artwork) / perPage >= page - 1
+          )
           .map((artwork) => (
             <div key={artwork.id} className="w-full inline-flex border p-2">
-              <div className="mr-auto mt-auto mb-auto">{artwork.title}</div>
+              <div className="mr-auto mt-auto mb-auto overflow-hidden">
+                {artwork.title}
+              </div>
+              <img
+                src={artwork.src}
+                className="h-20 mt-auto mb-auto mr-2"
+                loading="lazy"
+              />
               <button
-                className="border-2 bg-white hover:text-white text-red-600 h-8 p-0 mt-auto mb-auto"
+                className="border-2 bg-white hover:text-white text-red-600 h-8 p-0 w-16 mt-auto mb-auto"
                 onClick={async (e) => {
-                  await fetch(ENDPOINT + "/" + artwork.id, {
-                    method: "DELETE",
-                    headers: {
-                      "Content-Type": "application/json",
-                    },
-                  });
-
-                  // console.log(fetch(ENDPOINT).then((res) => res.json()));
-                  setArtworks(artworks.filter((a) => a.id !== artwork.id));
-                  // alert(`Deleted ${artwork.title}`);
+                  if (
+                    window.confirm(
+                      `Are you sure you want to delete ${artwork.title}?`
+                    )
+                  ) {
+                    deleteArtwork(e, artwork);
+                    setArtworks(artworks.filter((a) => a.id !== artwork.id));
+                  }
                 }}
               >
                 delete
               </button>
             </div>
-          ))
-          .reverse()}
+          ))}
       </div>
     </>
   );
