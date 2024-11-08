@@ -1,6 +1,6 @@
 import Gallery from "components/Gallery";
 import PageBar from "components/PageBar";
-import artworks_json from "api/db.json";
+import artworks_json from "data/db.json";
 import Top from "components/Top";
 import type { Metadata } from "next";
 import { ARTWORKS_NUMBER } from "lib/constant";

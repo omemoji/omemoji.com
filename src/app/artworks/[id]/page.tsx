@@ -1,6 +1,6 @@
 // kkk
 import Link from "next/link";
-import artworks_json from "api/db.json";
+import artworks_json from "data/db.json";
 import NextImage from "components/NextImage";
 import { Metadata } from "next";
 import Back from "components/Back";
