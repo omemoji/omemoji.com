@@ -12,6 +12,7 @@ const config = {
     "/artworks/page/*",
     "/articles/tag/*",
     "/articles/page/*",
+    "/admin",
   ],
   outDir: "./out",
 };
