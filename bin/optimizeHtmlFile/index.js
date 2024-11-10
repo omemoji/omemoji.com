@@ -1,8 +1,8 @@
 #! /usr/bin/env node
 
-import * as path from "path";
-import * as fs from "fs";
-import { JSDOM } from "jsdom";
+const path = require("path");
+const fs = require("fs");
+const { JSDOM } = require("jsdom");
 
 const HTML_FILE_PATH = "out";
 
@@ -83,12 +83,17 @@ htmlFilePaths.forEach((htmlFilePath) => {
     link.remove();
   });
 
-  fs.writeFileSync(htmlFilePath, document.documentElement.outerHTML);
+  // DOCTYPEの追加
+  let modifiedHtml = document.documentElement.outerHTML;
+  if (!document.documentElement.outerHTML.startsWith("<!DOCTYPE html>")) {
+    modifiedHtml = "<!DOCTYPE html>" + document.documentElement.outerHTML;
+  }
+  fs.writeFileSync(htmlFilePath, modifiedHtml);
 });
 
 // ディレクトリの削除
 
-fs.rmdirSync(path.join(dirPath, "/admin"), { recursive: true });
-fs.rmdirSync(path.join(dirPath, "/articles/tag/undefined"), {
+fs.rmSync(path.join(dirPath, "/admin"), { recursive: true });
+fs.rmSync(path.join(dirPath, "/articles/tag/undefined"), {
   recursive: true,
 });
