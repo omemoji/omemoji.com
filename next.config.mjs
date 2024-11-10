@@ -10,7 +10,7 @@ const nextConfig = {
   trailingSlash: true,
   images: {
     deviceSizes: [480, 800],
-    imageSizes: [480, 800],
+    imageSizes: [250, 480, 800],
   },
 };
 
