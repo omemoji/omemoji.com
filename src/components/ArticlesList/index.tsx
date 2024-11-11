@@ -20,7 +20,7 @@ export default async function Articles({ articles }: Props) {
                   {article.emoji}
                 </div>
                 <div>
-                  <h2 className="mt-0 text-lg xs:text-xl border-none xs:border-solid xs:border-l-8 pl-0 xs:pl-3 mb-4">
+                  <h2 className="mt-0 text-lg xs:text-xl border-none xs:border-solid xs:border-l-8 pl-0 xs:pl-3 mb-0 xs:mb-4">
                     <Link href={"/articles/" + article.slug}>
                       {article.title}
                     </Link>
