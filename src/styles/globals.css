@@ -36,7 +36,7 @@
     @apply my-2 px-4 py-2 text-3xl  text-center;
   }
   h2 {
-    @apply mt-8 mb-8 pt-[8px] pb-[10px] pr-[20px] text-2xl;
+    @apply mt-8 mb-8 pt-[8px] pb-[10px]  text-2xl;
     border-bottom: solid 1px var(--border);
     border-left: solid 8px var(--link);
     padding-left: 12px;
@@ -153,6 +153,13 @@
     background-color: var(--code-bg);
     color: var(--code-fg);
   }
+  li code {
+    @apply text-sm;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background-color: var(--code-bg);
+    color: var(--code-fg);
+  }
   code span {
     @apply text-sm;
     margin-top: 2px;
@@ -220,7 +227,5 @@
     --quote: #9c9c9c;
     --linkcard: #666666;
     --menu: #9c9c9c;
-    --code-bg: #dddddd;
-    --code-fg: #222222;
   }
 }
