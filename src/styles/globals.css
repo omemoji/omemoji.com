@@ -210,8 +210,8 @@
     --quote: #666666;
     --linkcard: #aaaaaa;
     --menu: #666666;
-    --code-fg: #dddddd;
-    --code-bg: #222222;
+    --code-fg: #222222;
+    --code-bg: #eeeeee;
 
     /* --link: #4070ff; */
   }
@@ -227,5 +227,7 @@
     --quote: #9c9c9c;
     --linkcard: #666666;
     --menu: #9c9c9c;
+    --code-fg: #dddddd;
+    --code-bg: #222222;
   }
 }

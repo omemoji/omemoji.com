@@ -21,6 +21,7 @@ const detectImage = ($: CheerioAPI, url: string) => {
     $('meta[property="og:image:url"]').attr("content") ??
     $('meta[itemprop="image"]').attr("content") ??
     $('meta[name="twitter:image"]').attr("content") ??
+    $('link[rel="apple-touch-icon"]').attr("href") ??
     "";
 
   let imgurl = tmp;
@@ -84,7 +85,8 @@ const detectDescription = ($: CheerioAPI) => {
 };
 
 export default async function fetchMeta(url: string) {
-  const metas = await fetch(url)
+  const req = new Request(url, { headers: { "User-Agent": "bot" } });
+  const metas = await fetch(req)
     .then((res) => res.text())
     .then(async (text) => {
       const metaData = {
