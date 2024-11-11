@@ -7,10 +7,10 @@ export default function Header() {
       </h2>
 
       <ul className="flex  ml-auto  my-auto ">
-        <li className="text-lg ">
+        <li className="text-base xs:text-lg ">
           <Link href="/artworks">Artworks</Link>
         </li>
-        <li className="ml-4 text-lg ">
+        <li className="ml-4 text-base xs:text-lg ">
           <Link href="/articles">Articles</Link>
         </li>
       </ul>

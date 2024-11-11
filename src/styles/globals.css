@@ -36,8 +36,10 @@
     @apply my-2 px-4 py-2 text-3xl  text-center;
   }
   h2 {
-    @apply mt-8 mb-8 py-[6px] text-2xl;
+    @apply mt-8 mb-8 pt-[8px] pb-[10px] pr-[20px] text-2xl;
     border-bottom: solid 1px var(--border);
+    border-left: solid 8px var(--link);
+    padding-left: 12px;
     font-size: 1.7rem;
     line-height: 2rem;
   }
@@ -60,8 +62,10 @@
   h3 {
     @apply my-6;
 
-    font-size: 1.4rem;
+    font-size: 1.3rem;
     line-height: 1.75rem;
+    border-left: solid 4px var(--link);
+    padding-left: 8px;
   }
   h4 {
     @apply my-4 text-lg;
@@ -142,6 +146,13 @@
     max-height: 540px;
   }
 
+  p code {
+    @apply text-sm;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background-color: var(--code-bg);
+    color: var(--code-fg);
+  }
   code span {
     @apply text-sm;
     margin-top: 2px;
@@ -169,7 +180,7 @@
     border-top: solid 4px var(--link);
   }
   .tag {
-    @apply inline-block mx-1 hover:underline;
+    @apply inline-block mr-1 hover:underline;
     color: var(--link);
   }
 
@@ -192,6 +203,8 @@
     --quote: #666666;
     --linkcard: #aaaaaa;
     --menu: #666666;
+    --code-fg: #dddddd;
+    --code-bg: #222222;
 
     /* --link: #4070ff; */
   }
@@ -207,5 +220,7 @@
     --quote: #9c9c9c;
     --linkcard: #666666;
     --menu: #9c9c9c;
+    --code-bg: #dddddd;
+    --code-fg: #222222;
   }
 }
