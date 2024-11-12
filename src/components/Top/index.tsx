@@ -23,7 +23,7 @@ export default async function Top({
 }: Props) {
   return (
     <div>
-      <div className="py-8 sm:flex  justify-center  ">
+      <div className="py-8 sm:flex justify-center">
         <Icon src={src} className="mx-auto my-auto sm:mx-2" />
 
         <div className="sm:w-72 my-auto text-center mx-auto sm:mx-0">
@@ -31,7 +31,7 @@ export default async function Top({
           <p className=" text-xl px-4 ">{description}</p>
         </div>
       </div>
-      <ul className="flex w-full  border-b border-[color:var(--border)] mx-auto">
+      <ul className="flex w-full border-y border-[color:var(--border)] mx-auto">
         {menus.map((menu) => (
           <li
             key={menu.title}
