@@ -21,7 +21,7 @@ export const getArticlesData = async (path: string) => {
     files.map(async (file) => {
       const content = fs.readFileSync(file, "utf-8");
       const res = await mdInfo(content);
-      if (res.published !== false) {
+      if (res.published !== false || process.env.NODE_ENV === "development") {
         return res;
       } else {
         return {
