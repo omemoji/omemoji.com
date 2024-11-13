@@ -35,7 +35,7 @@ export default async function Top({
         {menus.map((menu) => (
           <li
             key={menu.title}
-            className="w-1/3 hover:bg-gray-400/30 transition-colors"
+            className="w-1/3 hover:bg-gray-400/30 pt-1 transition-colors"
           >
             <Link href={menu.href} className="">
               {menu.category == category ? (
@@ -46,9 +46,11 @@ export default async function Top({
                   <div className="bg-[color:var(--link)] rounded-full h-1 w-1/2 mx-auto"></div>
                 </>
               ) : (
-                <p className="text-center text-[color:var(--menu)] text-lg xs:text-2xl py-3  leading-normal">
-                  {menu.category}
-                </p>
+                <>
+                  <p className="text-center text-[color:var(--menu)] text-lg xs:text-2xl py-3  leading-normal">
+                    {menu.category}
+                  </p>
+                </>
               )}
             </Link>
           </li>
