@@ -5,6 +5,7 @@ title: "Ubuntu Server を普段使いしてみよう "
 description: "Ubuntu Server 22.04 にGUI環境を入れて普段使い"
 date: "2022-12-24"
 tags: ["Tech", "Linux", "Ubuntu"]
+published: true
 ---
 
 ![top:Ubuntu Server with i3](/images/articles/ubuntu_i3/ubuntu_i3.png)

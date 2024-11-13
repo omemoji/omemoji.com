@@ -5,6 +5,7 @@ title: "Void Linuxをインストールする"
 description: "Void Linuxのインストール及びi3デスクトップ環境の構築"
 date: "2023-07-24"
 tags: ["Tech", "Linux", "Void"]
+published: true
 ---
 
 ![top:Void Linux with i3](/images/articles/void_linux/void_linux.jpeg)

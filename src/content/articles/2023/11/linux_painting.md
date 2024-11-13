@@ -5,6 +5,7 @@ title: "Linuxで絵を描いてみよう"
 description: "Linux上で安価なお絵描き環境を構築する"
 date: "2023-11-21"
 tags: ["Illustration", "Linux", "Krita"]
+published: true
 ---
 
 ![top:Linux 上で Krita を使用して描いた絵。アステカ神話の「鷲の戦士」をモデルとしている](/images/artworks/eagle.png)

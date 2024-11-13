@@ -5,6 +5,7 @@ title: "Hello, world!"
 description: "最初の記事、自己紹介"
 date: "2022-12-17"
 tags: ["Life"]
+published: true
 ---
 
 ## このサイトについて

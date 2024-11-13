@@ -30,7 +30,7 @@ export const metadata: Metadata = {
 export default async function Articles() {
   const articlesData = (await getArticlesData("content/articles")).filter(
     (article) =>
-      article.published !== false || process.env.NODE_ENV === "development"
+      article.published === true || process.env.NODE_ENV === "development"
   );
   const articles_shown = articlesData.filter(
     (article) =>

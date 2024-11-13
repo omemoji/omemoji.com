@@ -83,7 +83,7 @@ export async function generateStaticParams() {
   const articlesData = await getArticlesData("content/articles");
   const articles_publishing = articlesData.filter(
     (article) =>
-      article.published !== false || process.env.NODE_ENV === "development"
+      article.published === true || process.env.NODE_ENV === "development"
   );
   return articles_publishing.map((article) => ({
     slug: article.slug,

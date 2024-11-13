@@ -4,12 +4,8 @@ slug: "teamlab"
 title: "チームラボのサマーインターンに参加しました"
 description: "チームラボサマーインターンシップ2023の感想"
 date: "2023-09-14"
-tags:
-  - "Life"
-  - "Tech"
-  - "Nuxt"
-  - "Job"
-  - "Internship"
+tags: ["Life", "Tech", "Nuxt", "Job", "Internship"]
+published: true
 ---
 
 ![top:最終日に撮影した写真](/images/articles/teamlab/teamlab.jpg)

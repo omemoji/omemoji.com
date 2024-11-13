@@ -4,13 +4,7 @@ slug: "mynavi_hackathon"
 title: "マイナビのハッカソンに参加しました"
 description: "株式会社マイナビの「フルスタック開発プログラム」に参加し優勝した"
 date: "2023-12-28"
-tags:
-  - "Tech"
-  - "Next"
-  - "AWS"
-  - "Internship"
-  - "TypeScript"
-  - "Hackathon"
+tags: ["Tech", "Next", "AWS", "Internship", "TypeScript", "Hackathon"]
 published: true
 ---
 

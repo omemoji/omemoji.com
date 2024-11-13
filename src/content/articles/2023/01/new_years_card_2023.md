@@ -4,9 +4,8 @@ slug: "new_years_card_2023"
 title: "2023年度年賀状イラストを作る"
 description: "Inkscapeで年賀状イラストを作成"
 date: "2023-01-01"
-tags:
-  - "Illustration"
-  - "Inkscape"
+tags: ["Illustration", "Inkscape"]
+published: true
 ---
 
 ![top:うさぎ年](/images/artworks/2023.png)
