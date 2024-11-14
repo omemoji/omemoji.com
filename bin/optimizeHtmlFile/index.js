@@ -76,7 +76,7 @@ htmlFilePaths.forEach((htmlFilePath) => {
   document.querySelectorAll("script").forEach((script) => {
     if (
       script.id !== "myscript" &&
-      (!script.id || script.src.startsWith("/_next"))
+      (!script.src || script.src.startsWith("/_next"))
     ) {
       script.remove();
     } else {
