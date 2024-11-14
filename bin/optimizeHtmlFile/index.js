@@ -100,11 +100,9 @@ htmlFilePaths.forEach((htmlFilePath) => {
     <!-- Google Analytics with setTimeOut -->
     <script async>
     let MEASUREMENT_ID="G-XXCZ8KW3CC";
-
-    $(function() {
-      setgtag();
-    });
-
+ 
+    setgtag();
+   
     function setgtag() {
       setTimeout(function() {
 
