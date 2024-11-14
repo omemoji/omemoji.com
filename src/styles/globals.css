@@ -12,7 +12,6 @@
       "Hiragino Kaku Gothic", Roboto, "Noto Sans CJK JP", "Segoe UI", sans-serif,
       "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
       "Noto Color Emoji";
-    word-break: break-word;
   }
   body {
     color: var(--fg);
@@ -135,7 +134,7 @@
   /* Link */
   article a {
     @apply hover:underline;
-    word-break: break-word;
+    word-break: normal;
     color: var(--link);
   }
 
@@ -154,7 +153,6 @@
     border-radius: 4px;
     background-color: var(--code-bg);
     color: var(--code-fg);
-    word-break: break-word;
   }
   li code {
     @apply text-sm;
@@ -162,7 +160,6 @@
     border-radius: 4px;
     background-color: var(--code-bg);
     color: var(--code-fg);
-    word-break: break-word;
   }
   code span {
     @apply text-sm;
@@ -209,7 +206,7 @@
     --fg: #000000;
     --bg: #ffffff;
     --bg-artwork: #dddddd;
-    --border: #b0b0b0;
+    --border: #d0d0d0;
     --link: #d50000;
     --quote: #666666;
     --linkcard: #aaaaaa;

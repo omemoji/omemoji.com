@@ -31,7 +31,7 @@ export default async function Top({
           <p className=" text-xl px-4 ">{description}</p>
         </div>
       </div>
-      <ul className="flex w-full border-y border-[color:var(--border)] mx-auto">
+      <ul className="flex w-full border-b border-[color:var(--border)] mx-auto">
         {menus.map((menu) => (
           <li
             key={menu.title}

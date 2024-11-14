@@ -33,7 +33,7 @@ export default function LinkCard({
         className=" hover:no-underline "
       >
         <div className=" hover:bg-gray-400/30 transition-colors w-full  h-[120px] rounded-lg border-solid border border-[color:var(--border)] flex ">
-          <div className="p-4 pr-0 flex overflow-hidden flex-col mr-auto">
+          <div className="p-4 pr-0 flex overflow-hidden flex-col mr-auto w-full">
             <div className="text-[color:var(--fg)] whitespace-nowrap xs:text-lg font-bold overflow-hidden text-ellipsis">
               {title}{" "}
             </div>
@@ -44,8 +44,8 @@ export default function LinkCard({
               {shortenURL(url)}
             </div>
           </div>
-          {og_imgUrl != "" && (
-            /* eslint-disable-next-line @next/next/no-img-element */
+
+          {og_imgUrl !== "" && (
             <Picture
               src={og_imgUrl}
               width={og_w}
@@ -53,7 +53,7 @@ export default function LinkCard({
               quote={30}
               alt=""
               loading="lazy"
-              className="object-cover h-[118px] max-w-[120px] xs:max-w-[300px] w-auto  m-0 rounded-r-lg"
+              className="h-[118px] max-w-[120px] xs:max-w-[300px] w-auto m-0 rounded-r-lg object-cover"
             />
           )}
         </div>
