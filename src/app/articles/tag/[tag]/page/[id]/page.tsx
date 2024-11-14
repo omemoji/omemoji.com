@@ -48,9 +48,11 @@ export default async function ArticlesPage({
 
   const { tag, id } = params;
   const slug_number = Number(id);
-  const tagged_articlesData = await getTaggedArticlesData(
-    "content/articles",
-    tag
+  const tagged_articlesData = (
+    await getTaggedArticlesData("content/articles", tag)
+  ).filter(
+    (article) =>
+      article.published === true || process.env.NODE_ENV === "development"
   );
 
   const articles_shown = tagged_articlesData.filter(

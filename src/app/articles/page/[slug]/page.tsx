@@ -44,7 +44,10 @@ export default async function ArticlesPage({
 }) {
   const { slug } = params;
   const slug_number = Number(slug);
-  const articlesData = await getArticlesData("content/articles");
+  const articlesData = (await getArticlesData("content/articles")).filter(
+    (article) =>
+      article.published === true || process.env.NODE_ENV === "development"
+  );
   const articles_shown = articlesData.filter(
     (artwork) =>
       COUNT_PER_PAGE * (slug_number - 1) <= articlesData.indexOf(artwork) &&

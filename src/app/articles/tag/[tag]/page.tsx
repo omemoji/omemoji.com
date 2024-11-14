@@ -41,7 +41,12 @@ export default async function ArticlesTag({
   params: { tag: string };
 }) {
   const { tag } = params;
-  const tagged_articles = await getTaggedArticlesData("content/articles", tag);
+  const tagged_articles = (
+    await getTaggedArticlesData("content/articles", tag)
+  ).filter(
+    (article) =>
+      article.published === true || process.env.NODE_ENV === "development"
+  );
 
   const articles_shown = tagged_articles.filter(
     (article) =>

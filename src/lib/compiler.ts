@@ -20,6 +20,7 @@ const compiler = async (source: string) => {
       date: string;
       description: string;
       tags: string[];
+      published: boolean;
     };
   }> = compileMDX({
     source,
