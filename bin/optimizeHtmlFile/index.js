@@ -133,14 +133,3 @@ function decodeHTML(str) {
       : m;
   });
 }
-
-// google tag managerの追加
-`<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXCZ8KW3CC"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-XXCZ8KW3CC');
-</script>`;
