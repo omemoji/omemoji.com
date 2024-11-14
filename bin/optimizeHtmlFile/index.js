@@ -95,7 +95,7 @@ htmlFilePaths.forEach((htmlFilePath) => {
   }
   // google tag managerの追加
   modifiedHtml = modifiedHtml.replace(
-    "</head>",
+    "</body>",
     `<!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXCZ8KW3CC"></script>
     <script>
@@ -104,7 +104,7 @@ htmlFilePaths.forEach((htmlFilePath) => {
     gtag('js', new Date());
     gtag('config', 'G-XXCZ8KW3CC');
     </script>
-    </head>`
+    </body>`
   );
   fs.writeFileSync(htmlFilePath, modifiedHtml);
 });
