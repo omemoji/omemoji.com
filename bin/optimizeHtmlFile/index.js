@@ -74,8 +74,13 @@ htmlFilePaths.forEach((htmlFilePath) => {
 
   // scriptタグの削除（外部から読み込んでいるものを除く）
   document.querySelectorAll("script").forEach((script) => {
-    if (!script.src || script.src.startsWith("/_next")) {
+    if (
+      script.id !== "myscript" &&
+      (!script.id || script.src.startsWith("/_next"))
+    ) {
       script.remove();
+    } else {
+      script.innerHTML = decodeHTML(script.innerHTML);
     }
   });
   // as=scriptのlinkタグの削除
@@ -97,3 +102,21 @@ fs.rmSync(path.join(dirPath, "/admin"), { recursive: true });
 fs.rmSync(path.join(dirPath, "/articles/tag/undefined"), {
   recursive: true,
 });
+
+// decode HTML
+
+function decodeHTML(str) {
+  return str.replace(/&(?:([a-z]+?)|#(\d+?));/g, function (m, c, d) {
+    return c
+      ? {
+          amp: "&",
+          lt: "<",
+          gt: ">",
+          quot: '"',
+          nbsp: " ",
+        }[c] || m
+      : d
+      ? String.fromCharCode(d)
+      : m;
+  });
+}

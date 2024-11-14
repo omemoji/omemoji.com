@@ -5,8 +5,10 @@ import NextImage from "components/NextImage";
 import { Metadata } from "next";
 import Back from "components/Back";
 import { ArtworkData } from "lib/interface";
+import GalleryRow from "components/GalleryRow";
 
 const { artworks } = JSON.parse(JSON.stringify(artworks_json));
+const artworks_reversed: ArtworkData[] = artworks.toReversed();
 
 export async function generateMetadata({
   params,
@@ -61,6 +63,15 @@ export default function Artwork({ params }: { params: { id: string } }) {
     href: "",
     description: "",
   };
+  function getIndex(artwork_id: string, artworks: ArtworkData[]) {
+    for (let i: number = 0; i < artworks.length; i++) {
+      if (artworks[i]["id"] === artwork_id) {
+        return i;
+      }
+    }
+    return -1;
+  }
+  const artwork_number = getIndex(artwork.id, artworks_reversed);
 
   return (
     <>
@@ -82,7 +93,7 @@ export default function Artwork({ params }: { params: { id: string } }) {
               <Link
                 href={"/artworks/tag/" + tag}
                 key={tag}
-                className="tag text-2xl"
+                className="tag text-xl"
               >
                 {"#" + tag}
               </Link>
@@ -93,6 +104,11 @@ export default function Artwork({ params }: { params: { id: string } }) {
           </p>
         </div>
       </div>
+      <GalleryRow
+        artworks={artworks_reversed}
+        artwork_number={artwork_number}
+        artwork_id={artwork.id}
+      />
       <Back url="/artworks" />
       {/* 
       <Gallery
