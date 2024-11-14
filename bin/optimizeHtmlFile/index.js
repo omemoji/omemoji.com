@@ -96,15 +96,40 @@ htmlFilePaths.forEach((htmlFilePath) => {
   // google tag managerの追加
   modifiedHtml = modifiedHtml.replace(
     "</body>",
-    `<!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXCZ8KW3CC"></script>
+    `  
+    <!-- Google Analytics with setTimeOut -->
+    <script async>
+    let MEASUREMENT_ID="G-XXCZ8KW3CC";
+
+    $(function() {
+      setgtag();
+    });
+
+    function setgtag() {
+      setTimeout(function() {
+
+        let gtc = document.createElement("script");
+        gtc.innerHTML='window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config", MEASUREMENT_ID);';
+
+        document.body.appendChild(gtc);
+
+        let gt=document.createElement("script");
+        gt.src='https://www.googletagmanager.com/gtag/js?id=' + MEASUREMENT_ID;
+        document.body.appendChild(gt);
+      }, 2500);
+      
+    }
+    </script>
+
+    <!-- Google tag (gtag.js) -->
     <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
     gtag('config', 'G-XXCZ8KW3CC');
     </script>
-    </body>`
+    </body>  
+    `
   );
   fs.writeFileSync(htmlFilePath, modifiedHtml);
 });
