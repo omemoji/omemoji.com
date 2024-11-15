@@ -133,8 +133,7 @@
 
   /* Link */
   article a {
-    @apply hover:underline;
-    word-break: normal;
+    @apply hover:underline break-all;
     color: var(--link);
   }
 
