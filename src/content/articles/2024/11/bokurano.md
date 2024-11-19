@@ -3,8 +3,8 @@ emoji: "🌏"
 slug: "bokurano"
 title: "漫画『ぼくらの』感想──死ぬこと、闘うこと、生きること"
 description: "漫画『ぼくらの』の感想と考察"
-date: "2024-11-31"
-tags: ["Comic"]
+date: "2024-11-20"
+tags: ["Comic", "Review"]
 published: true
 ---
 
