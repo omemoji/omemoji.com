@@ -24,7 +24,7 @@ const replaceComponents = {
     ) : props.alt.startsWith("caption:") ? (
       <NextImage
         {...props}
-        className="content-image"
+        className="content-image-article"
         alt={props.alt.substring(8)}
         priority={false}
       />

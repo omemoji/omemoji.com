@@ -183,6 +183,10 @@
     max-height: 540px;
     background-color: var(--bg-artwork);
   }
+  .content-image-article {
+    @apply w-full h-auto max-h-[540px] xs:max-h-[400px];
+    background-color: var(--bg-artwork);
+  }
   .caption {
     border-top: solid 4px var(--link);
   }
