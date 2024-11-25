@@ -39,10 +39,10 @@ export default function GalleryRow({
               <Link href={"/artworks/" + artwork.id}>
                 <Picture
                   className={
-                    "m-0 aspect-square object-cover rounded-md bg-white hover:opacity-40 transition-opacity" +
+                    "m-0 aspect-square object-cover rounded-md bg-white" +
                     (artwork_id === artwork.id
-                      ? " border-b-[color:var(--link)] border-b-4"
-                      : "")
+                      ? " border-2 border-[var(--link)]"
+                      : " hover:opacity-40 transition-opacity")
                   }
                   src={artwork.src}
                   quality={20}
