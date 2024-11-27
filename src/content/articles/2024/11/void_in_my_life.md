@@ -88,7 +88,7 @@ Void Linux を実際に普段使いした上で感じた、長所と短所につ
 
 #### 起動が速い
 
-やたら起動が早く、ディスプレイマネージャなしなら起動してから数秒でログイン画面に移ることが出来る。`systemd`の代わりに`runit`を用いているからだろうか？
+やたら起動が早く、ディスプレイマネージャ（LightDM など）なしなら起動してから数秒でログイン画面に移ることが出来る。`systemd`の代わりに`runit`を用いているからだろうか？
 
 #### ドキュメントが優秀
 
@@ -118,6 +118,16 @@ https://docs.voidlinux.org/
 
 Void Linux は非常に癖が強い。パッケージマネージャは xbps というオリジナルのものを使っているし、システムマネージャとして`systemd`ではなく`runit`を用いている。他のディストロの知識を使い回せない場面が多いため、最初は情報の少なさと合わせて苦労するかも知れない。しかし、この記事をわざわざ読むような人は Linux の基本的な使い方は分かっているだろうから、Void Linux の独自要素に慣れさえすればなんとかなるだろう。
 
+## 他ディストリビューションとの比較
+
+### Arch Linux
+
+### Debian
+
+### Ubuntu (Server)
+
+### Solus
+
 ## Tips
 
 ### Visual Studio Code
@@ -140,6 +150,6 @@ Void Linux に特有の要素ではないが、
 
 https://voidlinux.org/download/
 
-また、Docker コンテナも用意されている。基本的には`void-glibc-full`を使えば良い。
+また、コンテナ も用意されている。基本的には`void-glibc-full`を使えば良い。
 
 https://github.com/void-linux/void-containers
