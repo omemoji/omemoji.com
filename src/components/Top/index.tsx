@@ -23,12 +23,11 @@ export default async function Top({
 }: Props) {
   return (
     <div>
-      <div className="py-8 sm:flex justify-center">
-        <Icon src={src} className="mx-auto my-auto sm:mx-2" />
-
-        <div className="sm:w-72 my-auto text-center mx-auto sm:mx-0">
-          <h1 className="sm:text-4xl">{title}</h1>
-          <p className=" text-xl px-4 ">{description}</p>
+      <div className="py-8  justify-center">
+        <Icon src={src} className="mx-auto" />
+        <div className="my-auto text-center mx-auto ">
+          <h1>{title}</h1>
+          <p className=" text-xl px-4">{description}</p>
         </div>
       </div>
       <ul className="flex w-full border-b border-[color:var(--border)] mx-auto">
@@ -43,7 +42,7 @@ export default async function Top({
                   <p className="text-center text-[color:var(--fg)] font-bold text-lg xs:text-2xl py-3  leading-normal">
                     {menu.category}
                   </p>
-                  <div className="bg-[color:var(--link)] rounded-full h-1 w-1/2 mx-auto"></div>
+                  <div className="bg-[color:var(--link)] rounded-full h-[6px] w-2/3 mx-auto"></div>
                 </>
               ) : (
                 <>
