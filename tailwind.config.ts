@@ -1,5 +1,5 @@
 import type { Config } from "tailwindcss";
-export const w_md: number = 720;
+export const w_md: number = 640;
 
 const config: Config = {
   content: [
