@@ -1,0 +1,42 @@
+---
+import { Picture } from "astro:assets";
+import { WIDTH_MAIN } from "../lib/constant";
+
+export interface Props {
+  src: ImageMetadata;
+  alt: string;
+  className?: string;
+  priority?: boolean;
+  category?: string;
+}
+
+const { src, alt, className, priority, category, ...props } = Astro.props;
+const height = Math.min((src.height * WIDTH_MAIN) / src.width, 540);
+const width = (height * src.width) / src.height;
+---
+
+<figure>
+  <Picture
+    width={width}
+    height={height}
+    src={src}
+    alt={alt}
+    quality={70}
+    formats={["avif"]}
+    priority={priority ?? false}
+    pictureAttributes={{
+      style: {
+        aspectRatio: `${src.width} / ${src.height}`,
+      },
+    }}
+    class={"content-image object-contain" + " " + className}
+    {...props}
+  />
+  {
+    category !== "artwork" && (
+      <figcaption class={"text-center text-[color:var(--quote)] mt-4"}>
+        {alt}
+      </figcaption>
+    )
+  }
+</figure>

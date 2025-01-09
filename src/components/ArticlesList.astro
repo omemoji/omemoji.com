@@ -1,0 +1,41 @@
+---
+import type { CollectionEntry } from "astro:content";
+import type { Page } from "astro";
+
+interface Props {
+  page: Page<CollectionEntry<"articles">>;
+}
+const { page } = Astro.props;
+---
+
+<article class="">
+  {
+    page.data.map((article) => (
+      <div class="border border-[var(--border)] sm:flex w-full  px-8 py-4 rounded-[5px] my-8 ">
+        <div class="  text-center my-8 sm:my-auto text-[80px] sm:text-[100px] sm:pr-8">
+          {article.data.emoji}
+        </div>
+        <div>
+          <h2 class="mt-0 text-lg xs:text-xl border-l-4 mb-4">
+            <a href={"/articles/" + article.id}>{article.data.title}</a>
+          </h2>
+          <p class="my-0">
+            {article.data.description}
+            <br />
+            <time datetime={article.data.date.toISOString()}>
+              {new Intl.DateTimeFormat("ja-JP").format(article.data.date)}
+            </time>
+          </p>
+
+          <div class=" inline-block ">
+            {article.data.tags.map((tag) => (
+              <a href={"/articles/tag/" + tag} class="tag">
+                {"#" + tag}
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+    ))
+  }
+</article>

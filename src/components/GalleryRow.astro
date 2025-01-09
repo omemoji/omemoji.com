@@ -1,0 +1,64 @@
+---
+import type { ArtworkData } from "@/lib/artworks";
+import { WIDTH_MAIN as w_md } from "@/lib/constant";
+import { Picture } from "astro:assets";
+import { getThumbnailSize } from "@/lib/artworks.ts";
+
+type Props = {
+  artworks: Array<ArtworkData>;
+  artwork_number: number;
+  artwork_id: string;
+};
+
+const { artworks, artwork_number, artwork_id } = Astro.props;
+const image_size = w_md * 0.27;
+
+const images = import.meta.glob("/public/images/artworks/*");
+const image = async (path: string) => {
+  const image: any = await images[path]();
+  return getThumbnailSize(image.default, image_size);
+};
+---
+
+<div
+  id="artworks_id"
+  class="overflow-x-scroll border-t border-t-[var(--border)] flex-nowrap"
+  data-message={artwork_number}
+>
+  <div class="flex">
+    {
+      artworks.map(async (artwork) => (
+        <div class="flex-none  w-[27%] artwork-image px-1 py-2 h-auto ">
+          <a href={"/artworks/" + artwork.id}>
+            <Picture
+              class={
+                "m-0 aspect-square object-cover rounded-md bg-white" +
+                (artwork_id === artwork.id
+                  ? " border-2 border-[var(--link)]"
+                  : " hover:opacity-40 transition-opacity")
+              }
+              src={(await image(artwork.src)).src}
+              quality={20}
+              width={(await image(artwork.src)).width}
+              height={(await image(artwork.src)).height}
+              alt={artwork.title}
+              priority={false}
+              loading={"lazy"}
+            />
+          </a>
+        </div>
+      ))
+    }
+  </div>
+</div>
+
+<script>
+  import { WIDTH_MAIN as w_md } from "@/lib/constant";
+  const element: HTMLElement | null = document.getElementById("artworks_id");
+  if (element) {
+    const artwork_number: number = Number(element.dataset.message);
+    const scrollLeft =
+      (w_md * 0.27 * artwork_number * Math.min(window.innerWidth, w_md)) / w_md;
+    element.scrollLeft = scrollLeft;
+  }
+</script>

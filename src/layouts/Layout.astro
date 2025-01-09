@@ -1,0 +1,101 @@
+---
+import "../styles/globals.css";
+
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
+
+interface Props {
+  title: string;
+  description: string;
+  path: string;
+  og?: {
+    enabled: boolean;
+    image?: URL;
+    width?: number;
+    height?: number;
+    type?: "article" | "website";
+  };
+}
+
+const { title, description, path, og } = Astro.props;
+
+const site = Astro.url.origin;
+const author = "omemoji";
+---
+
+<!doctype html>
+<html lang="ja">
+  <head>
+    <title>{title}</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="48x48" />
+
+    <meta name="description" content={description} />
+    <meta name="application-name" content={title} />
+    <link rel="author" href={site} />
+    <meta name="author" content={author} />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="creator" content={author} />
+    <meta name="publisher" content={author} />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      href={new URL("/rss.xml", site).toString()}
+    />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={new URL(path, site).toString()} />
+    <meta property="og:site_name" content={title} />
+    <meta name="twitter:site" content="@omemoji_art" />
+    <meta name="twitter:creator" content="@omemoji_art" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    {
+      og && og.enabled && (
+        <>
+          <meta
+            property="og:image"
+            content={og.image ?? new URL("/omemoji.png", site).toString()}
+          />
+          <meta property="og:image:width" content={`${og.width ?? 720}`} />
+          <meta property="og:image:height" content={`${og.height ?? 720}`} />
+          <meta property="og:type" content={og.type ?? "website"} />
+          <meta
+            name="twitter:card"
+            content={og.type === "article" ? "summary_large_image" : "summary"}
+          />
+        </>
+      )
+    }
+  </head>
+  <body>
+    <Header />
+    <main>
+      <slot />
+    </main>
+    <Footer />
+    <!-- Google Analytics with setTimeOut -->
+    <script async>
+      let MEASUREMENT_ID = "G-XXCZ8KW3CC";
+
+      setgtag();
+
+      function setgtag() {
+        setTimeout(function () {
+          let gtc = document.createElement("script");
+          gtc.innerHTML =
+            'window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config", MEASUREMENT_ID);';
+
+          document.body.appendChild(gtc);
+
+          let gt = document.createElement("script");
+          gt.src =
+            "https://www.googletagmanager.com/gtag/js?id=" + MEASUREMENT_ID;
+          document.body.appendChild(gt);
+        }, 2500);
+      }
+    </script>
+  </body>
+</html>

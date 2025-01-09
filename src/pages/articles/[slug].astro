@@ -1,0 +1,53 @@
+---
+import "katex/dist/katex.min.css";
+import { getCollection } from "astro:content";
+import type { CollectionEntry } from "astro:content";
+import Layout from "@/layouts/Layout.astro";
+import TopArticle from "@/components/TopArticle.astro";
+import Back from "@/components/Back.astro";
+import { render } from "astro:content";
+import ImageHandler from "@/components/ImageHandler.astro";
+import LinkHandler from "@/components/LinkHandler.astro";
+
+interface Props {
+  article: CollectionEntry<"articles">;
+}
+
+export async function getStaticPaths() {
+  const articles: CollectionEntry<"articles">[] = await getCollection(
+    "articles",
+    ({ data }) => {
+      return import.meta.env.PROD ? data.published : true;
+    }
+  );
+  return articles.map((article) => ({
+    params: { slug: article.id },
+    props: { article },
+  }));
+}
+
+const { article } = Astro.props;
+const { Content } = await render(article);
+
+export const components = {
+  img: ImageHandler,
+  a: LinkHandler,
+};
+---
+
+<Layout
+  title={article.data.title + " | 創作物紹介"}
+  description={article.data.description}
+  path={"/articles/" + article.id}
+>
+  <TopArticle
+    emoji={article.data.emoji}
+    title={article.data.title}
+    tags={article.data.tags}
+    date={article.data.date}
+  />
+  <article>
+    <Content components={components} />
+  </article>
+  <Back url="/articles" />
+</Layout>

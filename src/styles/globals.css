@@ -166,6 +166,10 @@
     margin-bottom: 2px;
   }
 
+   {
+    box-shadow: none;
+  }
+
   blockquote {
     @apply m-6 px-4;
     color: var(--quote);
@@ -177,7 +181,6 @@
   .strong-color {
     color: var(--link);
   }
-
   .content-image {
     @apply w-full h-auto;
     max-height: 540px;
@@ -209,7 +212,7 @@
     --fg: #000000;
     --bg: #ffffff;
     --bg-artwork: #dddddd;
-    --border: #d0d0d0;
+    --border: #aaaaaa;
     --link: #d50000;
     --quote: #666666;
     --linkcard: #aaaaaa;

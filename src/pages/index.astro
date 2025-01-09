@@ -1,0 +1,25 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Top from "../components/Top.astro";
+import { render } from "astro:content";
+import type { CollectionEntry } from "astro:content";
+
+import ImageHandler from "@/components/ImageHandler.astro";
+import LinkHandler from "@/components/LinkHandler.astro";
+import { getCollection } from "astro:content";
+
+const about: CollectionEntry<"about">[] = await getCollection("about");
+const { Content } = await render(about[0]);
+
+const components = {
+  img: ImageHandler,
+  a: LinkHandler,
+};
+---
+
+<Layout title="創作物紹介" description="omemoji's portfolio" path="">
+  <Top title="omemoji" category="About" description="omemoji's portfolio" />
+  <article>
+    <Content components={components} />
+  </article>
+</Layout>

@@ -1,0 +1,55 @@
+---
+import { Picture } from "astro:assets";
+import omemoji from "../assets/omemoji.png";
+
+const menus = [
+  { title: "omemoji", category: "About", emoji: "👤", href: "/" },
+  { title: "Artworks", category: "Artworks", emoji: "🎨", href: "/artworks" },
+  { title: "Articles", category: "Articles", emoji: "🖊", href: "/articles" },
+];
+
+const { title, category, description } = Astro.props;
+---
+
+<div>
+  <div class="py-8 justify-center">
+    <Picture
+      src={omemoji}
+      width={160}
+      height={160}
+      class="mx-auto rounded-full"
+      quality={80}
+      formats={["avif"]}
+      alt="omemoji"
+      priority={true}
+    />
+    <div class="my-auto text-center mx-auto">
+      <h1>{title}</h1>
+      <p class="text-xl px-4">{description}</p>
+    </div>
+  </div>
+  <ul class="flex w-full border-b border-[color:var(--border)] mx-auto">
+    {
+      menus.map((menu) => (
+        <li class="w-1/3 hover:bg-gray-400/30 pt-1 transition-colors">
+          <a href={menu.href} class="">
+            {menu.category == category ? (
+              <>
+                <p class="text-center text-[color:var(--fg)] font-bold text-lg xs:text-2xl py-3  leading-normal">
+                  {menu.category}
+                </p>
+                <div class="bg-[color:var(--link)] rounded-full h-[6px] w-2/3 mx-auto" />
+              </>
+            ) : (
+              <>
+                <p class="text-center text-[color:var(--menu)] text-lg xs:text-2xl py-3  leading-normal">
+                  {menu.category}
+                </p>
+              </>
+            )}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</div>

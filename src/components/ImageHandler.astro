@@ -1,0 +1,18 @@
+---
+import Image from "./Image.astro";
+interface Props {
+  src: ImageMetadata | string;
+  className?: string;
+  alt: string;
+}
+
+const { src, ...props } = Astro.props;
+---
+
+{
+  typeof src === "string" ? (
+    <img {src} {...props} />
+  ) : (
+    <Image {src} className="max-h-[400px]" {...props} />
+  )
+}

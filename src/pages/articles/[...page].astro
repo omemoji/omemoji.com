@@ -1,0 +1,51 @@
+---
+import { getCollection } from "astro:content";
+import type { CollectionEntry } from "astro:content";
+import type { Page, PaginateFunction } from "astro";
+
+import Layout from "@/layouts/Layout.astro";
+import Top from "@/components/Top.astro";
+import ArticlesList from "@/components/ArticlesList.astro";
+import { COUNT_PER_PAGE } from "@/lib/constant";
+import PageBar from "@/components/PageBar.astro";
+import { pageIdGen } from "@/lib/fs";
+
+interface Props {
+  page: Page<CollectionEntry<"articles">>;
+}
+
+export async function getStaticPaths({
+  paginate,
+}: {
+  paginate: PaginateFunction;
+}) {
+  const posts = (
+    await getCollection("articles", ({ data }) => {
+      return import.meta.env.PROD ? data.published : true;
+    })
+  )
+    .sort((a, b) => a.data.date.getTime() - b.data.date.getTime())
+    .reverse();
+  return paginate(posts, { pageSize: COUNT_PER_PAGE });
+}
+
+const { page } = Astro.props;
+---
+
+<Layout
+  title={"Articles | 創作物紹介"}
+  description="日記や技術的な記事など"
+  path={page.url.current}
+>
+  <Top
+    title="Articles"
+    category="Articles"
+    description="日記や技術的な記事など"
+  />
+  <ArticlesList page={page} />
+  <PageBar
+    category="articles"
+    current={page.currentPage}
+    pages={pageIdGen(Math.ceil(page.total / COUNT_PER_PAGE))}
+  />
+</Layout>

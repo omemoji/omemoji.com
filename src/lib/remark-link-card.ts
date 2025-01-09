@@ -1,97 +1,34 @@
-import fetchMeta from "lib/fetchMeta";
-import { visit } from "unist-util-visit";
+import { SKIP, visit } from "unist-util-visit";
 
-import { isParent, isLink, isParagraph } from "./mdast-util";
+import { isBareExternalLink } from "./mdast-util-node-is";
 
-import type { Link, Resource } from "mdast";
-import type { H } from "mdast-util-to-hast";
-import type { Plugin, Transformer } from "unified";
-import type { Node, Parent } from "unist";
+import type { Root } from "mdast";
+import type { Plugin } from "unified";
 
-interface LinkCard extends Parent, Resource {
-  type: "linkCard";
-  meta: {
-    url: string;
-    title: string;
-    description: string;
-    og: { imgUrl: string; w: number; h: number };
-    icon: string | undefined;
-  };
-}
-
-function isLinkCard(node: Node): node is LinkCard {
-  if (!isParagraph(node)) {
-    return false;
-  }
-
-  if (node.children.length !== 1) {
-    return false;
-  }
-
-  const singleChild = node.children[0];
-
-  if (
-    !(
-      isLink(singleChild) &&
-      singleChild.children[0].type == "text" &&
-      singleChild.url.startsWith("http")
-    )
-  ) {
-    return false;
-  }
-
-  return true;
-}
-
-export const remarkLinkCard: Plugin = function linkCardTrans(): Transformer {
-  return async (tree: Node) => {
-    const promises: (() => Promise<void>)[] = [];
-    visit(tree, isLinkCard, visitor);
-    await Promise.allSettled(promises.map((t) => t()));
-
-    function visitor(
-      node: Node,
-      index: number | undefined,
-      parent: Parent | undefined
-    ) {
-      if (!isParagraph(node)) {
+const remarkLinkcard: Plugin<[], Root> = () => {
+  return (tree) => {
+    visit(tree, "paragraph", (node, index, parent) => {
+      if (
+        !parent ||
+        typeof index !== "number" ||
+        node.children.length !== 1 ||
+        !isBareExternalLink(node.children[0])
+      ) {
         return;
       }
 
-      if (!isParent(parent)) {
-        return;
-      }
+      node.children[0].data = {
+        ...node.children[0].data,
+        hProperties: {
+          ...node.children[0].data?.hProperties,
+          linkcard: true,
+        },
+      };
 
-      if (parent.type === "listItem") {
-        return;
-      }
-
-      const child = node.children[0] as Link;
-
-      promises.push(async () => {
-        const data = await fetchMeta(child.url);
-
-        parent.children[index ?? 0] = {
-          type: "linkCard",
-          meta: data,
-        } as LinkCard;
-      });
-    }
+      parent.children.splice(index, 1, node.children[0]);
+      return [SKIP, index];
+    });
   };
 };
 
-export function linkCardHandler(_h: H, node: LinkCard) {
-  return {
-    type: "element" as const,
-    tagName: "linkcard",
-    properties: {
-      url: node.meta.url,
-      title: node.meta.title,
-      description: node.meta.description,
-      og_imgUrl: node.meta.og.imgUrl,
-      og_w: node.meta.og.w,
-      og_h: node.meta.og.h,
-    },
-    children: [],
-  };
-}
+export default remarkLinkcard;
