@@ -71,7 +71,13 @@ export default defineConfig({
     tailwind(),
     mdx({ extendMarkdownConfig: true }),
     react(),
-    sitemap(),
+    sitemap({
+      filter: (page) =>
+        !page.includes("/artworks/tag") &&
+        !page.includes("/articles/tag") &&
+        !page.match(/\/artworks\/[0-9]+\//) &&
+        !page.match(/\/articles\/[0-9]+\//),
+    }),
   ],
   image: {
     remotePatterns: [{ protocol: "https" }],
