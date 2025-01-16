@@ -17,7 +17,12 @@ const components = {
 };
 ---
 
-<Layout title="創作物紹介" description="omemoji's portfolio" path="">
+<Layout
+  title="創作物紹介"
+  description="omemoji's portfolio"
+  path=""
+  og={{ enabled: true }}
+>
   <Top title="omemoji" category="About" description="omemoji's portfolio" />
   <article>
     <Content components={components} />

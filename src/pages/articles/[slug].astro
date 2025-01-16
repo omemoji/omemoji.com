@@ -39,6 +39,9 @@ export const components = {
   title={article.data.title + " | 創作物紹介"}
   description={article.data.description}
   path={"/articles/" + article.id}
+  og={{
+    enabled: true,
+  }}
 >
   <TopArticle
     emoji={article.data.emoji}
