@@ -22,9 +22,7 @@ const { page } = Astro.props;
           <p class="my-0">
             {article.data.description}
             <br />
-            <time datetime={article.data.date.toISOString()}>
-              {new Intl.DateTimeFormat("ja-JP").format(article.data.date)}
-            </time>
+            {article.data.date.toISOString().split("T")[0]}
           </p>
 
           <div class=" inline-block ">

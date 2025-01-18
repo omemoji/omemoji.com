@@ -35,6 +35,13 @@ const artwork_number = getIndex(artwork.id, getArtworks());
   title={artwork.title + " | 創作物紹介"}
   description={artwork.description}
   path={"/artworks/" + artwork.id}
+  og={{
+    enabled: true,
+    image: new URL(`/api/og/artworks/${artwork.id}.png`, Astro.url.origin),
+    width: 1200,
+    height: 630,
+    type: "article",
+  }}
 >
   <a href={artwork.src.substr(artwork.src.indexOf("/images"))}>
     <Image

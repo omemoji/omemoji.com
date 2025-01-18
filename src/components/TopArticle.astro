@@ -15,8 +15,6 @@ const { emoji, title, tags, date } = Astro.props;
     }
   </div>
   <p class="xs:text-xl mb-8">
-    Published: <time datetime={date.toISOString()}>
-      {new Intl.DateTimeFormat("ja-JP").format(date)}
-    </time>
+    Published: {date.toISOString().split("T")[0]}
   </p>
 </div>

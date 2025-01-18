@@ -41,6 +41,10 @@ export const components = {
   path={"/articles/" + article.id}
   og={{
     enabled: true,
+    image: new URL(`/api/og/articles/${article.id}.png`, Astro.url.origin),
+    width: 1200,
+    height: 630,
+    type: "article",
   }}
 >
   <TopArticle
