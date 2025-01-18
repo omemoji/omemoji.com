@@ -3,8 +3,8 @@ import { load } from "cheerio";
 import type { CheerioAPI } from "cheerio";
 import getImageSize from "@/lib/getImageSize";
 import { sha256 } from "@noble/hashes/sha2";
-import fs from "fs";
-import path from "path";
+import fs from "node:fs";
+import path from "node:path";
 
 const detectTitle = ($: CheerioAPI, url: string) => {
   let t =
