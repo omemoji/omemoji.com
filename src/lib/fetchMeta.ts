@@ -51,7 +51,7 @@ const getImg = async (
     "./public/og",
     `${sha256(src).toString().replace(/,/g, "") + ".png"}`
   )}`;
-  if (!fs.existsSync(url) || import.meta.env.PROD) {
+  if (!fs.existsSync(url)) {
     let imgBuffer: Buffer | undefined = await fetch(src).then(async (res) =>
       res.ok ? Buffer.from(await res.arrayBuffer()) : undefined
     );
