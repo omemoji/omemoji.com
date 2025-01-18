@@ -4,7 +4,7 @@ import path from "path";
 import { getPlaiceholder } from "plaiceholder";
 
 const getImageSize = async (src: string) => {
-  if (src == "") {
+  if (src === "" || src === undefined) {
     return { img: { url: "", width: 0, height: 0 } };
   }
   const buffer = !src.startsWith("http")

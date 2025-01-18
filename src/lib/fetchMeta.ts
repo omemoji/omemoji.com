@@ -45,20 +45,23 @@ const detectDescription = ($: CheerioAPI) => {
 
 export default async function fetchMeta(url: string) {
   const req = new Request(url, { headers: { "User-Agent": "bot" } });
+  const metaData = {
+    url: url,
+    title: "",
+    description: "",
+    image: { url: "", width: 0, height: 0 },
+  };
   const metas = await fetch(req)
     .then((res) => res.text())
     .then(async (text) => {
-      const metaData = {
-        url: url,
-        title: "",
-        description: "",
-        image: { url: "", width: 0, height: 0 },
-      };
       const $ = load(text);
       metaData.title = detectTitle($, url);
       metaData.description = detectDescription($);
       const image = getImageSize(detectImage($, url));
       metaData.image = (await image).img;
+      return metaData;
+    })
+    .catch((e) => {
       return metaData;
     });
   return metas;

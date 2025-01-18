@@ -18,6 +18,7 @@ import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
 import { pluginCollapsibleSections } from "@expressive-code/plugin-collapsible-sections";
 
 import remarkLinkcard from "./src/lib/remark-link-card";
+import icon from "astro-icon";
 // https://astro.build/config
 export default defineConfig({
   outDir: "./out",
@@ -77,6 +78,11 @@ export default defineConfig({
         !page.includes("/articles/tag") &&
         !page.match(/\/artworks\/[0-9]+\//) &&
         !page.match(/\/articles\/[0-9]+\//),
+    }),
+    icon({
+      include: {
+        mdi: ["github", "twitter", "instagram"],
+      },
     }),
   ],
   image: {

@@ -1,0 +1,30 @@
+---
+import { Icon } from "astro-icon/components";
+
+const linklist: { name: string; href: string }[] = [
+  {
+    name: "mdi:github",
+    href: "https://github.com/omemoji",
+  },
+  {
+    name: "mdi:instagram",
+    href: "https://instagram.com/omemoji",
+  },
+  {
+    name: "mdi:twitter",
+    href: "https://twitter.com/omemoji_art",
+  },
+];
+---
+
+<div class="flex my-auto ml-auto">
+  {
+    linklist.map((link) => (
+      <div>
+        <a class="w-8" href={link.href} target="_blank" rel="noopener">
+          <Icon name={link.name} size={32} class="ml-2 my-2" />
+        </a>
+      </div>
+    ))
+  }
+</div>
