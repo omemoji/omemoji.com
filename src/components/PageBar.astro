@@ -1,0 +1,58 @@
+---
+import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+
+interface Props {
+  category: string;
+  current: number;
+  pages: number[];
+}
+
+const { category, current, pages } = Astro.props;
+const p: string = current - 1 !== 1 ? (current - 1).toString() : "";
+---
+
+<div class="h-24 flex border-t border-[color:var(--border)]">
+  <div class="mx-auto">
+    <ul class="flex h-full">
+      <li class="my-auto mx-2">
+        {
+          current !== 1 ? (
+            <a href={`/${category}/` + p}>
+              <IoIosArrowBack size={40} title="Arrow Back" color="var(--fg)" />
+            </a>
+          ) : (
+            <IoIosArrowBack
+              size={40}
+              title="Arrow Back"
+              color="var(--bg-artwork)"
+            />
+          )
+        }
+      </li>
+
+      <li class="my-auto mx-2 text-2xl">
+        {current} / {pages.slice(-1)[0]}
+      </li>
+
+      <li class="my-auto mx-2">
+        {
+          current !== pages.slice(-1)[0] ? (
+            <a href={`/${category}/` + `${current + 1}`}>
+              <IoIosArrowForward
+                size={40}
+                title="Arrow Forward"
+                color="var(--fg)"
+              />
+            </a>
+          ) : (
+            <IoIosArrowForward
+              size={40}
+              title="Arrow Forward"
+              color="var(--bg-artwork)"
+            />
+          )
+        }
+      </li>
+    </ul>
+  </div>
+</div>

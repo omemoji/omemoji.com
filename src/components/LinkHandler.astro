@@ -1,0 +1,20 @@
+---
+import LinkCard from "@/components/LinkCard.astro";
+
+interface Props {
+  href: string;
+  linkcard?: string;
+}
+
+const props = Astro.props;
+---
+
+{
+  Object.hasOwn(props, "linkcard") ? (
+    <LinkCard {...props} />
+  ) : (
+    <a {...props}>
+      <slot />
+    </a>
+  )
+}

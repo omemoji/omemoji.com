@@ -1,0 +1,78 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { getArtworks, type ArtworkData } from "../../lib/artworks";
+import Image from "../../components/Image.astro";
+import Back from "../../components/Back.astro";
+import GalleryRow from "@/components/GalleryRow.astro";
+
+export async function getStaticPaths() {
+  const artworks = getArtworks();
+  return artworks.map((artwork: any) => ({
+    params: { id: artwork.id },
+    props: { artwork },
+  }));
+}
+
+interface Props {
+  artwork: ArtworkData;
+}
+
+const { artwork }: any = Astro.props;
+const images: any = import.meta.glob("/public/images/artworks/*");
+const image = await images[artwork.src]();
+function getIndex(artwork_id: string, artworks: ArtworkData[]) {
+  for (let i: number = 0; i < artworks.length; i++) {
+    if (artworks[i]["id"] === artwork_id) {
+      return i;
+    }
+  }
+  return -1;
+}
+const artwork_number = getIndex(artwork.id, getArtworks());
+---
+
+<Layout
+  title={artwork.title + " | 創作物紹介"}
+  description={artwork.description}
+  path={"/artworks/" + artwork.id}
+  og={{
+    enabled: true,
+    image: new URL(`/api/og/artworks/${artwork.id}.png`, Astro.url.origin),
+    width: 1200,
+    height: 630,
+    type: "article",
+  }}
+>
+  <a href={artwork.src.substr(artwork.src.indexOf("/images"))}>
+    <Image
+      alt={artwork.title}
+      src={image.default}
+      category="artwork"
+      priority={true}
+    />
+  </a>
+
+  <div class="pt-4 pb-8 caption">
+    <div class="">
+      <h1 class="xs:text-4xl">{artwork.title}</h1>
+      <div class="flex justify-center mb-4">
+        {
+          artwork.tag.map((tag: string) => (
+            <a href={"/artworks/tag/" + tag} class="tag text-xl">
+              {"#" + tag}
+            </a>
+          ))
+        }
+      </div>
+      <p class="text-center text-xl mx-auto px-4">
+        {artwork.description}
+      </p>
+    </div>
+  </div>
+  <GalleryRow
+    artworks={getArtworks()}
+    artwork_number={artwork_number}
+    artwork_id={artwork.id}
+  />
+  <Back url="/artworks" />
+</Layout>

@@ -1,0 +1,20 @@
+---
+const { emoji, title, tags, date } = Astro.props;
+---
+
+<div class="top-article mb-8 text-center">
+  <p class="mb-4 mx-auto emoji leading-relaxed">{emoji}</p>
+  <h1 class="text-2xl xs:text-3xl mt-8 mb-2">{title}</h1>
+  <div class="inline-block mb-4">
+    {
+      tags.map((tag: string) => (
+        <a href={"/articles/tag/" + tag} class="tag xs:text-xl">
+          {"#" + tag}
+        </a>
+      ))
+    }
+  </div>
+  <p class="xs:text-xl mb-8">
+    Published: {date.toISOString().split("T")[0]}
+  </p>
+</div>

@@ -1,0 +1,14 @@
+---
+import { IoArrowBackCircleOutline } from "react-icons/io5";
+
+const { url } = Astro.props;
+---
+
+<div class="h-16 flex border-t border-[color:var(--border)]">
+  <div class="hover:bg-gray-400/30 transition-colors px-2">
+    <a href={url} class="flex h-full">
+      <IoArrowBackCircleOutline size={24} className="mr-2 my-auto" />
+      <p class="my-auto">Back</p>
+    </a>
+  </div>
+</div>

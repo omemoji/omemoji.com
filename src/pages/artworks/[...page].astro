@@ -1,0 +1,41 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Top from "@/components/Top.astro";
+import { getArtworks, getArtworksShown } from "@/lib/artworks";
+import Gallery from "@/components/Gallery.astro";
+import { ARTWORKS_PER_PAGE } from "@/lib/constant";
+import { pageIdGen } from "@/lib/fs";
+import PageBar from "@/components/PageBar.astro";
+
+export function getStaticPaths() {
+  const pages = pageIdGen(
+    Math.ceil(getArtworks().length / ARTWORKS_PER_PAGE)
+  ).map((page) => ({
+    page: page === 1 ? undefined : page.toString(),
+    p: page,
+  }));
+
+  return pages.map(({ page, p }) => {
+    return { params: { page }, props: { p } };
+  });
+}
+
+const { p } = Astro.props;
+const { page } = Astro.params;
+---
+
+<Layout
+  title="Artworks | 創作物紹介"
+  description="omemoji's artworks"
+  path={"/artworks/" + (page ?? "")}
+  og={{ enabled: true }}
+>
+  <Top title="Artworks" category="Artworks" description="omemoji's artworks" />
+  <!-- p=1 means the first page -->
+  <Gallery artworks={getArtworksShown(p)} />
+  <PageBar
+    current={p}
+    pages={pageIdGen(Math.ceil(getArtworks().length / ARTWORKS_PER_PAGE))}
+    category="artworks"
+  />
+</Layout>

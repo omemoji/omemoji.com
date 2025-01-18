@@ -12,11 +12,10 @@ https://omemoji.com
 
 ## 使用している技術
 
-- Next.js
+- Astro
 - Tailwind CSS
 - TypeScript
 - Cloudflare Pages
-- GitHub Actions
 
 ## Todo
 

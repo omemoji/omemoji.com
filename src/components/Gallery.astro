@@ -1,0 +1,36 @@
+---
+import { Picture } from "astro:assets";
+import { WIDTH_MAIN } from "../lib/constant";
+import type { ArtworkData } from "../lib/artworks";
+import { getThumbnailSize } from "../lib/artworks";
+
+const { artworks } = Astro.props;
+
+const images = import.meta.glob("/public/images/artworks/*");
+
+const image = async (path: string) => {
+  const image: any = await images[path]();
+  return getThumbnailSize(image.default, WIDTH_MAIN / 3);
+};
+---
+
+<div class="grid grid-cols-3">
+  {
+    artworks.map(async (artwork: ArtworkData) => (
+      <div>
+        <a href={"/artworks/" + artwork.id}>
+          <Picture
+            class="m-0 aspect-square object-cover"
+            src={(await image(artwork.src)).src}
+            quality={20}
+            width={(await image(artwork.src)).width}
+            height={(await image(artwork.src)).height}
+            formats={["avif"]}
+            alt={artwork.title}
+            loading="lazy"
+          />
+        </a>
+      </div>
+    ))
+  }
+</div>
