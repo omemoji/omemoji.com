@@ -82,7 +82,7 @@ export default defineConfig({
   image: {
     remotePatterns: [{ protocol: "https" }],
   },
-  site: "https://omemoji.com",
+  site: "https://omemoji.com/",
   experimental: {
     svg: {
       mode: "inline",
