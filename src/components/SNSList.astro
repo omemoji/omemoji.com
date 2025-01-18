@@ -22,7 +22,12 @@ const linklist: { name: string; href: string }[] = [
     linklist.map((link) => (
       <div>
         <a class="w-8" href={link.href} target="_blank" rel="noopener">
-          <Icon name={link.name} size={32} class="ml-2 my-2" />
+          <Icon
+            name={link.name}
+            desc={link.name.replace("mdi:", "")}
+            size={32}
+            class="ml-2 my-2"
+          />
         </a>
       </div>
     ))
