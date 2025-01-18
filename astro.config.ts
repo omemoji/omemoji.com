@@ -22,6 +22,9 @@ import icon from "astro-icon";
 // https://astro.build/config
 export default defineConfig({
   outDir: "./out",
+  build: {
+    format: "file",
+  },
   markdown: {
     remarkPlugins: [remarkGemoji, remarkRuby, remarkMath, remarkLinkcard],
     remarkRehype: {
