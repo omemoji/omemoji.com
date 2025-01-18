@@ -1,5 +1,5 @@
 ---
-import { Picture } from "astro:assets";
+import { Image } from "astro:assets";
 import fetchMeta from "@/lib/fetchMeta";
 
 interface Props {
@@ -43,11 +43,12 @@ const { title, description, image } = await fetchMeta(href);
 
       {
         image.url !== "" && (
-          <Picture
+          <Image
             src={image.url}
-            width={image.w}
-            height={image.h}
+            width={(image.width * 120) / image.height}
+            height={120}
             quality={30}
+            format="avif"
             alt=""
             loading="lazy"
             class="h-[118px] max-w-[120px] xs:max-w-[300px] w-auto m-0 rounded-r-lg object-cover"

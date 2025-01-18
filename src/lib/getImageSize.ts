@@ -4,6 +4,9 @@ import path from "path";
 import { getPlaiceholder } from "plaiceholder";
 
 const getImageSize = async (src: string) => {
+  if (src == "") {
+    return { img: { url: "", width: 0, height: 0 } };
+  }
   const buffer = !src.startsWith("http")
     ? await fs.readFile(path.join("./public", src))
     : await fetch(src).then(async (res) =>
@@ -12,9 +15,9 @@ const getImageSize = async (src: string) => {
   const {
     metadata: { height, width },
   } = await getPlaiceholder(buffer);
-
+  const url = src;
   return {
-    img: { src, height, width },
+    img: { url, width, height },
   };
 };
 

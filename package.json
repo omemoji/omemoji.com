@@ -14,7 +14,6 @@
     "@astrojs/rss": "4.0.9",
     "@astrojs/sitemap": "^3.2.1",
     "@astrojs/tailwind": "^5.1.4",
-    "@fontsource/roboto-mono": "^5.1.1",
     "@types/mdx": "^2.0.13",
     "@types/react": "^19.0.7",
     "@types/react-dom": "^19.0.3",
