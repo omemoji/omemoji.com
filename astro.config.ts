@@ -83,6 +83,7 @@ export default defineConfig({
     remotePatterns: [{ protocol: "https" }],
   },
   site: "https://omemoji.com/",
+  trailingSlash: "never",
   experimental: {
     svg: {
       mode: "inline",
