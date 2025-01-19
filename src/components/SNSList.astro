@@ -1,36 +1,32 @@
 ---
-import { library, icon } from "@fortawesome/fontawesome-svg-core";
-import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
-import "@fortawesome/fontawesome-svg-core/styles.css";
 import {
-  faGithub,
-  faInstagram,
-  faXTwitter,
-  faPixiv,
-} from "@fortawesome/free-brands-svg-icons";
+  siGithub,
+  siInstagram,
+  siX,
+  siPixiv,
+  siZenn,
+  type SimpleIcon,
+} from "simple-icons";
 
-library.add(faGithub, faInstagram, faXTwitter);
-
-const SNSlist: { icon: IconDefinition; alt: string; href: string }[] = [
+const SNSlist: { icon: SimpleIcon; href: string }[] = [
   {
-    icon: faGithub,
-    alt: "GitHub",
-    href: "https://github.com/omemoji",
+    icon: siGithub,
+    href: "https://github.com",
   },
   {
-    icon: faInstagram,
-    alt: "Instagram",
+    icon: siInstagram,
     href: "https://instagram.com/omemoji",
   },
   {
-    icon: faXTwitter,
-    alt: "X(Twitter)",
+    icon: siX,
     href: "https://x.com/omemoji_art",
   },
-
   {
-    icon: faPixiv,
-    alt: "Pixiv",
+    icon: siZenn,
+    href: "https://zenn.dev/omemoji",
+  },
+  {
+    icon: siPixiv,
     href: "https://www.pixiv.net/users/65949346",
   },
 ];
@@ -39,21 +35,11 @@ const SNSlist: { icon: IconDefinition; alt: string; href: string }[] = [
 <div class="flex my-auto ml-auto">
   {
     SNSlist.map((sns) => (
-      <div class="h-6">
-        <a href={sns.href} target="_blank" rel="noopener">
-          <Fragment set:html={icon(sns.icon, { title: sns.alt }).html} />
+      <div class="w-6 h-6 ml-3  fill-[var(--fg)]">
+        <a href={sns.href} target="_blank" rel="noopener" class="w-6 h-6 ">
+          <Fragment set:html={sns.icon.svg} class="w-6 h-6 c" />
         </a>
       </div>
     ))
   }
 </div>
-
-<style is:global>
-  .svg-inline--fa {
-    overflow: visible;
-    box-sizing: content-box;
-    display: inline-block;
-    height: 24px;
-    margin-left: 12px;
-  }
-</style>
