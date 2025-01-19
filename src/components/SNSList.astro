@@ -35,9 +35,14 @@ const SNSlist: { icon: SimpleIcon; href: string }[] = [
 <div class="flex my-auto ml-auto">
   {
     SNSlist.map((sns) => (
-      <div class="w-6 h-6 ml-3  fill-[var(--fg)]">
-        <a href={sns.href} target="_blank" rel="noopener" class="w-6 h-6 ">
-          <Fragment set:html={sns.icon.svg} class="w-6 h-6 c" />
+      <div class="w-6 h-6 ml-3  ">
+        <a
+          href={sns.href}
+          target="_blank"
+          rel="noopener"
+          class="w-6 h-6 fill-[var(--fg)]"
+        >
+          <Fragment set:html={sns.icon.svg} class="w-6 h-6" />
         </a>
       </div>
     ))
