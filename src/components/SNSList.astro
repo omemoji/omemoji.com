@@ -1,35 +1,59 @@
 ---
-import { Icon } from "astro-icon/components";
+import { library, icon } from "@fortawesome/fontawesome-svg-core";
+import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
+import "@fortawesome/fontawesome-svg-core/styles.css";
+import {
+  faGithub,
+  faInstagram,
+  faXTwitter,
+  faPixiv,
+} from "@fortawesome/free-brands-svg-icons";
 
-const linklist: { name: string; href: string }[] = [
+library.add(faGithub, faInstagram, faXTwitter);
+
+const SNSlist: { icon: IconDefinition; alt: string; href: string }[] = [
   {
-    name: "mdi:github",
+    icon: faGithub,
+    alt: "GitHub",
     href: "https://github.com/omemoji",
   },
   {
-    name: "mdi:instagram",
+    icon: faInstagram,
+    alt: "Instagram",
     href: "https://instagram.com/omemoji",
   },
   {
-    name: "mdi:twitter",
-    href: "https://twitter.com/omemoji_art",
+    icon: faXTwitter,
+    alt: "X(Twitter)",
+    href: "https://x.com/omemoji_art",
+  },
+
+  {
+    icon: faPixiv,
+    alt: "Pixiv",
+    href: "https://www.pixiv.net/users/65949346",
   },
 ];
 ---
 
 <div class="flex my-auto ml-auto">
   {
-    linklist.map((link) => (
-      <div>
-        <a class="w-8" href={link.href} target="_blank" rel="noopener">
-          <Icon
-            name={link.name}
-            title={link.name.replace("mdi:", "")}
-            size={32}
-            class="ml-2 my-2"
-          />
+    SNSlist.map((sns) => (
+      <div class="h-6">
+        <a href={sns.href} target="_blank" rel="noopener">
+          <Fragment set:html={icon(sns.icon, { title: sns.alt }).html} />
         </a>
       </div>
     ))
   }
 </div>
+
+<style is:global>
+  .svg-inline--fa {
+    overflow: visible;
+    box-sizing: content-box;
+    display: inline-block;
+    height: 24px;
+    margin-left: 12px;
+  }
+</style>
