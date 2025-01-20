@@ -11,8 +11,9 @@ type Props = {
 };
 
 const { artworks, artwork_number, artwork_id } = Astro.props;
-const image_size = w_md * 0.27;
-
+const scale = 0.27;
+const image_size = w_md * scale;
+const class_width = `w-[27%]`;
 const images = import.meta.glob("/public/images/artworks/*");
 const image = async (path: string) => {
   const image: any = await images[path]();
@@ -24,15 +25,17 @@ const image = async (path: string) => {
   id="artworks_id"
   class="overflow-x-scroll border-t border-t-[var(--border)] flex-nowrap"
   data-message={artwork_number}
+  data-scale={scale}
 >
   <div class="flex">
     {
       artworks.map(async (artwork) => (
-        <div class="flex-none  w-[27%] artwork-image px-1 py-2 h-auto ">
+        <div class={"flex-none px-1 py-2 h-auto " + class_width}>
           <a href={"/artworks/" + artwork.id}>
             <Picture
               class={
                 "m-0 aspect-square object-cover rounded-md bg-white" +
+                "w-full" +
                 (artwork_id === artwork.id
                   ? " border-2 border-[var(--link)]"
                   : " hover:opacity-40 transition-opacity")
@@ -57,8 +60,13 @@ const image = async (path: string) => {
   const element: HTMLElement | null = document.getElementById("artworks_id");
   if (element) {
     const artwork_number: number = Number(element.dataset.message);
+    const scale = Number(element.dataset.scale);
     const scrollLeft =
-      (w_md * 0.27 * artwork_number * Math.min(window.innerWidth, w_md)) / w_md;
+      (w_md *
+        scale *
+        (artwork_number - (1 - scale) / (2 * scale)) *
+        Math.min(window.innerWidth, w_md)) /
+      w_md;
     element.scrollLeft = scrollLeft;
   }
 </script>
