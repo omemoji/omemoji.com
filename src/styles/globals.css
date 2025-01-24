@@ -137,10 +137,6 @@
     color: var(--link);
   }
 
-  footer {
-    border-top: solid 1px var(--border);
-  }
-
   pre {
     @apply mb-6 py-4 px-8 overflow-auto rounded-lg;
     max-height: 540px;
