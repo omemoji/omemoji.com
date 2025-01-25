@@ -1,9 +1,9 @@
 ---
 emoji: "📕"
 slug: "kindle_on_linux"
-title: "LinuxでもKindleで本を読もう"
-description: "Waydroidを導入し、Linux上でKindleを動かす"
-date: 2025-02-28
+title: "Linux（Waydroid）でKindleを使ってみよう"
+description: "Waydroidを導入し、LinuxでもKindleで本を読めるようにする"
+date: 2025-02-20
 tags: ["Tech", "Linux", "Android", "Book", "Comic"]
 published: false
 ---
@@ -51,17 +51,29 @@ Waydroid は、 Android システム全体を Linux 上のコンテナ内で動�
 
 https://docs.waydro.id/usage/install-on-desktops
 
-参考までに、Void Linux でインストールする例を示す。
+### 初期設定
+
+まず、`waydroid-container.service`を起動・有効化出来ているか確認する（`systemd`を使っている場合）。
+その後、
+
+```sh
+sudo waydroid init
+```
+
+で Android イメージをインストールする。この時点では GApps を入れる必要はないので、VANILLA イメージを選択する。
+
+[^3]: X11 でも`weston` を使えば動かせるらしいが、試してはいない（参考：[https://arimasou16.com/blog/2022/07/17/00469/](https://arimasou16.com/blog/2022/07/17/00469/)）
+
+### （参考）Void Linux によるインストール
 
 ```sh
 # インストール
 sudo xbps-install -S waydroid
-
-# runit で自動起動させる
+# runit でサービスとして管理出来るようにする
 sudo ln -sv /etc/sv/waydroid-container /var/service/
+# 初期設定
+sudo waydroid init
 ```
-
-[^3]: X11 でも`weston` を使えば動かせるらしいが、試してはいない（参考：[https://arimasou16.com/blog/2022/07/17/00469/](https://arimasou16.com/blog/2022/07/17/00469/)）
 
 ## GAPPS 及び ARM への対応
 
@@ -71,7 +83,7 @@ sudo ln -sv /etc/sv/waydroid-container /var/service/
 
 ### 必要なものをインストールする
 
-以下のスクリプトを使うことで、上記二つの問題は簡単に解決出来る。
+以下のスクリプトを使う。
 
 https://github.com/casualsnek/waydroid_script
 
@@ -84,17 +96,23 @@ sudo venv/bin/python3 main.py
 ```
 
 で対話型インターフェースを起動した後、`Android 11 -> Install`と進んで`gapps`と`libhoudini`（CPU が AMD の場合には`libndk`）をインストールする。
-なお、`libhoudini`（`libndk`）は x86_64 Android - ARM 間の翻訳レイヤであり、ARM 対応はこれを用いて行っている。
+`gapps`はカスタム ROM で Google Play Store を利用出来るようにするためのものである。
+また、`libhoudini`（`libndk`）は x86_64 Android - ARM 間の翻訳レイヤであり、ARM 対応はこれを用いて行っている。
 
 ### デバイスを Google に登録する
 
 https://docs.waydro.id/faq/google-play-certification
 
-Google Play Store を利用するために、自分のデバイスを Google Play Protect に認証してもらう。
-
-まず`sudo waydroid shell`で Waydroid のシェルに入った後、
+Google Play Store を利用するためには、自分のデバイスを Google Play Protect に認証してもらう必要がある。
 
 ```sh
+sudo waydroid shell
+```
+
+で Waydroid のシェルに入った後、
+
+```sh
+
 ANDROID_RUNTIME_ROOT=/apex/com.android.runtime ANDROID_DATA=/data ANDROID_TZDATA_ROOT=/apex/com.android.tzdata ANDROID_I18N_ROOT=/apex/com.android.i18n sqlite3 /data/data/com.google.android.gsf/databases/gservices.db "select * from main where name = \"android_id\";"
 ```
 
@@ -116,6 +134,8 @@ ANDROID_RUNTIME_ROOT=/apex/com.android.runtime ANDROID_DATA=/data ANDROID_TZDATA
 
 ## 参考
 
-https://www.haxibami.net/blog/posts/linux-waydroid-18
+https://docs.waydro.id
 
-https://webzoit.net/hp/it/internet/homepage/env/os/bsd_unix_linux/debian/etc/lineageos_based_android_using_waydroid_on_debian_amd64.html
+https://wiki.archlinux.jp/index.php/Waydroid
+
+https://www.haxibami.net/blog/posts/linux-waydroid-18
