@@ -56,5 +56,12 @@ export const components = {
   <article>
     <Content components={components} />
   </article>
-  <Back url="/articles" />
+  <Back
+    url="/articles"
+    ,
+    slug={article.id}
+    ,
+    title={article.data.title + " | 創作物紹介"}
+    tags={article.data.tags}
+  />
 </Layout>

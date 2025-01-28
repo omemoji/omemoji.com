@@ -58,7 +58,7 @@ const artwork_number = getIndex(artwork.id, getArtworks());
       <div class="flex justify-center mb-4">
         {
           artwork.tag.map((tag: string) => (
-            <a href={"/artworks/tag/" + tag} class="tag text-xl">
+            <a href={encodeURI("/artworks/tag/" + tag)} class="tag text-xl">
               {"#" + tag}
             </a>
           ))
@@ -74,5 +74,12 @@ const artwork_number = getIndex(artwork.id, getArtworks());
     artwork_number={artwork_number}
     artwork_id={artwork.id}
   />
-  <Back url="/artworks" />
+  <Back
+    url="/artworks"
+    ,
+    slug={artwork.id}
+    ,
+    title={artwork.title + " | 創作物紹介"}
+    tags={artwork.tag}
+  />
 </Layout>
