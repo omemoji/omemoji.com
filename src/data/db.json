@@ -20,7 +20,7 @@
       "id": "skyblue",
       "src": "/public/images/artworks/skyblue.png",
       "title": "skyblue",
-      "tag": ["Adobe_Illustrator", "Girl"],
+      "tag": ["Adobe_Illustrator"],
       "href": "",
       "description": "音楽を奏でるクジラと少女"
     },
@@ -52,7 +52,7 @@
       "id": "tower_girl",
       "src": "/public/images/artworks/tower_girl.png",
       "title": "鉄塔少女",
-      "tag": ["Inkscape", "Girl"],
+      "tag": ["Inkscape"],
       "href": "https://inkscape.org/~omemoji/%E2%98%85+29",
       "description": "夕暮れの鉄塔に佇む少女"
     },
@@ -92,7 +92,7 @@
       "id": "zugadanten2022",
       "src": "/public/images/artworks/zugadanten2022.jpg",
       "title": "図画団展2022",
-      "tag": ["Krita", "Zugadan", "Bird"],
+      "tag": ["Krita", "図画団", "Bird"],
       "href": "https://www.instagram.com/p/CkSHtqIBGFx/",
       "description": "2022年度図画団展のポスター"
     },
@@ -124,7 +124,7 @@
       "id": "celestial_maiden",
       "src": "/public/images/artworks/celestial_maiden.png",
       "title": "天女",
-      "tag": ["Krita", "Girl", "Character"],
+      "tag": ["Krita", "Character"],
       "href": "https://www.instagram.com/p/Cp7uUD9vlLD/",
       "description": "絵の具を自在に操る天女"
     },
@@ -164,7 +164,7 @@
       "id": "ink_drop",
       "src": "/public/images/artworks/ink_drop.png",
       "title": "Ink drop",
-      "tag": ["Krita", "Zugadan"],
+      "tag": ["Krita", "図画団"],
       "href": "https://www.instagram.com/p/Cy86MEcvrdo/",
       "description": "水中に垂らされていく、金魚の形を成した墨滴"
     },
@@ -172,14 +172,14 @@
       "id": "zugadan_poster_2024",
       "src": "/public/images/artworks/zugadan_poster_2024.png",
       "title": "図画団新歓ポスター",
-      "tag": ["Krita", "Zugadan"],
+      "tag": ["Krita", "図画団"],
       "description": "筑波大学図画団の2024年度新歓ポスター"
     },
     {
       "id": "manken_poster_2024",
       "src": "/public/images/artworks/manken_poster_2024.png",
       "title": "漫画研究会新歓ポスター",
-      "tag": ["Krita", "Manken"],
+      "tag": ["Krita", "漫画研究会"],
       "description": "漫画研究会の2024年度新歓ポスター"
     }
   ]
