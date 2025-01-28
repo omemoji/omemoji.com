@@ -44,7 +44,7 @@ export default defineConfig({
   },
   integrations: [
     astroExpressiveCode({
-      themes: ["monokai"],
+      themes: ["kanagawa-wave"],
       frames: {
         // Example: Hide the "Copy to clipboard" button
       },
