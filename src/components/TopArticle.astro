@@ -8,7 +8,7 @@ const { emoji, title, tags, date } = Astro.props;
   <div class="inline-block mb-4">
     {
       tags.map((tag: string) => (
-        <a href={"/articles/tag/" + tag} class="tag xs:text-xl">
+        <a href={encodeURI("/articles/tag/" + tag)} class="tag xs:text-xl">
           {"#" + tag}
         </a>
       ))

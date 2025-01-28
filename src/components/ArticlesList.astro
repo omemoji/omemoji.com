@@ -27,7 +27,7 @@ const { page } = Astro.props;
 
           <div class=" inline-block ">
             {article.data.tags.map((tag) => (
-              <a href={"/articles/tag/" + tag} class="tag">
+              <a href={encodeURI("/articles/tag/" + tag)} class="tag">
                 {"#" + tag}
               </a>
             ))}
