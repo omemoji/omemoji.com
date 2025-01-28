@@ -3,8 +3,8 @@ emoji: "📕"
 slug: "kindle_on_linux"
 title: "Linux（Waydroid）でKindleを使ってみよう"
 description: "Waydroidを導入し、LinuxでもKindleで本を読めるようにする"
-date: 2025-02-20
-tags: ["Tech", "Linux", "Android", "Book", "Comic"]
+date: 2025-03-10
+tags: ["Tech", "Linux", "Android"]
 published: false
 ---
 
@@ -18,7 +18,7 @@ Amazon Kindle は、 公式の Linux 向けデスクトップアプリが存在�
 結論から言うと、 [Waydroid](https://waydro.id/) を用いて Linux 上で Android 版の Kindle を実行することにした。
 本記事では Waydroid を導入する方法、及びその上で Kindle を動かすための手順について説明する。
 
-### 何故 Android 版なのか？
+### （余談）何故 Android 版なのか？
 
 Linux 上で Kindle を実行する方法としては、以下の 3 つが考えられる。
 
@@ -40,9 +40,11 @@ Linux 上で Kindle を実行する方法としては、以下の 3 つが考え
 
 https://github.com/waydroid/waydroid
 
-Waydroid は、 Android システム全体を Linux 上のコンテナ内で動かすためのソフトウェアである。
+Waydroid は、 Android システムを Linux 上のコンテナ内で動かすためのソフトウェアである。
 カーネルをホストマシンと共有することでハードウェアに直接アクセス出来るため、他の Android エミュレータ・仮想環境より高いパフォーマンスを実現している。
 実際の使用感としても、もはやネイティブアプリと遜色ない軽快さで動作してくれる。
+
+![CPUやメモリなどのハードウェア、及びカーネルをホストのLinuxと共有していることが分かる](./fastfetch.png)
 
 ### インストール
 
@@ -79,7 +81,7 @@ sudo waydroid init
 
 これで Waydroid 上で Android を動かせるようになったが、これだけでは Kindle を動かす上で十分ではない。
 何故なら、この Android システムは Google Play Store がインストールされていない上にアーキテクチャも x86_64 だからである[^4]。
-よって、これらの問題を解決する必要がある。
+よって、以下の手順に従いこれらの問題を解決する。
 
 ### 必要なものをインストールする
 
@@ -124,7 +126,7 @@ ANDROID_RUNTIME_ROOT=/apex/com.android.runtime ANDROID_DATA=/data ANDROID_TZDATA
 
 ## おわりに
 
-![Linuxからランチャーで直接起動出来る。細かいところまで便利である](./kindle_02.png)
+![Google Play StoreからKindleをインストール出来るようになった](./kindle_02.png)
 
 これで Amazon Kindle を Google Play Store からインストールし、起動出来るようになったはずである。
 仮想化されていることを感じさせないほどにサクサク動く Kindle とともに、Linux でも便利な読書生活を楽しんでしまおう。
