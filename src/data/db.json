@@ -4,7 +4,7 @@
       "id": "blazing_leaves",
       "src": "/public/images/artworks/blazing_leaves.jpg",
       "title": "Blazing leaves",
-      "tag": ["Acryl", "Analog", "School"],
+      "tag": ["Acryl", "Analog", "Illustration"],
       "href": "",
       "description": "高校生国際美術展に応募したもの"
     },
@@ -20,7 +20,7 @@
       "id": "skyblue",
       "src": "/public/images/artworks/skyblue.png",
       "title": "skyblue",
-      "tag": ["Adobe_Illustrator"],
+      "tag": ["Adobe_Illustrator", "Illustration"],
       "href": "",
       "description": "音楽を奏でるクジラと少女"
     },
@@ -28,7 +28,7 @@
       "id": "shinkan-cover",
       "src": "/public/images/artworks/shinkan-cover.png",
       "title": "SHINKAN Booklet 2021",
-      "tag": ["Adobe_Illustrator", "Bird"],
+      "tag": ["Adobe_Illustrator", "Bird", "Illustration"],
       "href": "",
       "description": "2021年度情報科学類新歓パンフレットの表紙"
     },
@@ -36,7 +36,7 @@
       "id": "RGBdragon",
       "src": "/public/images/artworks/RGBdragon.png",
       "title": "RGBdragon",
-      "tag": ["Inkscape", "Dragon"],
+      "tag": ["Inkscape", "Dragon", "Illustration"],
       "href": "https://inkscape.org/~omemoji/%E2%98%85rgbdragon",
       "description": "光の三原色に彩られた龍"
     },
@@ -44,7 +44,7 @@
       "id": "the_end_of_fall",
       "src": "/public/images/artworks/the_end_of_fall.png",
       "title": "The end of fall",
-      "tag": ["Inkscape", "Bird"],
+      "tag": ["Inkscape", "Bird", "Illustration"],
       "href": "https://inkscape.org/~omemoji/%E2%98%85the-end-of-fall",
       "description": "紅葉と透き通った湖面"
     },
@@ -52,7 +52,7 @@
       "id": "tower_girl",
       "src": "/public/images/artworks/tower_girl.png",
       "title": "鉄塔少女",
-      "tag": ["Inkscape"],
+      "tag": ["Inkscape", "Illustration"],
       "href": "https://inkscape.org/~omemoji/%E2%98%85+29",
       "description": "夕暮れの鉄塔に佇む少女"
     },
@@ -60,7 +60,7 @@
       "id": "god_of_swords",
       "src": "/public/images/artworks/god_of_swords.png",
       "title": "剣神",
-      "tag": ["Krita"],
+      "tag": ["Krita", "Illustration"],
       "href": "https://www.instagram.com/p/CW18LCxvxYe/",
       "description": "虹の剣を持つ神"
     },
@@ -68,7 +68,7 @@
       "id": "2022",
       "src": "/public/images/artworks/2022.png",
       "title": "2022 Happy New Year! ",
-      "tag": ["Krita", "New_Year"],
+      "tag": ["Krita", "New_Year", "Illustration"],
       "href": "https://www.instagram.com/p/CYJtB4bP9LA/",
       "description": "年賀状"
     },
@@ -76,7 +76,7 @@
       "id": "harvest",
       "src": "/public/images/artworks/harvest.png",
       "title": "やまぶどう",
-      "tag": ["Krita", "Bird"],
+      "tag": ["Krita", "Bird", "Illustration"],
       "href": "https://www.instagram.com/p/CbeI9z3v0HT/",
       "description": "秋のやまぶどうとカラス"
     },
@@ -84,7 +84,7 @@
       "id": "rainbow_dragon",
       "src": "/public/images/artworks/rainbow_dragon.png",
       "title": "虹龍",
-      "tag": ["Krita", "Dragon"],
+      "tag": ["Krita", "Dragon", "Illustration"],
       "href": "https://www.instagram.com/p/Cb1wksDvX-i/",
       "description": "極彩色の龍"
     },
@@ -92,7 +92,7 @@
       "id": "zugadanten2022",
       "src": "/public/images/artworks/zugadanten2022.jpg",
       "title": "図画団展2022",
-      "tag": ["Krita", "図画団", "Bird"],
+      "tag": ["Krita", "図画団", "Bird", "Illustration"],
       "href": "https://www.instagram.com/p/CkSHtqIBGFx/",
       "description": "2022年度図画団展のポスター"
     },
@@ -100,7 +100,7 @@
       "id": "lux",
       "src": "/public/images/artworks/lux.png",
       "title": "Lux",
-      "tag": ["Krita", "Character"],
+      "tag": ["Krita", "OriginalCharacter", "Illustration"],
       "href": "https://www.instagram.com/p/CmwruKfvP-v",
       "description": "がらくたで構成された、かわいい猫の姫"
     },
@@ -108,7 +108,7 @@
       "id": "2023",
       "src": "/public/images/artworks/2023.png",
       "title": "2023 Happy New Year! ",
-      "tag": ["Inkscape", "New_Year"],
+      "tag": ["Inkscape", "New_Year", "Illustration"],
       "href": "https://inkscape.org/~omemoji/%E2%98%85moon",
       "description": "2023年の年賀状"
     },
@@ -116,7 +116,7 @@
       "id": "white_snake",
       "src": "/public/images/artworks/white_snake.png",
       "title": "白蛇",
-      "tag": ["Krita"],
+      "tag": ["Krita", "Illustration"],
       "href": "https://www.instagram.com/p/CpvBorxPl-x/",
       "description": "A Japanese white snake"
     },
@@ -124,7 +124,7 @@
       "id": "celestial_maiden",
       "src": "/public/images/artworks/celestial_maiden.png",
       "title": "天女",
-      "tag": ["Krita", "Character"],
+      "tag": ["Krita", "OriginalCharacter", "Illustration"],
       "href": "https://www.instagram.com/p/Cp7uUD9vlLD/",
       "description": "絵の具を自在に操る天女"
     },
@@ -132,7 +132,7 @@
       "id": "masterpiece",
       "src": "/public/images/artworks/masterpiece.png",
       "title": "The Creator",
-      "tag": ["Krita", "Character"],
+      "tag": ["Krita", "OriginalCharacter", "Illustration"],
       "href": "https://twitter.com/omemoji_art/status/1641262352556519424",
       "description": "絵筆を持った神"
     },
@@ -140,7 +140,7 @@
       "id": "eagle",
       "src": "/public/images/artworks/eagle.png",
       "title": "ワシの戦士",
-      "tag": ["Krita", "Character"],
+      "tag": ["Krita", "OriginalCharacter", "Illustration"],
       "href": "https://www.instagram.com/p/Cqknaevvhac/",
       "description": "ジェットエンジンを背負った空の戦士"
     },
@@ -148,7 +148,7 @@
       "id": "medusa",
       "src": "/public/images/artworks/medusa.png",
       "title": "Medusa",
-      "tag": ["Krita", "Character"],
+      "tag": ["Krita", "OriginalCharacter", "Illustration"],
       "href": "https://www.instagram.com/p/CvW-p4zvlll/",
       "description": "黒蛇使いの少女"
     },
@@ -156,7 +156,7 @@
       "id": "helios",
       "src": "/public/images/artworks/helios.png",
       "title": "Helios",
-      "tag": ["Krita", "Character"],
+      "tag": ["Krita", "OriginalCharacter", "Illustration"],
       "href": "https://www.instagram.com/p/Cvlk3miR3NH/",
       "description": "Warrior of the Sun"
     },
@@ -164,7 +164,7 @@
       "id": "ink_drop",
       "src": "/public/images/artworks/ink_drop.png",
       "title": "Ink drop",
-      "tag": ["Krita", "図画団"],
+      "tag": ["Krita", "図画団", "Illustration"],
       "href": "https://www.instagram.com/p/Cy86MEcvrdo/",
       "description": "水中に垂らされていく、金魚の形を成した墨滴"
     },
@@ -172,14 +172,14 @@
       "id": "zugadan_poster_2024",
       "src": "/public/images/artworks/zugadan_poster_2024.png",
       "title": "図画団新歓ポスター",
-      "tag": ["Krita", "図画団"],
+      "tag": ["Krita", "図画団", "Dragon", "Illustration"],
       "description": "筑波大学図画団の2024年度新歓ポスター"
     },
     {
       "id": "manken_poster_2024",
       "src": "/public/images/artworks/manken_poster_2024.png",
       "title": "漫画研究会新歓ポスター",
-      "tag": ["Krita", "漫画研究会"],
+      "tag": ["Krita", "漫画研究会", "Illustration"],
       "description": "漫画研究会の2024年度新歓ポスター"
     }
   ]
