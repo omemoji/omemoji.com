@@ -9,7 +9,6 @@ const additionalTags: string[] = tags_tmp
   .map((tag: string) => dict[tag])
   .filter((tag: string | undefined) => tag !== undefined);
 const SNSTags = tags_tmp.concat(additionalTags);
-console.log(SNSTags);
 const shareURL = encodeURI(
   `https://x.com/intent/post?url=${"https://omemoji.com" + url + `&text=${title}&hashtags=創作物紹介,${SNSTags.toString()}`}`
 );
