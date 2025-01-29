@@ -13,6 +13,10 @@ const { src, ...props } = Astro.props;
   typeof src === "string" ? (
     <img {src} {...props} />
   ) : (
-    <Image {src} className="max-h-[440px]" {...props} />
+    <Image
+      {src}
+      className="max-h-[440px] border-y border-[var(--border)]"
+      {...props}
+    />
   )
 }

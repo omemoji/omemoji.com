@@ -174,16 +174,9 @@
 }
 
 @layer components {
-  .strong-color {
-    color: var(--link);
-  }
   .content-image {
     @apply w-full h-auto;
     max-height: 540px;
-    background-color: var(--bg-artwork);
-  }
-  .content-image-article {
-    @apply w-full h-auto max-h-[540px] xs:max-h-[400px];
     background-color: var(--bg-artwork);
   }
   .caption {
