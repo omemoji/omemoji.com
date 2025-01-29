@@ -20,11 +20,13 @@ const getImageMeta = async (src: string) => {
     const {
       metadata: { width, height },
     } = bufferExists
-      ? await getPlaiceholder(buffer)
+      ? await getPlaiceholder(buffer).catch((e) => ({
+          metadata: { width: 0, height: 0 },
+        }))
       : {
           metadata: { width: 0, height: 0 },
         };
-    const url = bufferExists ? src : "";
+    const url = height > 0 ? src : "";
     return {
       img: { url: url, width, height },
     };
