@@ -5,7 +5,7 @@ title: "Linux（Waydroid）でKindleを使ってみよう"
 description: "Waydroidを導入し、LinuxでもKindleで本を読めるようにする"
 date: 2025-03-10
 tags: ["Tech", "Linux", "Android"]
-published: false
+published: true
 ---
 
 ![WaydroidでKindleを開いている様子](./kindle_01.png)
@@ -48,10 +48,8 @@ Waydroid は、 Android システムを Linux 上のコンテナ内で動かす�
 
 ### インストール
 
-以下のドキュメントに従ってインストールする。
-主要なディストロであれば問題なくインストール出来るだろうが、ディスプレイサーバーは **Wayland でなければならない**[^3]。
-
-https://docs.waydro.id/usage/install-on-desktops
+[こちら](https://docs.waydro.id/usage/install-on-desktops)のドキュメントに従ってインストールする。
+主要なディストロであれば問題なくインストール出来るが、ディスプレイサーバーは **Wayland でなければならない**[^3]。
 
 ### 初期設定
 
@@ -71,7 +69,7 @@ sudo waydroid init
 ```sh
 # インストール
 sudo xbps-install -S waydroid
-# runit でサービスとして管理出来るようにする
+# runit でサービスとして起動・管理出来るようにする
 sudo ln -sv /etc/sv/waydroid-container /var/service/
 # 初期設定
 sudo waydroid init
@@ -103,8 +101,6 @@ sudo venv/bin/python3 main.py
 
 ### デバイスを Google に登録する
 
-https://docs.waydro.id/faq/google-play-certification
-
 Google Play Store を利用するためには、自分のデバイスを Google Play Protect に認証してもらう必要がある。
 
 ```sh
@@ -135,8 +131,6 @@ ANDROID_RUNTIME_ROOT=/apex/com.android.runtime ANDROID_DATA=/data ANDROID_TZDATA
 [^5]: ただし、アプリケーションの規約に違反しないよう注意する必要がある
 
 ## 参考
-
-https://docs.waydro.id
 
 https://wiki.archlinux.jp/index.php/Waydroid
 
