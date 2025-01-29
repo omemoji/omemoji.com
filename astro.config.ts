@@ -44,21 +44,21 @@ export default defineConfig({
   },
   integrations: [
     astroExpressiveCode({
-      themes: ["kanagawa-wave"],
+      themes: ["github-dark", "github-light"],
       frames: {
         // Example: Hide the "Copy to clipboard" button
       },
       styleOverrides: {
         // You can also override styles
-
+        borderColor: "var(--border)",
         frames: {
           frameBoxShadowCssValue: "none",
         },
       },
       plugins: [pluginLineNumbers(), pluginCollapsibleSections()],
       defaultProps: {
-        showLineNumbers: false,
-        collapse: "25-9999",
+        showLineNumbers: true,
+        collapse: "30-9999",
       },
       shiki: {
         langs: [
