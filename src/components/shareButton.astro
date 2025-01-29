@@ -1,9 +1,17 @@
 ---
 import { siX } from "simple-icons";
+import { dictionary } from "@/data/dictionary.json";
 
 const { url, title, tags } = Astro.props;
+const tags_tmp = tags.map((tag: string) => tag);
+const dict = JSON.parse(JSON.stringify(dictionary));
+const additionalTags: string[] = tags_tmp
+  .map((tag: string) => dict[tag])
+  .filter((tag: string | undefined) => tag !== undefined);
+const SNSTags = tags_tmp.concat(additionalTags);
+console.log(SNSTags);
 const shareURL = encodeURI(
-  `https://x.com/share?url=${"https://omemoji.com" + url + `&text=${title}&hashtags=創作物紹介,${tags.toString()}`}`
+  `https://x.com/intent/post?url=${"https://omemoji.com" + url + `&text=${title}&hashtags=創作物紹介,${SNSTags.toString()}`}`
 );
 ---
 
