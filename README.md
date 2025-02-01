@@ -1,6 +1,6 @@
 # 創作物紹介
 
-![omemoji](https://github.com/omemoji/omemoji.com/assets/68148226/11ebcc2b-a4ce-4c62-a3fc-3f26fae5e7c6)
+<img src="./public/omemoji.png" width=240 height=240/>
 
 ## 概要
 
@@ -25,14 +25,12 @@ https://omemoji.com
 - [x] サイトマップ
 - [x] ページネーション
   - [x] タグページのページネーション
+- [x] OGP 画像をビルド時に生成
 - [ ] RSS
-- [ ] OGP 画像をビルド時に生成
 
 ### About
 
 - [x] 自分のプロフィールやアカウント、実績などを載せる
-- [x] [https://github.com/omemoji/omemoji](https://github.com/omemoji/omemoji)の内容と同期する
-  - [x] [https://github.com/omemoji/omemoji](https://github.com/omemoji/omemoji)が更新されたとき Cloudflare Pages でデプロイを行う
 
 ### Artworks
 
@@ -48,9 +46,9 @@ https://omemoji.com
 - [x] 個別の記事を動的ルーティング
 - [x] Tag 機能
 - [x] リンクカード
-  - [x] ビルド時に画像を最適化して`/og`以下に配置する
+  - [x] 画像を最適化
 - [ ] 目次
 
 ## 備考
 
-- Astro で書き直す可能性がある
+- [x] Astro で書き直した
