@@ -7,6 +7,7 @@ import Header from "../components/Header.astro";
 interface Props {
   title: string;
   description: string;
+  category: string;
   path: string;
   og?: {
     enabled: boolean;
@@ -17,7 +18,7 @@ interface Props {
   };
 }
 
-const { title, description, path, og } = Astro.props;
+const { title, description, category, path, og } = Astro.props;
 
 const site = Astro.url.origin;
 const author = "omemoji";
@@ -71,7 +72,7 @@ const author = "omemoji";
     }
   </head>
   <body>
-    <Header />
+    <Header category={category} />
     <main>
       <slot />
     </main>

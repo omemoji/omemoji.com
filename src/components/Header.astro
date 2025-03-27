@@ -1,13 +1,38 @@
-<header class="h-16 flex px-4 border-b border-b-[var(--border)]">
-  <h2 class="border-none font-bold my-auto text-xl px-0">
+---
+const menus = [
+  { title: "omemoji", category: "About", emoji: "👤", href: "/" },
+  { title: "Artworks", category: "Artworks", emoji: "🎨", href: "/artworks" },
+  { title: "Articles", category: "Articles", emoji: "🖊", href: "/articles" },
+];
+const { category } = Astro.props;
+---
+
+<header class="border-b border-b-[var(--border)]">
+  <h2 class="border-none font-bold my-auto text-xl p-4">
     <a href="/">創作物紹介</a>
   </h2>
-  <ul class="flex ml-auto my-auto">
-    <li class="text-base xs:text-lg">
-      <a href="/artworks">Artworks</a>
-    </li>
-    <li class="ml-4 text-base xs:text-lg">
-      <a href="/articles">Articles</a>
-    </li>
+  <ul class="flex w-2/3">
+    {
+      menus.map((menu) => (
+        <li class=" hover:bg-gray-400/30 transition-colors">
+          <a href={menu.href} class="">
+            {menu.category == category ? (
+              <>
+                <p class="text-center text-[color:var(--fg)] font-bold text-lg py-3 px-4 leading-normal">
+                  {menu.category}
+                </p>
+                <div class="bg-[color:var(--link)] rounded-full h-[4px] mx-auto" />
+              </>
+            ) : (
+              <>
+                <p class="text-center text-[color:var(--menu)] text-lg  py-3 px-4  leading-normal">
+                  {menu.category}
+                </p>
+              </>
+            )}
+          </a>
+        </li>
+      ))
+    }
   </ul>
 </header>

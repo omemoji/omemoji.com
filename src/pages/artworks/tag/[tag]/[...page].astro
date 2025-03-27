@@ -36,6 +36,7 @@ const params = Astro.params;
 <Layout
   title={params.tag + ": Artworks | 創作物紹介"}
   description="omemoji's artworks"
+  category="Artworks"
   path={"/artworks/tag/" + params.tag + "/" + (params.page ?? "")}
   og={{ enabled: true }}
 >
