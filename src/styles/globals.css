@@ -21,7 +21,7 @@
   }
 
   main article {
-    @apply py-0 mb-8 px-4;
+    @apply px-4;
   }
 
   h1,
