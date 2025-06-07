@@ -17,7 +17,7 @@ export const GET: APIRoute = async ({ params }) => {
   const article = articles.find((post) => `${post.id}` === slug);
   if (article) {
     const img = await ogImage(article.data.title);
-    res = new Response(img);
+    res = new Response(new Uint8Array(img));
   }
   return res;
 };

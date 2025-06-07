@@ -1,8 +1,5 @@
-import { getCollection } from "astro:content";
 import type { APIRoute } from "astro";
-
 import { getArtworks } from "@/lib/artworks";
-
 import ogArtworkImage from "@/components/OgArtworkImage";
 
 const artworks = getArtworks();
@@ -13,7 +10,7 @@ export const GET: APIRoute = async ({ params }) => {
   const artwork = artworks.find((artwork) => `${artwork.id}` === slug);
   if (artwork) {
     const img = await ogArtworkImage(artwork.title, artwork.src);
-    res = new Response(img);
+    res = new Response(new Uint8Array(img));
   }
   return res;
 };
