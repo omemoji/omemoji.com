@@ -2,15 +2,18 @@
 import Admin from "@/components/Admin.tsx";
 import Layout from "@/layouts/Layout.astro";
 import type { GetStaticPaths } from "astro";
-
 export const getStaticPaths = (() => {
-  // 開発環境 (astro dev) の場合のみ、このページへのパスを生成する
   if (import.meta.env.DEV) {
-    return [{ params: {} }];
+    return [
+      {
+        params: {
+          admin: "admin",
+        },
+      },
+    ];
+  } else {
+    return [];
   }
-
-  // 本番ビルド時 (astro build) は空の配列を返し、ページを生成しない
-  return [];
 }) satisfies GetStaticPaths;
 ---
 
