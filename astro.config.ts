@@ -86,7 +86,4 @@ export default defineConfig({
   },
   site: "https://omemoji.com/",
   trailingSlash: "never",
-  experimental: {
-    svg: true,
-  },
 });
