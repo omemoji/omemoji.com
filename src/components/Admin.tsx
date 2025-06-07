@@ -29,7 +29,6 @@ export const Admin: React.FC<AdminProps> = () => {
       ...prev,
       [name]: value,
     }));
-    console.log("Form data updated:", formData);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
