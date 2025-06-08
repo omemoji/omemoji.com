@@ -7,7 +7,6 @@ export default {
       xs: "480px",
       sm: "600px",
       md: WIDTH_MAIN.toString() + "px",
-      md_article: (WIDTH_MAIN + 24).toString() + "px",
     },
     extend: {},
   },
