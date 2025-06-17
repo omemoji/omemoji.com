@@ -57,7 +57,7 @@ export default defineConfig({
       },
       plugins: [pluginLineNumbers(), pluginCollapsibleSections()],
       defaultProps: {
-        showLineNumbers: true,
+        showLineNumbers: false,
         collapse: "30-9999",
       },
       shiki: {
