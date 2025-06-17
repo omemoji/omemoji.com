@@ -39,8 +39,9 @@
   h2 {
     @apply mt-8 mb-8 pt-[8px] pb-[10px]  text-2xl;
     border-bottom: solid 1px var(--border);
+    /* border-bottom: solid 1px var(--border);
     border-left: solid 8px var(--link);
-    padding-left: 12px;
+    padding-left: 12px; */
     font-size: 1.7rem;
     line-height: 2rem;
   }
@@ -65,8 +66,9 @@
 
     font-size: 1.3rem;
     line-height: 1.75rem;
-    border-left: solid 4px var(--link);
-    padding-left: 8px;
+    /* border-left: solid 4px var(--link);
+
+    padding-left: 8px; */
   }
   h4 {
     @apply my-4 text-lg;
