@@ -34,7 +34,7 @@
     "@types/bun": "^1.2.18",
     "@types/marked": "^6.0.0",
     "@types/mdx": "^2.0.13",
-    "@types/node": "^22.16.3",
+    "@types/node": "^24.0.13",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "cheerio": "^1.1.0",
