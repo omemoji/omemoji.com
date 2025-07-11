@@ -21,7 +21,7 @@
   }
 
   main article {
-    @apply px-4 md:px-6;
+    @apply m-4 md:m-12;
   }
 
   h1,
@@ -37,7 +37,7 @@
     @apply my-2 px-4 py-2 text-3xl  text-center;
   }
   h2 {
-    @apply mt-8 mb-8 pt-[8px] pb-[10px]  text-2xl;
+    @apply mt-12 mb-6 py-2  text-2xl;
     border-bottom: solid 1px var(--border);
     /* border-bottom: solid 1px var(--border);
     border-left: solid 8px var(--link);
@@ -71,7 +71,7 @@
     padding-left: 8px; */
   }
   h4 {
-    @apply my-4 text-lg;
+    @apply my-2 text-base;
   }
   h5 {
     @apply text-base;
