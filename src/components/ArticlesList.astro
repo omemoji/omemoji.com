@@ -8,11 +8,11 @@ interface Props {
 const { page } = Astro.props;
 ---
 
-<article class="m-6">
+<div class="m-6">
   {
     page.data.map((article) => (
       <div class="border border-[var(--border)] sm:flex w-full  px-8 py-4 rounded-[5px] my-6 ">
-        <div class="  text-center my-8 sm:my-auto text-[80px] sm:text-[100px] sm:pr-8">
+        <div class="  text-center my-10 sm:my-auto text-[80px] sm:text-[100px] sm:pr-8">
           {article.data.emoji}
         </div>
         <div>
@@ -36,4 +36,4 @@ const { page } = Astro.props;
       </div>
     ))
   }
-</article>
+</div>
