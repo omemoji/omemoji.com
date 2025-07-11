@@ -5,3 +5,7 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    # Bunのlockfileを自動更新するための設定
+    versioning-strategy: increase
+    # PRを自動でマージしない（手動確認推奨）
+    open-pull-requests-limit: 5
