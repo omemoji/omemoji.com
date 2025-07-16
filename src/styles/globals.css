@@ -37,9 +37,9 @@
     @apply my-2 px-4 py-2 text-3xl  text-center;
   }
   h2 {
-    @apply mt-12 mb-6 py-2  text-2xl;
-    border-bottom: solid 1px var(--border);
-    font-size: 1.7rem;
+    @apply mt-12 mb-6 py-2;
+    border-bottom: solid 3px var(--border);
+    font-size: 1.8rem;
     line-height: 2rem;
   }
   h3 {
@@ -61,6 +61,10 @@
   }
   article h2 a {
     color: var(--fg);
+  }
+  article h3 {
+    @apply my-6;
+    border-bottom: solid 1px var(--border);
   }
   article h3 a {
     color: var(--fg);
