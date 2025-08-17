@@ -8,6 +8,7 @@ import Back from "@/components/Back.astro";
 import { render } from "astro:content";
 import ImageHandler from "@/components/ImageHandler.astro";
 import LinkHandler from "@/components/LinkHandler.astro";
+import ArticleToc from "@/components/ArticleToc.astro";
 
 interface Props {
   article: CollectionEntry<"articles">;
@@ -27,8 +28,7 @@ export async function getStaticPaths() {
 }
 
 const { article } = Astro.props;
-const { Content } = await render(article);
-
+const { Content, headings } = await render(article);
 export const components = {
   img: ImageHandler,
   a: LinkHandler,
@@ -54,6 +54,7 @@ export const components = {
     tags={article.data.tags}
     date={article.data.date}
   />
+  {headings.length > 0 && <ArticleToc headings={headings} />}
   <article>
     <Content components={components} />
   </article>

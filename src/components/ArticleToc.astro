@@ -1,0 +1,111 @@
+---
+import type { MarkdownHeading } from "@astrojs/markdown-remark";
+const { headings } = Astro.props;
+const tocHeadings: MarkdownHeading[] = headings.filter(
+  (heading: MarkdownHeading) => heading.depth <= 3
+);
+---
+
+<nav class="table-of-contents collapsed">
+  <button class="toc-toggle" type="button">
+    <h2>目次</h2>
+    <span class="toggle-icon">▼</span>
+  </button>
+  <ul class="toc-content">
+    {
+      tocHeadings.map((heading) => (
+        <li class={`toc-level-${heading.depth}`}>
+          <a href={`#${heading.slug}`}>{heading.text}</a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+
+<style>
+  .table-of-contents {
+    @apply bg-gray-100 border border-gray-300 rounded-md;
+    @apply px-6 py-4 m-12;
+  }
+
+  .toc-toggle {
+    @apply w-full flex justify-between items-center;
+    @apply bg-transparent border-none cursor-pointer;
+    @apply p-0 text-left;
+  }
+
+  .toc-toggle h2 {
+    margin: 0;
+    font-size: 1.125rem;
+    color: #495057;
+  }
+
+  .toggle-icon {
+    @apply text-gray-500 text-sm;
+    transition: transform 0.2s ease;
+  }
+
+  .table-of-contents.collapsed .toggle-icon {
+    transform: rotate(-90deg);
+  }
+
+  .toc-content {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    max-height: 1000px;
+  }
+
+  .table-of-contents.collapsed .toc-content {
+    max-height: 0;
+    padding-top: 0;
+    margin-top: 0;
+  }
+
+  .toc-content:not(.table-of-contents.collapsed .toc-content) {
+    margin-top: 0.5rem;
+  }
+
+  .table-of-contents li {
+    margin: 0.25rem 0;
+    list-style: none;
+  }
+
+  .toc-level-1 {
+    padding-left: 0;
+  }
+
+  .toc-level-2 {
+    padding-left: 2rem;
+  }
+
+  .toc-level-3 {
+    padding-left: 4rem;
+  }
+
+  .table-of-contents a {
+    color: #6c757d;
+    text-decoration: none;
+    display: block;
+  }
+
+  .table-of-contents a:hover {
+    color: #495057;
+    text-decoration: underline;
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const tocToggle = document.querySelector(".toc-toggle");
+    const tableOfContents = document.querySelector(".table-of-contents");
+
+    if (tocToggle && tableOfContents) {
+      tocToggle.addEventListener("click", () => {
+        tableOfContents.classList.toggle("collapsed");
+      });
+    }
+  });
+</script>
