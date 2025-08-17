@@ -37,7 +37,7 @@
     @apply my-2 px-4 py-2 text-3xl  text-center;
   }
   h2 {
-    @apply mt-12 mb-6 py-2;
+    @apply mt-16 mb-6 py-2;
     font-size: 1.8rem;
     line-height: 2rem;
   }
@@ -47,7 +47,7 @@
     line-height: 1.75rem;
   }
   h4 {
-    @apply my-2 text-base;
+    @apply my-6 text-lg;
   }
   h5 {
     @apply text-base;
@@ -75,7 +75,7 @@
     color: var(--fg);
   }
   article h3 {
-    @apply my-6 py-1;
+    @apply mt-9 mb-6 py-2;
     border-bottom: solid 1px var(--border);
   }
   article h3 a {
@@ -210,6 +210,9 @@
 
   iframe {
     width: 100%;
+  }
+  .expressive-code {
+    @apply my-6;
   }
 }
 
