@@ -1,0 +1,32 @@
+name: Dependabot Bun Lockfile Update
+
+on:
+  pull_request:
+    paths:
+      - 'package.json'
+      - 'bun.lockb'
+
+jobs:
+  update-lockfile:
+    runs-on: ubuntu-latest
+    if: ${{ github.actor == 'dependabot[bot]' }}
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Update lockfile
+        run: bun install
+
+      - name: Commit and push changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: update bun.lockb"
+          file_pattern: bun.lockb bun.lock
