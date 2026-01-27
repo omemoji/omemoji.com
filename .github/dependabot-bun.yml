@@ -1,32 +1,41 @@
-name: Dependabot Bun Lockfile Update
+name: Update Bun Lockfile
 
 on:
   pull_request:
     paths:
       - 'package.json'
-      - 'bun.lockb'
+
+permissions:
+  contents: write
 
 jobs:
   update-lockfile:
+    # Dependabotが作成したPRの場合のみ実行
+    if: github.actor == 'dependabot[bot]'
     runs-on: ubuntu-latest
-    if: ${{ github.actor == 'dependabot[bot]' }}
-    permissions:
-      contents: write
-      pull-requests: write
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
 
-      - uses: oven-sh/setup-bun@v1
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
 
-      - name: Update lockfile
-        run: bun install
-
-      - name: Commit and push changes
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "chore: update bun.lockb"
-          file_pattern: bun.lockb bun.lock
+      - name: Update Lockfile
+        run: |
+          bun install
+          
+      - name: Commit and Push Changes
+        run: |
+          # 変更がある場合のみコミットする
+          if [[ `git status --porcelain` ]]; then
+            git config --global user.name 'github-actions[bot]'
+            git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+            git add bun.lockb
+            git commit -m "chore: update bun.lockb"
+            git push
+          fi
