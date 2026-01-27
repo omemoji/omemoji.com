@@ -14,7 +14,7 @@
     "@astrojs/react": "^4.4.2",
     "@astrojs/sitemap": "^3.7.0",
     "@astrojs/tailwind": "^5.1.5",
-    "@expressive-code/plugin-collapsible-sections": "^0.38.3",
+    "@expressive-code/plugin-collapsible-sections": "^0.41.6",
     "@expressive-code/plugin-line-numbers": "^0.38.3",
     "astro": "^5.16.15",
     "astro-expressive-code": "^0.38.3",
