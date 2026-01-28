@@ -1,6 +1,41 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme inline {
+  --color-gray-*: initial;
+  --color-blue-*: initial;
+}
+
+@theme {
+  --breakpoint-xs: 480px;
+  --breakpoint-sm: 600px;
+  --breakpoint-md: 700px;
+
+  /* Gray palette */
+  --color-gray-50: oklch(0.985 0 0);
+  --color-gray-100: oklch(0.967 0 0);
+  --color-gray-200: oklch(0.928 0 0);
+  --color-gray-300: oklch(0.872 0 0);
+  --color-gray-400: oklch(0.707 0 0);
+  --color-gray-500: oklch(0.551 0 0);
+  --color-gray-600: oklch(0.446 0 0);
+  --color-gray-700: oklch(0.373 0 0);
+  --color-gray-800: oklch(0.269 0 0);
+  --color-gray-900: oklch(0.205 0 0);
+  --color-gray-950: oklch(0.143 0 0);
+
+  /* Blue palette */
+  --color-blue-50: oklch(0.97 0.014 254.6);
+  --color-blue-100: oklch(0.932 0.032 255.5);
+  --color-blue-200: oklch(0.882 0.059 254.1);
+  --color-blue-300: oklch(0.809 0.105 251.8);
+  --color-blue-400: oklch(0.707 0.165 254.6);
+  --color-blue-500: oklch(0.623 0.214 259.1);
+  --color-blue-600: oklch(0.546 0.245 262.8);
+  --color-blue-700: oklch(0.488 0.243 264.3);
+  --color-blue-800: oklch(0.424 0.199 265.6);
+  --color-blue-900: oklch(0.379 0.146 265.7);
+  --color-blue-950: oklch(0.282 0.091 267.9);
+}
 
 @layer base {
   * {
@@ -16,8 +51,15 @@
   body {
     color: var(--fg);
     background: var(--bg);
-    @apply leading-8 max-w-screen-md mx-auto md:border-[var(--border)] md:border-x;
+    @apply leading-8 max-w-screen-md mx-auto md:border-(--border) md:border-x;
+    
     -webkit-text-size-adjust: 100%;
+  }
+
+  /* Link */
+  article a {
+    @apply hover:underline break-all;
+    color: var(--link);
   }
 
   main article {
@@ -144,12 +186,6 @@
     @apply my-0;
   }
 
-  /* Link */
-  article a {
-    @apply hover:underline break-all;
-    color: var(--link);
-  }
-
   pre {
     @apply mb-6 py-4 px-8 overflow-auto rounded-lg;
     max-height: 540px;
@@ -173,10 +209,6 @@
     @apply text-sm;
     margin-top: 2px;
     margin-bottom: 2px;
-  }
-
-   {
-    box-shadow: none;
   }
 
   blockquote {

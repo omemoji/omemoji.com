@@ -1,7 +1,6 @@
 // @ts-check
 import { defineConfig } from "astro/config";
-
-import tailwind from "@astrojs/tailwind";
+import tailwindcss from "@tailwindcss/vite";
 import mdx from "@astrojs/mdx";
 import react from "@astrojs/react";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
@@ -22,6 +21,9 @@ export default defineConfig({
   outDir: "./out",
   build: {
     format: "file",
+  },
+  vite: {
+    plugins: [tailwindcss()],
   },
   markdown: {
     remarkPlugins: [remarkGemoji, remarkRuby, remarkMath, remarkLinkcard],
@@ -70,7 +72,6 @@ export default defineConfig({
         ],
       },
     }),
-    tailwind(),
     mdx({ extendMarkdownConfig: true }),
     react(),
     sitemap({

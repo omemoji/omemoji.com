@@ -24,24 +24,40 @@ const tocHeadings: MarkdownHeading[] = headings.filter(
 
 <style>
   .table-of-contents {
-    @apply bg-gray-100 border border-gray-300 rounded-md;
-    @apply px-6 py-2 mx-4 my-12 md:mx-12;
+    padding: 0.5rem 1.5rem;
+    margin: 3rem 1rem;
+    border-radius: 0.375rem;
+    background-color: var(--code-bg);
+    border: 1px solid var(--border);
+  }
+
+  @media (min-width: 700px) {
+    .table-of-contents {
+      margin: 3rem;
+    }
   }
 
   .toc-toggle {
-    @apply w-full flex justify-between items-center;
-    @apply bg-transparent border-none cursor-pointer;
-    @apply p-0 text-left;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    text-align: left;
   }
 
   .toc-toggle h2 {
     margin: 0;
     font-size: 1.125rem;
-    color: #495057;
+    color: var(--fg);
   }
 
   .toggle-icon {
-    @apply text-gray-500 text-sm;
+    font-size: 0.875rem;
+    color: var(--menu);
     transition: transform 0.2s ease;
   }
 
@@ -86,13 +102,13 @@ const tocHeadings: MarkdownHeading[] = headings.filter(
   }
 
   .table-of-contents a {
-    color: #6c757d;
+    color: var(--menu);
     text-decoration: none;
     display: block;
   }
 
   .table-of-contents a:hover {
-    color: #495057;
+    color: var(--fg);
     text-decoration: underline;
   }
 </style>
