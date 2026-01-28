@@ -20,7 +20,7 @@ const getImageMeta = async (src: string) => {
     const {
       metadata: { width, height },
     } = bufferExists
-      ? await getPlaiceholder(buffer).catch((e) => ({
+      ? await getPlaiceholder(buffer).catch(() => ({
           metadata: { width: 0, height: 0 },
         }))
       : {
@@ -57,13 +57,9 @@ const detectImage = async ($: CheerioAPI, url: string) => {
   if (imgUrl !== "" && !imgUrl.startsWith("http")) {
     let imgurl_minus_https = url.substring(url.indexOf("/") + 2);
     if (imgurl_minus_https.match("/")) {
-      imgurl_minus_https = imgurl_minus_https.substring(
-        0,
-        imgurl_minus_https.indexOf("/")
-      );
+      imgurl_minus_https = imgurl_minus_https.substring(0, imgurl_minus_https.indexOf("/"));
     }
-    imgUrl =
-      url.substring(0, url.indexOf("/")) + "//" + imgurl_minus_https + imgUrl;
+    imgUrl = url.substring(0, url.indexOf("/")) + "//" + imgurl_minus_https + imgUrl;
   }
   return (await getImageMeta(imgUrl)).img;
 };
@@ -101,7 +97,7 @@ export default async function fetchMeta(url: string) {
       metadataCache.set(url, meta);
       return meta;
     })
-    .catch((e) => {
+    .catch(() => {
       return metaDataEmpty;
     });
   return metaData;

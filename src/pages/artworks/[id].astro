@@ -7,7 +7,7 @@ import GalleryRow from "@/components/GalleryRow.astro";
 
 export async function getStaticPaths() {
   const artworks = getArtworks();
-  return artworks.map((artwork: any) => ({
+  return artworks.map((artwork: ArtworkData) => ({
     params: { id: artwork.id },
     props: { artwork },
   }));
@@ -17,8 +17,8 @@ interface Props {
   artwork: ArtworkData;
 }
 
-const { artwork }: any = Astro.props;
-const images: any = import.meta.glob("/public/images/artworks/*");
+const artwork = Astro.props.artwork;
+const images = import.meta.glob<{ default: ImageMetadata }>("/public/images/artworks/*");
 const image = await images[artwork.src]();
 function getIndex(artwork_id: string, artworks: ArtworkData[]) {
   for (let i: number = 0; i < artworks.length; i++) {
@@ -33,7 +33,7 @@ const artwork_number = getIndex(artwork.id, getArtworks());
 
 <Layout
   title={artwork.title + " | 創作物紹介"}
-  description={artwork.description}
+  description={artwork.description ?? ""}
   category="Artworks"
   path={"/artworks/" + artwork.id}
   og={{
@@ -45,12 +45,7 @@ const artwork_number = getIndex(artwork.id, getArtworks());
   }}
 >
   <a href={artwork.src.substr(artwork.src.indexOf("/images"))}>
-    <Image
-      alt={artwork.title}
-      src={image.default}
-      category="artwork"
-      priority={true}
-    />
+    <Image alt={artwork.title} src={image.default} category="artwork" priority={true} />
   </a>
 
   <div class="pt-4 pb-8 caption">
@@ -70,16 +65,10 @@ const artwork_number = getIndex(artwork.id, getArtworks());
       </p>
     </div>
   </div>
-  <GalleryRow
-    artworks={getArtworks()}
-    artwork_number={artwork_number}
-    artwork_id={artwork.id}
-  />
+  <GalleryRow artworks={getArtworks()} artwork_number={artwork_number} artwork_id={artwork.id} />
   <Back
     url="/artworks"
-    ,
     slug={artwork.id}
-    ,
     title={artwork.title + " | 創作物紹介"}
     tags={artwork.tag}
   />

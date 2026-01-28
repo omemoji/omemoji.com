@@ -14,9 +14,9 @@ const { artworks, artwork_number, artwork_id } = Astro.props;
 const scale = 0.27;
 const image_size = w_md * scale;
 const class_width = `w-[27%]`;
-const images = import.meta.glob("/public/images/artworks/*");
+const images = import.meta.glob<{ default: ImageMetadata }>("/public/images/artworks/*");
 const image = async (path: string) => {
-  const image: any = await images[path]();
+  const image = await images[path]();
   return getThumbnailSize(image.default, image_size);
 };
 ---

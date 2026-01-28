@@ -46,10 +46,7 @@ export const getTaggedArtworks = (tag: string): ArtworkData[] => {
   return getArtworks().filter((artwork) => artwork.tag.includes(tag));
 };
 
-export const getTaggedArtworksShown = (
-  tag: string,
-  p: number
-): ArtworkData[] => {
+export const getTaggedArtworksShown = (tag: string, p: number): ArtworkData[] => {
   return getTaggedArtworks(tag).filter(
     (artwork) =>
       (p - 1) * ARTWORKS_PER_PAGE <= getTaggedArtworks(tag).indexOf(artwork) &&

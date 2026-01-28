@@ -2,7 +2,6 @@ import eslint from "@eslint/js";
 import tseslint from "typescript-eslint";
 import astro from "eslint-plugin-astro";
 import jsonc from "eslint-plugin-jsonc";
-import markdown from "eslint-plugin-markdown";
 import globals from "globals";
 
 export default tseslint.config(
@@ -17,9 +16,6 @@ export default tseslint.config(
 
   // JSON
   ...jsonc.configs["flat/recommended-with-jsonc"],
-
-  // Markdown
-  ...markdown.configs.recommended,
 
   // Global settings for all files
   {
@@ -67,12 +63,6 @@ export default tseslint.config(
 
   // Ignore patterns
   {
-    ignores: [
-      "node_modules/**",
-      "out/**",
-      "dist/**",
-      ".astro/**",
-      "*.min.js",
-    ],
+    ignores: ["node_modules/**", "out/**", "dist/**", ".astro/**", "*.min.js"],
   }
 );

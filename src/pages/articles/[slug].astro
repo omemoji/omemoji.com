@@ -15,12 +15,9 @@ interface Props {
 }
 
 export async function getStaticPaths() {
-  const articles: CollectionEntry<"articles">[] = await getCollection(
-    "articles",
-    ({ data }) => {
-      return import.meta.env.PROD ? data.published : true;
-    }
-  );
+  const articles: CollectionEntry<"articles">[] = await getCollection("articles", ({ data }) => {
+    return import.meta.env.PROD ? data.published : true;
+  });
   return articles.map((article) => ({
     params: { slug: article.id },
     props: { article },
@@ -60,9 +57,7 @@ export const components = {
   </article>
   <Back
     url="/articles"
-    ,
     slug={article.id}
-    ,
     title={article.data.title + " | 創作物紹介"}
     tags={article.data.tags}
   />
