@@ -23,8 +23,6 @@ export default tseslint.config(
       globals: {
         ...globals.browser,
         ...globals.node,
-        Bun: "readonly",
-        ImageMetadata: "readonly",
       },
     },
   },
