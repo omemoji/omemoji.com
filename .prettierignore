@@ -1,0 +1,7 @@
+node_modules
+out
+dist
+.astro
+bun.lock
+public
+*.min.js
