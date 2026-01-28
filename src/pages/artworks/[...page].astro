@@ -8,9 +8,7 @@ import { pageIdGen } from "@/lib/fs";
 import PageBar from "@/components/PageBar.astro";
 
 export function getStaticPaths() {
-  const pages = pageIdGen(
-    Math.ceil(getArtworks().length / ARTWORKS_PER_PAGE)
-  ).map((page) => ({
+  const pages = pageIdGen(Math.ceil(getArtworks().length / ARTWORKS_PER_PAGE)).map((page) => ({
     page: page === 1 ? undefined : page.toString(),
     p: page,
   }));

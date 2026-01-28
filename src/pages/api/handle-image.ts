@@ -1,28 +1,22 @@
 import fs from "fs/promises";
 import path from "path";
 
-export async function POST({
-  request,
-}: {
-  request: Request;
-}): Promise<Response> {
+export async function POST({ request }: { request: Request }): Promise<Response> {
   try {
     // AstroのRequestからFormDataを取得
     const formData = await request.formData();
     const file = formData.get("image");
     if (!file || !(file instanceof File)) {
-      return new Response(
-        JSON.stringify({ message: "No file uploaded or invalid file" }),
-        { status: 400 }
-      );
+      return new Response(JSON.stringify({ message: "No file uploaded or invalid file" }), {
+        status: 400,
+      });
     }
 
     // ファイルタイプチェック
     if (!file.type.startsWith("image/")) {
-      return new Response(
-        JSON.stringify({ message: "Only image files are allowed!" }),
-        { status: 400 }
-      );
+      return new Response(JSON.stringify({ message: "Only image files are allowed!" }), {
+        status: 400,
+      });
     }
 
     // ファイルサイズチェック (10MB)

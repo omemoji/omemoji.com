@@ -21,9 +21,7 @@ export const Admin: React.FC<AdminProps> = () => {
   const [imagePreview, setImagePreview] = useState<string>("");
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -38,8 +36,7 @@ export const Admin: React.FC<AdminProps> = () => {
 
       // Extract filename without extension for ID
       const fileName = file.name;
-      const fileNameWithoutExt =
-        fileName.substring(0, fileName.lastIndexOf(".")) || fileName;
+      const fileNameWithoutExt = fileName.substring(0, fileName.lastIndexOf(".")) || fileName;
 
       // Create preview URL
       const previewUrl = URL.createObjectURL(file);
@@ -111,9 +108,7 @@ export const Admin: React.FC<AdminProps> = () => {
         } catch (uploadError) {
           throw new Error(
             `Image upload failed: ${
-              uploadError instanceof Error
-                ? uploadError.message
-                : "Unknown error"
+              uploadError instanceof Error ? uploadError.message : "Unknown error"
             }`
           );
         }
@@ -152,8 +147,7 @@ export const Admin: React.FC<AdminProps> = () => {
       }
     } catch (error) {
       setMessage(
-        "Error saving artwork: " +
-          (error instanceof Error ? error.message : "Unknown error")
+        "Error saving artwork: " + (error instanceof Error ? error.message : "Unknown error")
       );
     } finally {
       setIsSubmitting(false);
@@ -175,9 +169,7 @@ export const Admin: React.FC<AdminProps> = () => {
       {message && (
         <div
           className={`p-4 mb-4 rounded ${
-            message.includes("Error")
-              ? "bg-red-100 text-red-700"
-              : "bg-green-100 text-green-700"
+            message.includes("Error") ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"
           }`}
         >
           {message}
@@ -186,10 +178,7 @@ export const Admin: React.FC<AdminProps> = () => {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label
-            htmlFor="title"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
+          <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
             Title *
           </label>
           <input
@@ -204,10 +193,7 @@ export const Admin: React.FC<AdminProps> = () => {
         </div>
 
         <div>
-          <label
-            htmlFor="imageFile"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
+          <label htmlFor="imageFile" className="block text-sm font-medium text-gray-700 mb-1">
             Upload Image *
           </label>
           <input
@@ -219,8 +205,7 @@ export const Admin: React.FC<AdminProps> = () => {
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <p className="text-sm text-gray-500 mt-1">
-            The filename (without extension) will be used as the ID
-            automatically.
+            The filename (without extension) will be used as the ID automatically.
           </p>
 
           {/* Image Preview */}
@@ -237,10 +222,7 @@ export const Admin: React.FC<AdminProps> = () => {
         </div>
 
         <div>
-          <label
-            htmlFor="href"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
+          <label htmlFor="href" className="block text-sm font-medium text-gray-700 mb-1">
             Link URL (optional)
           </label>
           <input
@@ -255,10 +237,7 @@ export const Admin: React.FC<AdminProps> = () => {
         </div>
 
         <div>
-          <label
-            htmlFor="description"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
+          <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
             Description (optional)
           </label>
           <textarea
@@ -272,10 +251,7 @@ export const Admin: React.FC<AdminProps> = () => {
         </div>
 
         <div>
-          <label
-            htmlFor="tag"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
+          <label htmlFor="tag" className="block text-sm font-medium text-gray-700 mb-1">
             Tags *
           </label>
           <div className="flex gap-2 mb-2">

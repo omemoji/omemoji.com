@@ -7,14 +7,9 @@ interface ArtworkListProps {
   onMessage: (message: string) => void;
 }
 
-export const ArtworkList: React.FC<ArtworkListProps> = ({
-  refreshTrigger,
-  onMessage,
-}) => {
+export const ArtworkList: React.FC<ArtworkListProps> = ({ refreshTrigger, onMessage }) => {
   const [artworks, setArtworks] = useState<ArtworkData[]>([]);
-  const [editingArtwork, setEditingArtwork] = useState<ArtworkData | null>(
-    null
-  );
+  const [editingArtwork, setEditingArtwork] = useState<ArtworkData | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(0); // 現在のページ（0-based）
@@ -40,18 +35,14 @@ export const ArtworkList: React.FC<ArtworkListProps> = ({
     } catch (error) {
       console.error("Error loading artworks:", error);
       onMessage(
-        "Error loading artworks: " +
-          (error instanceof Error ? error.message : "Unknown error")
+        "Error loading artworks: " + (error instanceof Error ? error.message : "Unknown error")
       );
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDeleteArtwork = async (
-    artworkId: string,
-    event: React.MouseEvent
-  ) => {
+  const handleDeleteArtwork = async (artworkId: string, event: React.MouseEvent) => {
     event.stopPropagation();
 
     if (!confirm("Are you sure you want to delete this artwork?")) {
@@ -59,12 +50,9 @@ export const ArtworkList: React.FC<ArtworkListProps> = ({
     }
 
     try {
-      const response = await fetch(
-        `http://localhost:3001/artworks/${artworkId}`,
-        {
-          method: "DELETE",
-        }
-      );
+      const response = await fetch(`http://localhost:3001/artworks/${artworkId}`, {
+        method: "DELETE",
+      });
 
       if (response.ok) {
         onMessage("Artwork deleted successfully!");
@@ -79,8 +67,7 @@ export const ArtworkList: React.FC<ArtworkListProps> = ({
       }
     } catch (error) {
       onMessage(
-        "Error deleting artwork: " +
-          (error instanceof Error ? error.message : "Unknown error")
+        "Error deleting artwork: " + (error instanceof Error ? error.message : "Unknown error")
       );
     }
   };
@@ -92,16 +79,13 @@ export const ArtworkList: React.FC<ArtworkListProps> = ({
 
   const handleSaveEdit = async (editedArtwork: ArtworkData) => {
     try {
-      const response = await fetch(
-        `http://localhost:3001/artworks/${editedArtwork.id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(editedArtwork),
-        }
-      );
+      const response = await fetch(`http://localhost:3001/artworks/${editedArtwork.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(editedArtwork),
+      });
 
       if (response.ok) {
         onMessage("Artwork updated successfully!");
@@ -111,8 +95,7 @@ export const ArtworkList: React.FC<ArtworkListProps> = ({
       }
     } catch (error) {
       onMessage(
-        "Error updating artwork: " +
-          (error instanceof Error ? error.message : "Unknown error")
+        "Error updating artwork: " + (error instanceof Error ? error.message : "Unknown error")
       );
     }
   };
@@ -162,10 +145,7 @@ export const ArtworkList: React.FC<ArtworkListProps> = ({
         {/* Page Selection Dropdown */}
         {totalPages > 1 && (
           <div className="flex items-center gap-2">
-            <label
-              htmlFor="page-select"
-              className="text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="page-select" className="text-sm font-medium text-gray-700">
               Show:
             </label>
             <select
@@ -211,10 +191,7 @@ export const ArtworkList: React.FC<ArtworkListProps> = ({
               />
             </div>
 
-            <h3
-              className="font-semibold text-lg mb-2 truncate"
-              title={artwork.title}
-            >
+            <h3 className="font-semibold text-lg mb-2 truncate" title={artwork.title}>
               {artwork.title}
             </h3>
 
@@ -249,8 +226,8 @@ export const ArtworkList: React.FC<ArtworkListProps> = ({
       {totalPages > 1 && (
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">
-            Showing {startIndex + 1}-{Math.min(endIndex, artworks.length)} of{" "}
-            {artworks.length} artworks (Page {currentPage + 1} of {totalPages})
+            Showing {startIndex + 1}-{Math.min(endIndex, artworks.length)} of {artworks.length}{" "}
+            artworks (Page {currentPage + 1} of {totalPages})
           </p>
         </div>
       )}
@@ -266,9 +243,7 @@ export const ArtworkList: React.FC<ArtworkListProps> = ({
             Previous
           </button>
           <button
-            onClick={() =>
-              setCurrentPage(Math.min(totalPages - 1, currentPage + 1))
-            }
+            onClick={() => setCurrentPage(Math.min(totalPages - 1, currentPage + 1))}
             disabled={currentPage === totalPages - 1}
             className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
           >

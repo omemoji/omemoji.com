@@ -14,30 +14,19 @@ interface Props {
   page: Page<CollectionEntry<"articles">>;
 }
 
-export async function getStaticPaths({
-  paginate,
-}: {
-  paginate: PaginateFunction;
-}) {
-  const allArticles: CollectionEntry<"articles">[] = await getCollection(
-    "articles",
-    ({ data }) => {
-      return import.meta.env.PROD ? data.published : true;
-    }
-  );
+export async function getStaticPaths({ paginate }: { paginate: PaginateFunction }) {
+  const allArticles: CollectionEntry<"articles">[] = await getCollection("articles", ({ data }) => {
+    return import.meta.env.PROD ? data.published : true;
+  });
   const tags: string[] = [
     ...new Set(
-      allArticles.flatMap(
-        (article: CollectionEntry<"articles">) => article.data.tags ?? []
-      )
+      allArticles.flatMap((article: CollectionEntry<"articles">) => article.data.tags ?? [])
     ),
   ];
 
   const paginates = tags.flatMap((tag: string) => {
     const posts = allArticles
-      .filter((article: CollectionEntry<"articles">) =>
-        article.data.tags?.includes(tag)
-      )
+      .filter((article: CollectionEntry<"articles">) => article.data.tags?.includes(tag))
       .sort((a, b) => a.data.date.getTime() - b.data.date.getTime())
       .reverse();
     return paginate(posts, { pageSize: COUNT_PER_PAGE, params: { tag } });
@@ -56,11 +45,7 @@ const params = Astro.params;
   path={page.url.current}
   og={{ enabled: true }}
 >
-  <Top
-    title={"#" + params.tag}
-    category="Articles"
-    description={"Tag: " + params.tag}
-  />
+  <Top title={"#" + params.tag} category="Articles" description={"Tag: " + params.tag} />
   <ArticlesList page={page} />
   <PageBar
     category="articles"

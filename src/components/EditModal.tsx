@@ -8,12 +8,7 @@ interface EditModalProps {
   onSave: (artwork: ArtworkData) => void;
 }
 
-export const EditModal: React.FC<EditModalProps> = ({
-  artwork,
-  isOpen,
-  onClose,
-  onSave,
-}) => {
+export const EditModal: React.FC<EditModalProps> = ({ artwork, isOpen, onClose, onSave }) => {
   const [editData, setEditData] = useState<ArtworkData>(artwork);
   const [tagInput, setTagInput] = useState("");
 
@@ -21,9 +16,7 @@ export const EditModal: React.FC<EditModalProps> = ({
     setEditData(artwork);
   }, [artwork]);
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setEditData((prev) => ({
       ...prev,
@@ -66,9 +59,7 @@ export const EditModal: React.FC<EditModalProps> = ({
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Title *
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Title *</label>
             <input
               type="text"
               name="title"
@@ -106,17 +97,13 @@ export const EditModal: React.FC<EditModalProps> = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Tags *
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Tags *</label>
             <div className="flex gap-2 mb-2">
               <input
                 type="text"
                 value={tagInput}
                 onChange={(e) => setTagInput(e.target.value)}
-                onKeyPress={(e) =>
-                  e.key === "Enter" && (e.preventDefault(), handleAddTag())
-                }
+                onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), handleAddTag())}
                 placeholder="Add a tag"
                 className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />

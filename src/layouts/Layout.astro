@@ -39,11 +39,7 @@ const author = "omemoji";
     <meta name="generator" content={Astro.generator} />
     <meta name="creator" content={author} />
     <meta name="publisher" content={author} />
-    <link
-      rel="alternate"
-      type="application/rss+xml"
-      href={new URL("/rss.xml", site).toString()}
-    />
+    <link rel="alternate" type="application/rss+xml" href={new URL("/rss.xml", site).toString()} />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -92,8 +88,7 @@ const author = "omemoji";
           document.body.appendChild(gtc);
 
           const gt = document.createElement("script");
-          gt.src =
-            "https://www.googletagmanager.com/gtag/js?id=" + MEASUREMENT_ID;
+          gt.src = "https://www.googletagmanager.com/gtag/js?id=" + MEASUREMENT_ID;
           document.body.appendChild(gt);
         }, 2500);
       }

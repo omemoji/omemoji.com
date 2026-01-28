@@ -43,16 +43,16 @@
   }
   html {
     font-size: 16px;
-    font-family: -apple-system, "Helvetica Neue", BlinkMacSystemFont, Arial,
-      "Hiragino Kaku Gothic", Roboto, "Noto Sans CJK JP", "Segoe UI", sans-serif,
-      "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
-      "Noto Color Emoji";
+    font-family:
+      -apple-system, "Helvetica Neue", BlinkMacSystemFont, Arial, "Hiragino Kaku Gothic", Roboto,
+      "Noto Sans CJK JP", "Segoe UI", sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+      "Segoe UI Symbol", "Noto Color Emoji";
   }
   body {
     color: var(--fg);
     background: var(--bg);
     @apply leading-8 max-w-screen-md mx-auto md:border-(--border) md:border-x;
-    
+
     -webkit-text-size-adjust: 100%;
   }
 

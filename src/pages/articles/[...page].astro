@@ -14,11 +14,7 @@ interface Props {
   page: Page<CollectionEntry<"articles">>;
 }
 
-export async function getStaticPaths({
-  paginate,
-}: {
-  paginate: PaginateFunction;
-}) {
+export async function getStaticPaths({ paginate }: { paginate: PaginateFunction }) {
   const posts = (
     await getCollection("articles", ({ data }) => {
       return import.meta.env.PROD ? data.published : true;
@@ -39,11 +35,7 @@ const { page } = Astro.props;
   path={page.url.current}
   og={{ enabled: true }}
 >
-  <Top
-    title="Articles"
-    category="Articles"
-    description="日記や技術的な記事など"
-  />
+  <Top title="Articles" category="Articles" description="日記や技術的な記事など" />
   <ArticlesList page={page} />
   <PageBar
     category="articles"

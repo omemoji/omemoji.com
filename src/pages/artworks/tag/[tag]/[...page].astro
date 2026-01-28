@@ -1,24 +1,16 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import Top from "@/components/Top.astro";
-import {
-  getArtworks,
-  getTaggedArtworks,
-  getTaggedArtworksShown,
-} from "@/lib/artworks";
+import { getArtworks, getTaggedArtworks, getTaggedArtworksShown } from "@/lib/artworks";
 import Gallery from "@/components/Gallery.astro";
 import { ARTWORKS_PER_PAGE } from "@/lib/constant";
 import { pageIdGen } from "@/lib/fs";
 import PageBar from "@/components/PageBar.astro";
 
 export function getStaticPaths() {
-  const tags: string[] = [
-    ...new Set(getArtworks().flatMap((artwork) => artwork.tag ?? [])),
-  ];
+  const tags: string[] = [...new Set(getArtworks().flatMap((artwork) => artwork.tag ?? []))];
   const pages = tags.flatMap((tag) => {
-    return pageIdGen(
-      Math.ceil(getTaggedArtworks(tag).length / ARTWORKS_PER_PAGE)
-    ).map((page) => ({
+    return pageIdGen(Math.ceil(getTaggedArtworks(tag).length / ARTWORKS_PER_PAGE)).map((page) => ({
       tag: tag,
       page: page === 1 ? undefined : page.toString(),
       p: page,
@@ -40,18 +32,12 @@ const params = Astro.params;
   path={"/artworks/tag/" + params.tag + "/" + (params.page ?? "")}
   og={{ enabled: true }}
 >
-  <Top
-    title={"#" + params.tag}
-    category="Artworks"
-    description={"Tag: " + params.tag}
-  />
+  <Top title={"#" + params.tag} category="Artworks" description={"Tag: " + params.tag} />
   <!-- p=1 means the first page -->
   <Gallery artworks={getTaggedArtworksShown(params.tag, p)} />
   <PageBar
     current={p}
-    pages={pageIdGen(
-      Math.ceil(getTaggedArtworks(params.tag).length / ARTWORKS_PER_PAGE)
-    )}
+    pages={pageIdGen(Math.ceil(getTaggedArtworks(params.tag).length / ARTWORKS_PER_PAGE))}
     category={"artworks/tag/" + params.tag}
   />
 </Layout>

@@ -27,9 +27,7 @@ export function isParagraph(node: unknown): node is Paragraph {
 
 // https://github.com/syntax-tree/mdast#text
 export function isText(node: unknown): node is Text {
-  return (
-    isLiteral(node) && node.type === "text" && typeof node.value === "string"
-  );
+  return isLiteral(node) && node.type === "text" && typeof node.value === "string";
 }
 
 export function isLink(node: unknown): node is Link {

@@ -4,12 +4,9 @@ import type { CollectionEntry } from "astro:content";
 
 import ogImage from "@/components/OgImage";
 
-const articles: CollectionEntry<"articles">[] = await getCollection(
-  "articles",
-  ({ data }) => {
-    return import.meta.env.PROD ? data.published : true;
-  }
-);
+const articles: CollectionEntry<"articles">[] = await getCollection("articles", ({ data }) => {
+  return import.meta.env.PROD ? data.published : true;
+});
 
 export const GET: APIRoute = async ({ params }) => {
   let res = new Response("Not found", { status: 404 });

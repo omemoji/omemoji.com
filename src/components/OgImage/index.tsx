@@ -18,8 +18,7 @@ const ogImage = async (text: string) => {
   const svg = await satori(
     <div
       style={{
-        fontFamily:
-          "Noto Sans CJK JP, Noto Sans CJK JP, Noto Color Emoji, sans-serif",
+        fontFamily: "Noto Sans CJK JP, Noto Sans CJK JP, Noto Color Emoji, sans-serif",
         backgroundColor: "#d50000",
         color: "black",
         display: "flex",

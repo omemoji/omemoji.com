@@ -35,6 +35,7 @@ https://github.com/omemoji/omemoji.com
 Next.js は app router を使用しており、ライブラリの兼ね合いからバージョンを 13.4 に留めている[^2]。ホスティングは Cloudflare Pages で行っている他、[GitHub のプロフィール](https://github.com/omemoji/omemoji)の更新時にデプロイが行われるように GitHub Actions を使用している[^3]。
 
 [^2]: 主に next-export-optimize-images のせい
+
 [^3]: [https://raw.githubusercontent.com/omemoji/omemoji/main/README.md](https://raw.githubusercontent.com/omemoji/omemoji/main/README.md) を `next-mdx-remote` で読み込むことで、 GitHub のプロフィールを「創作物紹介」のプロフィールに使い回せるようにしている
 
 ## 機能及び実装
@@ -143,13 +144,7 @@ const compiler = async (source: string) => {
     components: MDXComponent,
     options: {
       mdxOptions: {
-        remarkPlugins: [
-          remarkGfm,
-          remarkGemoji,
-          remarkUnwrapImages,
-          remarkLinkCard,
-          remarkMath,
-        ],
+        remarkPlugins: [remarkGfm, remarkGemoji, remarkUnwrapImages, remarkLinkCard, remarkMath],
         rehypePlugins: [
           [rehypePrettyCode, { theme: "monokai", grid: true }],
           rehypeSlug,
@@ -278,6 +273,7 @@ Cloudflare Pages の無料プランでホスティングしている。以前は
 GitHub Pages と比較すると、設定が楽[^4]だったり商用利用が可能[^5]といったメリットがある。
 
 [^4]: GitHub Pages の場合、自動でデプロイするために GitHub Actions の workflow を書く必要がある
+
 [^5]: 今の所予定はない
 
 https://developers.cloudflare.com/pages/get-started/guide/#connect-your-git-provider-to-pages
