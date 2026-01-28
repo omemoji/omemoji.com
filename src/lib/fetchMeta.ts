@@ -36,7 +36,7 @@ const getImageMeta = async (src: string) => {
 const metadataCache = new Map<string, Metadata>();
 
 const detectTitle = ($: CheerioAPI, url: string) => {
-  let t =
+  const t =
     $('meta[property="og:title"]').attr("content") ??
     $("title").text() ??
     $('meta[name="title"]').attr("content") ??
@@ -45,7 +45,7 @@ const detectTitle = ($: CheerioAPI, url: string) => {
 };
 
 const detectImage = async ($: CheerioAPI, url: string) => {
-  let tmp =
+  const tmp =
     $('meta[property="og:image"]').attr("content") ??
     $('meta[property="og:image:url"]').attr("content") ??
     $('meta[itemprop="image"]').attr("content") ??
@@ -69,7 +69,7 @@ const detectImage = async ($: CheerioAPI, url: string) => {
 };
 
 const detectDescription = ($: CheerioAPI) => {
-  let t =
+  const t =
     $('meta[property="og:description"]').attr("content") ??
     $('meta[name="description"]').attr("content") ??
     "";

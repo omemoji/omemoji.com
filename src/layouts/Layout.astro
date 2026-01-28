@@ -79,19 +79,19 @@ const author = "omemoji";
     <Footer />
     <!-- Google Analytics with setTimeOut -->
     <script async>
-      let MEASUREMENT_ID = "G-XXCZ8KW3CC";
+      const MEASUREMENT_ID = "G-XXCZ8KW3CC";
 
       setgtag();
 
       function setgtag() {
         setTimeout(function () {
-          let gtc = document.createElement("script");
+          const gtc = document.createElement("script");
           gtc.innerHTML =
             'window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config", MEASUREMENT_ID);';
 
           document.body.appendChild(gtc);
 
-          let gt = document.createElement("script");
+          const gt = document.createElement("script");
           gt.src =
             "https://www.googletagmanager.com/gtag/js?id=" + MEASUREMENT_ID;
           document.body.appendChild(gt);
