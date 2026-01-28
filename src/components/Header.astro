@@ -7,7 +7,7 @@ const menus = [
 const { category } = Astro.props;
 ---
 
-<header class="border-b border-b-[var(--border)]">
+<header class="border-b border-b-(--border)">
   <h2 class="border-none font-bold my-auto text-xl p-4">
     <a href="/">創作物紹介</a>
   </h2>
@@ -18,14 +18,14 @@ const { category } = Astro.props;
           <a href={menu.href} class="">
             {menu.category == category ? (
               <>
-                <p class="text-center text-[color:var(--fg)] font-bold text-lg py-3 px-4 leading-normal">
+                <p class="text-center text-(--fg) font-bold text-lg py-3 px-4 leading-normal">
                   {menu.category}
                 </p>
-                <div class="bg-[color:var(--link)] rounded-full h-[4px] mx-auto" />
+                <div class="bg-(--link) rounded-full h-1 mx-auto" />
               </>
             ) : (
               <>
-                <p class="text-center text-[color:var(--menu)] text-lg  py-3 px-4  leading-normal">
+                <p class="text-center text-(--menu) text-lg  py-3 px-4  leading-normal">
                   {menu.category}
                 </p>
               </>

@@ -23,7 +23,7 @@ const image = async (path: string) => {
 
 <div
   id="artworks_id"
-  class="overflow-x-scroll border-t border-t-[var(--border)] flex-nowrap"
+  class="overflow-x-scroll border-t flex-nowrap"
   data-message={artwork_number}
   data-scale={scale}
 >
@@ -37,7 +37,7 @@ const image = async (path: string) => {
                 "m-0 aspect-square object-cover rounded-md bg-white" +
                 "w-full" +
                 (artwork_id === artwork.id
-                  ? " border-2 border-[var(--link)]"
+                  ? " border-2 border-(--link)"
                   : " hover:opacity-40 transition-opacity")
               }
               src={(await image(artwork.src)).src}

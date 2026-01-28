@@ -1,12 +1,5 @@
 ---
-import {
-  siGithub,
-  siInstagram,
-  siX,
-  siPixiv,
-  siZenn,
-  type SimpleIcon,
-} from "simple-icons";
+import { siGithub, siInstagram, siX, siPixiv, siZenn, type SimpleIcon } from "simple-icons";
 
 const SNSlist: { icon: SimpleIcon; href: string }[] = [
   {
@@ -36,12 +29,7 @@ const SNSlist: { icon: SimpleIcon; href: string }[] = [
   {
     SNSlist.map((sns) => (
       <div class="w-6 h-6 ml-3  ">
-        <a
-          href={sns.href}
-          target="_blank"
-          rel="noopener"
-          class="w-6 h-6 fill-[var(--fg)]"
-        >
+        <a href={sns.href} target="_blank" rel="noopener" class="w-6 h-6 fill-(--fg)">
           <Fragment set:html={sns.icon.svg} class="w-6 h-6" />
         </a>
       </div>

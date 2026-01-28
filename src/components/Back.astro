@@ -5,7 +5,7 @@ import ShareButton from "./shareButton.astro";
 const { url, slug, title, tags } = Astro.props;
 ---
 
-<div class="h-16 flex border-t border-[color:var(--border)]">
+<div class="h-16 flex border-t border-(--border)">
   <div class="hover:bg-gray-400/30 transition-colors px-4">
     <a href={url} class="flex h-full">
       <IoArrowBackCircleOutline size={24} className="mr-2 my-auto" />
