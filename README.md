@@ -52,3 +52,4 @@ https://omemoji.com
 ## 備考
 
 - [x] Astro で書き直した
+- [x] HonoX で書き直す可能性あり 
