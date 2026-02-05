@@ -12,6 +12,60 @@ interface Metadata {
 const DEFAULT_OGP_WIDTH = 1200;
 const DEFAULT_OGP_HEIGHT = 630;
 
+// サブドメインかどうかを判定
+const isSubdomain = (url: string): boolean => {
+  try {
+    const hostname = new URL(url).hostname;
+    const parts = hostname.split(".");
+    // 例: blog.example.com -> ["blog", "example", "com"]
+    // www.example.com は通常のドメインとして扱う
+    if (parts.length > 2) {
+      // co.jp, com.au などの国別ドメインを考慮
+      const isCountryTLD =
+        parts.length === 3 &&
+        ["co", "com", "net", "org", "ac", "go", "ne"].includes(parts[1]) &&
+        parts[2].length === 2;
+      if (isCountryTLD) {
+        return false;
+      }
+      // www は除外
+      if (parts[0] === "www") {
+        return false;
+      }
+      return true;
+    }
+    return false;
+  } catch {
+    return false;
+  }
+};
+
+// 親ドメインのURLを取得
+const getParentDomainUrl = (url: string): string | null => {
+  try {
+    const urlObj = new URL(url);
+    const hostname = urlObj.hostname;
+    const parts = hostname.split(".");
+
+    if (parts.length > 2) {
+      // co.jp などを考慮
+      const isCountryTLD =
+        parts.length === 3 &&
+        ["co", "com", "net", "org", "ac", "go", "ne"].includes(parts[1]) &&
+        parts[2].length === 2;
+      if (isCountryTLD) {
+        return null;
+      }
+      // サブドメインを削除して親ドメインを取得
+      const parentHostname = parts.slice(1).join(".");
+      return `${urlObj.protocol}//${parentHostname}`;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+};
+
 const fetchWithTimeout = async (
   url: string,
   options: RequestInit = {},
@@ -124,6 +178,59 @@ const detectTitle = ($: CheerioAPI, url: string) => {
   return t;
 };
 
+// 親ドメインからOGP画像を取得する（フォールバック用）
+const fetchImageFromParentDomain = async (
+  url: string
+): Promise<{ url: string; width: number; height: number }> => {
+  const parentUrl = getParentDomainUrl(url);
+  if (!parentUrl) {
+    return { url: "", width: 0, height: 0 };
+  }
+
+  try {
+    const response = await fetchWithRetry(
+      parentUrl,
+      {
+        headers: {
+          Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        },
+      },
+      1,
+      10000
+    );
+
+    if (!response.ok) {
+      return { url: "", width: 0, height: 0 };
+    }
+
+    const text = await response.text();
+    const $ = load(text);
+
+    // 親ドメインからOGP画像を取得
+    const imgUrl =
+      $('meta[property="og:image"]').attr("content") ??
+      $('meta[property="og:image:url"]').attr("content") ??
+      $('meta[itemprop="image"]').attr("content") ??
+      $('meta[name="twitter:image"]').attr("content") ??
+      $('link[rel="apple-touch-icon"]').attr("href") ??
+      "";
+
+    if (imgUrl === "") {
+      return { url: "", width: 0, height: 0 };
+    }
+
+    // 相対パスを絶対パスに変換
+    let absoluteImgUrl = imgUrl;
+    if (!imgUrl.startsWith("http")) {
+      absoluteImgUrl = `${parentUrl}${imgUrl.startsWith("/") ? "" : "/"}${imgUrl}`;
+    }
+
+    return (await getImageMeta(absoluteImgUrl)).img;
+  } catch {
+    return { url: "", width: 0, height: 0 };
+  }
+};
+
 const detectImage = async ($: CheerioAPI, url: string) => {
   const tmp =
     $('meta[property="og:image"]').attr("content") ??
@@ -141,6 +248,12 @@ const detectImage = async ($: CheerioAPI, url: string) => {
     }
     imgUrl = url.substring(0, url.indexOf("/")) + "//" + imgurl_minus_https + imgUrl;
   }
+
+  // 画像が取得できなかった場合、サブドメインなら親ドメインからフォールバック
+  if (imgUrl === "" && isSubdomain(url)) {
+    return await fetchImageFromParentDomain(url);
+  }
+
   return (await getImageMeta(imgUrl)).img;
 };
 
