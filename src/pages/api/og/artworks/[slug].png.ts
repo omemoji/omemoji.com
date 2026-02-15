@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
-import { getArtworks } from "@/lib/artworks";
 import ogArtworkImage from "@/components/OgArtworkImage";
+import { getArtworks } from "@/lib/artworks";
 
 const artworks = getArtworks();
 

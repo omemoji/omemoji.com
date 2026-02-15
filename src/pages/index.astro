@@ -1,12 +1,10 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import Top from "../components/Top.astro";
-import { render } from "astro:content";
 import type { CollectionEntry } from "astro:content";
-
+import { getCollection, render } from "astro:content";
 import ImageHandler from "@/components/ImageHandler.astro";
 import LinkHandler from "@/components/LinkHandler.astro";
-import { getCollection } from "astro:content";
+import Top from "../components/Top.astro";
+import Layout from "../layouts/Layout.astro";
 
 const about: CollectionEntry<"about">[] = await getCollection("about");
 const { Content } = await render(about[0]);

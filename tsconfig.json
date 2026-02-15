@@ -4,6 +4,7 @@
   "exclude": ["dist"],
   "compilerOptions": {
     "allowJs": true,
+    "types": ["bun"],
     "paths": {
       "@/*": ["./src/*"]
     },

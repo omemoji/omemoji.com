@@ -4,7 +4,7 @@
 import satori from "satori";
 import sharp from "sharp";
 
-const ogArtworkImage = async (text: string, src: string) => {
+const ogArtworkImage = async (src: string) => {
   console.log(src);
   const [ArtworkBuffer] = await Promise.all([Bun.file(`.${src}`).arrayBuffer()]);
   const artworkBase64 = await sharp(Buffer.from(ArtworkBuffer)).toFormat("png").toBuffer();
@@ -22,6 +22,7 @@ const ogArtworkImage = async (text: string, src: string) => {
     >
       <img
         src={`data:image/png;base64,${artworkBase64.toString("base64")}`}
+        alt=""
         style={{
           height: "100%",
           width: "100%",

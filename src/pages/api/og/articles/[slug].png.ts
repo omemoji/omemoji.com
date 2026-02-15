@@ -1,6 +1,6 @@
+import type { CollectionEntry } from "astro:content";
 import { getCollection } from "astro:content";
 import type { APIRoute } from "astro";
-import type { CollectionEntry } from "astro:content";
 
 import ogImage from "@/components/OgImage";
 

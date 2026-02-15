@@ -1,10 +1,10 @@
 ---
-import Layout from "../../layouts/Layout.astro";
-import { getArtworks, type ArtworkData } from "../../lib/artworks";
-import Image from "../../components/Image.astro";
-import Back from "../../components/Back.astro";
-import GalleryRow from "@/components/GalleryRow.astro";
 import type { ImageMetadata } from "astro";
+import GalleryRow from "@/components/GalleryRow.astro";
+import Back from "../../components/Back.astro";
+import Image from "../../components/Image.astro";
+import Layout from "../../layouts/Layout.astro";
+import { type ArtworkData, getArtworks } from "../../lib/artworks";
 
 export async function getStaticPaths() {
   const artworks = getArtworks();
@@ -23,7 +23,7 @@ const images = import.meta.glob<{ default: ImageMetadata }>("/public/images/artw
 const image = await images[artwork.src]();
 function getIndex(artwork_id: string, artworks: ArtworkData[]) {
   for (let i: number = 0; i < artworks.length; i++) {
-    if (artworks[i]["id"] === artwork_id) {
+    if (artworks[i].id === artwork_id) {
       return i;
     }
   }
@@ -46,7 +46,12 @@ const artwork_number = getIndex(artwork.id, getArtworks());
   }}
 >
   <a href={artwork.src.substr(artwork.src.indexOf("/images"))}>
-    <Image alt={artwork.title} src={image.default} category="artwork" priority={true} />
+    <Image
+      alt={artwork.title}
+      src={image.default}
+      category="artwork"
+      priority={true}
+    />
   </a>
 
   <div class="pt-4 pb-8 caption">
@@ -66,7 +71,11 @@ const artwork_number = getIndex(artwork.id, getArtworks());
       </p>
     </div>
   </div>
-  <GalleryRow artworks={getArtworks()} artwork_number={artwork_number} artwork_id={artwork.id} />
+  <GalleryRow
+    artworks={getArtworks()}
+    artwork_number={artwork_number}
+    artwork_id={artwork.id}
+  />
   <Back
     url="/artworks"
     slug={artwork.id}

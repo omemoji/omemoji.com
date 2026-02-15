@@ -1,9 +1,9 @@
 ---
 import { Picture } from "astro:assets";
-import { WIDTH_MAIN } from "../lib/constant";
+import type { ImageMetadata } from "astro";
 import type { ArtworkData } from "../lib/artworks";
 import { getThumbnailSize } from "../lib/artworks";
-import type { ImageMetadata } from "astro";
+import { WIDTH_MAIN } from "../lib/constant";
 
 const { artworks } = Astro.props;
 

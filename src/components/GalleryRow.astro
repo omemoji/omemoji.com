@@ -1,9 +1,9 @@
 ---
-import type { ArtworkData } from "@/lib/artworks";
-import { WIDTH_MAIN as w_md } from "@/lib/constant";
 import { Picture } from "astro:assets";
-import { getThumbnailSize } from "@/lib/artworks.ts";
 import type { ImageMetadata } from "astro";
+import type { ArtworkData } from "@/lib/artworks";
+import { getThumbnailSize } from "@/lib/artworks.ts";
+import { WIDTH_MAIN as w_md } from "@/lib/constant";
 
 type Props = {
   artworks: Array<ArtworkData>;

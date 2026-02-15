@@ -1,14 +1,13 @@
 ---
 import "katex/dist/katex.min.css";
-import { getCollection } from "astro:content";
 import type { CollectionEntry } from "astro:content";
-import Layout from "@/layouts/Layout.astro";
-import TopArticle from "@/components/TopArticle.astro";
+import { getCollection, render } from "astro:content";
+import ArticleToc from "@/components/ArticleToc.astro";
 import Back from "@/components/Back.astro";
-import { render } from "astro:content";
 import ImageHandler from "@/components/ImageHandler.astro";
 import LinkHandler from "@/components/LinkHandler.astro";
-import ArticleToc from "@/components/ArticleToc.astro";
+import TopArticle from "@/components/TopArticle.astro";
+import Layout from "@/layouts/Layout.astro";
 
 interface Props {
   article: CollectionEntry<"articles">;

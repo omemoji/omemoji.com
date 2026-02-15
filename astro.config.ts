@@ -1,19 +1,20 @@
 // @ts-check
-import { defineConfig } from "astro/config";
-import tailwindcss from "@tailwindcss/vite";
+
 import mdx from "@astrojs/mdx";
 import react from "@astrojs/react";
+import sitemap from "@astrojs/sitemap";
+import { pluginCollapsibleSections } from "@expressive-code/plugin-collapsible-sections";
+import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
+import tailwindcss from "@tailwindcss/vite";
+import { defineConfig } from "astro/config";
+import astroExpressiveCode from "astro-expressive-code";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeKatex from "rehype-katex";
 import rehypeSlug from "rehype-slug";
 import rehypeUnwrapImages from "rehype-unwrap-images";
+import remarkRuby from "remark-denden-ruby";
 import remarkGemoji from "remark-gemoji";
 import remarkMath from "remark-math";
-import remarkRuby from "remark-denden-ruby";
-import sitemap from "@astrojs/sitemap";
-import astroExpressiveCode from "astro-expressive-code";
-import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
-import { pluginCollapsibleSections } from "@expressive-code/plugin-collapsible-sections";
 
 import remarkLinkcard from "./src/lib/remark-link-card";
 // https://astro.build/config

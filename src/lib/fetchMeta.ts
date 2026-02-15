@@ -1,5 +1,5 @@
-import { load } from "cheerio";
 import type { CheerioAPI } from "cheerio";
+import { load } from "cheerio";
 import { getPlaiceholder } from "plaiceholder";
 
 interface Metadata {
@@ -111,7 +111,6 @@ const fetchWithRetry = async (
       // AbortError（タイムアウト）やネットワークエラーはリトライ
       if (attempt < maxRetries) {
         await new Promise((resolve) => setTimeout(resolve, 1000 * (attempt + 1)));
-        continue;
       }
     }
   }
@@ -138,7 +137,9 @@ const getImageMeta = async (src: string) => {
 
     if (!response.ok) {
       // 画像取得に失敗しても、URLが存在すればデフォルトサイズで返す
-      return { img: { url: src, width: DEFAULT_OGP_WIDTH, height: DEFAULT_OGP_HEIGHT } };
+      return {
+        img: { url: src, width: DEFAULT_OGP_WIDTH, height: DEFAULT_OGP_HEIGHT },
+      };
     }
 
     const buffer: Buffer = Buffer.from(await response.arrayBuffer());
@@ -163,7 +164,9 @@ const getImageMeta = async (src: string) => {
     };
   } catch {
     // fetchが完全に失敗しても、URLが存在すればデフォルトサイズで返す
-    return { img: { url: src, width: DEFAULT_OGP_WIDTH, height: DEFAULT_OGP_HEIGHT } };
+    return {
+      img: { url: src, width: DEFAULT_OGP_WIDTH, height: DEFAULT_OGP_HEIGHT },
+    };
   }
 };
 
@@ -246,7 +249,7 @@ const detectImage = async ($: CheerioAPI, url: string) => {
     if (imgurl_minus_https.match("/")) {
       imgurl_minus_https = imgurl_minus_https.substring(0, imgurl_minus_https.indexOf("/"));
     }
-    imgUrl = url.substring(0, url.indexOf("/")) + "//" + imgurl_minus_https + imgUrl;
+    imgUrl = `${url.substring(0, url.indexOf("/"))}//${imgurl_minus_https}${imgUrl}`;
   }
 
   // 画像が取得できなかった場合、サブドメインなら親ドメインからフォールバック

@@ -1,13 +1,12 @@
 ---
-import { getCollection } from "astro:content";
 import type { CollectionEntry } from "astro:content";
+import { getCollection } from "astro:content";
 import type { Page, PaginateFunction } from "astro";
-
-import Layout from "@/layouts/Layout.astro";
-import Top from "@/components/Top.astro";
 import ArticlesList from "@/components/ArticlesList.astro";
-import { COUNT_PER_PAGE } from "@/lib/constant";
 import PageBar from "@/components/PageBar.astro";
+import Top from "@/components/Top.astro";
+import Layout from "@/layouts/Layout.astro";
+import { COUNT_PER_PAGE } from "@/lib/constant";
 import { pageIdGen } from "@/lib/fs";
 
 interface Props {

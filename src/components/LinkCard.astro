@@ -11,7 +11,7 @@ const shortenURL = (url: string) => {
   const starts = url.indexOf("/") + 2;
   const leftShortenURL = url.substring(starts);
   const ends = leftShortenURL.indexOf("/");
-  const URL = ends != -1 ? leftShortenURL.substring(0, ends) : leftShortenURL;
+  const URL = ends !== -1 ? leftShortenURL.substring(0, ends) : leftShortenURL;
   return URL;
 };
 
@@ -29,7 +29,9 @@ const { title, description, image } = await fetchMeta(href);
         >
           {title}{" "}
         </div>
-        <div class="text-(--quote) whitespace-nowrap text-sm overflow-hidden m-0 text-ellipsis">
+        <div
+          class="text-(--quote) whitespace-nowrap text-sm overflow-hidden m-0 text-ellipsis"
+        >
           {description}
         </div>
         <div

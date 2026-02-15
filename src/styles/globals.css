@@ -76,7 +76,7 @@
   }
 
   h1 {
-    @apply my-2 px-4 py-2 text-3xl  text-center;
+    @apply my-2 px-4 py-2 text-3xl text-center;
   }
   h2 {
     @apply mt-16 mb-6 py-2;

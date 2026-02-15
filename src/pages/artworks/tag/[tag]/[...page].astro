@@ -1,11 +1,11 @@
 ---
-import Layout from "@/layouts/Layout.astro";
-import Top from "@/components/Top.astro";
-import { getArtworks, getTaggedArtworks, getTaggedArtworksShown } from "@/lib/artworks";
 import Gallery from "@/components/Gallery.astro";
+import PageBar from "@/components/PageBar.astro";
+import Top from "@/components/Top.astro";
+import Layout from "@/layouts/Layout.astro";
+import { getArtworks, getTaggedArtworks, getTaggedArtworksShown } from "@/lib/artworks";
 import { ARTWORKS_PER_PAGE } from "@/lib/constant";
 import { pageIdGen } from "@/lib/fs";
-import PageBar from "@/components/PageBar.astro";
 
 export function getStaticPaths() {
   const tags: string[] = [...new Set(getArtworks().flatMap((artwork) => artwork.tag ?? []))];

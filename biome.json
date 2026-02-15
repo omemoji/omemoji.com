@@ -53,15 +53,7 @@
     }
   },
   "files": {
-    "includes": [
-      "**",
-      "!node_modules",
-      "!out",
-      "!.astro",
-      "!bun.lock",
-      "!public",
-      "!*.min.js"
-    ]
+    "includes": ["**", "!node_modules", "!out", "!.astro", "!bun.lock", "!public", "!*.min.js"]
   },
   "overrides": [
     {

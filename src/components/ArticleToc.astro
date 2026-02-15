@@ -1,5 +1,6 @@
 ---
 import type { MarkdownHeading } from "@astrojs/markdown-remark";
+
 const { headings } = Astro.props;
 const tocHeadings: MarkdownHeading[] = headings.filter(
   (heading: MarkdownHeading) => heading.depth <= 3

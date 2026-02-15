@@ -1,6 +1,7 @@
 // 1. `astro:content`からユーティリティをインポート
-import { z, defineCollection } from "astro:content";
+import { defineCollection, z } from "astro:content";
 import { glob } from "astro/loaders";
+
 // 2. コレクションを定義
 const articlesCollection = defineCollection({
   loader: glob({
