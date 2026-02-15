@@ -9,7 +9,7 @@ export const GET: APIRoute = async ({ params }) => {
   const { slug } = params;
   const artwork = artworks.find((artwork) => `${artwork.id}` === slug);
   if (artwork) {
-    const img = await ogArtworkImage(artwork.title, artwork.src);
+    const img = await ogArtworkImage(artwork.src);
     res = new Response(new Uint8Array(img));
   }
   return res;
