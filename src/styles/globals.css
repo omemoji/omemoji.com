@@ -44,9 +44,10 @@
   html {
     font-size: 16px;
     font-family:
-      -apple-system, "Helvetica Neue", BlinkMacSystemFont, Arial, "Hiragino Kaku Gothic", Roboto,
-      "Noto Sans CJK JP", "Segoe UI", sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-      "Segoe UI Symbol", "Noto Color Emoji";
+      -apple-system, "Helvetica Neue", BlinkMacSystemFont, Arial,
+      "Hiragino Kaku Gothic", Roboto, "Noto Sans CJK JP", "Segoe UI",
+      sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+      "Noto Color Emoji";
   }
   body {
     color: var(--fg);
@@ -79,12 +80,12 @@
     @apply my-2 px-4 py-2 text-3xl text-center;
   }
   h2 {
-    @apply mt-16 mb-6 py-2;
-    font-size: 1.8rem;
+    @apply mt-16 mb-8 py-2;
+    font-size: 1.6rem;
     line-height: 2rem;
   }
   h3 {
-    @apply my-6;
+    @apply my-8;
     font-size: 1.3rem;
     line-height: 1.75rem;
   }
