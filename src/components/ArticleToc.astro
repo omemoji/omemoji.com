@@ -3,125 +3,58 @@ import type { MarkdownHeading } from "@astrojs/markdown-remark";
 
 const { headings } = Astro.props;
 const tocHeadings: MarkdownHeading[] = headings.filter(
-  (heading: MarkdownHeading) => heading.depth <= 3
+  (heading: MarkdownHeading) => heading.depth <= 3,
 );
 ---
 
-<nav class="table-of-contents collapsed">
-  <button class="toc-toggle" type="button">
-    <h2>目次</h2>
-    <span class="toggle-icon">▼</span>
+<nav
+  class="group px-6 py-2 mx-4 my-12 md:mx-12 rounded-md bg-(--code-bg) border border-(--border) collapsed"
+>
+  <button
+    class="w-full flex justify-between items-center bg-transparent border-none cursor-pointer p-0 text-left"
+    type="button"
+  >
+    <h2 class="m-0 text-lg text-(--fg)">目次</h2>
+    <span
+      class="text-sm text-(--menu) transition-transform duration-200 ease-in-out group-[.collapsed]:-rotate-90"
+      >▼</span
+    >
   </button>
-  <ul class="toc-content">
+  <ul
+    class="list-none m-0 p-0 overflow-hidden transition-[max-height] duration-300 ease-in-out max-h-250 mt-2 group-[.collapsed]:max-h-0 group-[.collapsed]:mt-0!"
+  >
     {
       tocHeadings.map((heading) => (
-        <li class={`toc-level-${heading.depth}`}>
-          <a href={`#${heading.slug}`}>{heading.text}</a>
+        <li
+          class:list={[
+            "my-1 list-none",
+            {
+              "pl-0": heading.depth === 1,
+              "pl-8": heading.depth === 2,
+              "pl-16": heading.depth === 3,
+            },
+          ]}
+        >
+          <a
+            class="text-(--menu) no-underline block hover:text-(--fg) hover:underline"
+            href={`#${heading.slug}`}
+          >
+            {heading.text}
+          </a>
         </li>
       ))
     }
   </ul>
 </nav>
 
-<style>
-  .table-of-contents {
-    padding: 0.5rem 1.5rem;
-    margin: 3rem 1rem;
-    border-radius: 0.375rem;
-    background-color: var(--code-bg);
-    border: 1px solid var(--border);
-  }
-
-  @media (min-width: 700px) {
-    .table-of-contents {
-      margin: 3rem;
-    }
-  }
-
-  .toc-toggle {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    text-align: left;
-  }
-
-  .toc-toggle h2 {
-    margin: 0;
-    font-size: 1.125rem;
-    color: var(--fg);
-  }
-
-  .toggle-icon {
-    font-size: 0.875rem;
-    color: var(--menu);
-    transition: transform 0.2s ease;
-  }
-
-  .table-of-contents.collapsed .toggle-icon {
-    transform: rotate(-90deg);
-  }
-
-  .toc-content {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease;
-    max-height: 1000px;
-  }
-
-  .table-of-contents.collapsed .toc-content {
-    max-height: 0;
-    padding-top: 0;
-    margin-top: 0;
-  }
-
-  .toc-content:not(.table-of-contents.collapsed .toc-content) {
-    margin-top: 0.5rem;
-  }
-
-  .table-of-contents li {
-    margin: 0.25rem 0;
-    list-style: none;
-  }
-
-  .toc-level-1 {
-    padding-left: 0;
-  }
-
-  .toc-level-2 {
-    padding-left: 2rem;
-  }
-
-  .toc-level-3 {
-    padding-left: 4rem;
-  }
-
-  .table-of-contents a {
-    color: var(--menu);
-    text-decoration: none;
-    display: block;
-  }
-
-  .table-of-contents a:hover {
-    color: var(--fg);
-    text-decoration: underline;
-  }
-</style>
-
 <script>
   document.addEventListener("DOMContentLoaded", () => {
-    const tocToggle = document.querySelector(".toc-toggle");
-    const tableOfContents = document.querySelector(".table-of-contents");
+    const nav = document.querySelector("nav.group");
+    const tocToggle = nav?.querySelector("button");
 
-    if (tocToggle && tableOfContents) {
+    if (tocToggle && nav) {
       tocToggle.addEventListener("click", () => {
-        tableOfContents.classList.toggle("collapsed");
+        nav.classList.toggle("collapsed");
       });
     }
   });
