@@ -1,5 +1,5 @@
 ---
-import { Image } from "astro:assets";
+import { getImage } from "astro:assets";
 import fetchMeta from "@/lib/fetchMeta";
 
 interface Props {
@@ -16,6 +16,25 @@ const shortenURL = (url: string) => {
 };
 
 const { title, description, image } = await fetchMeta(href);
+
+// Astroで画像最適化を試み、失敗時（429, リダイレクト等）は元URLにフォールバック
+let optimizedImage: {
+  src: string;
+  attributes: Record<string, string | number | undefined>;
+} | null = null;
+if (image.url !== "") {
+  try {
+    const result = await getImage({
+      src: image.url,
+      width: Math.round((image.width * 120) / image.height),
+      height: 120,
+      quality: 30,
+    });
+    optimizedImage = result;
+  } catch (error) {
+    optimizedImage = null;
+  }
+}
 ---
 
 <div class="my-6">
@@ -42,17 +61,25 @@ const { title, description, image } = await fetchMeta(href);
       </div>
 
       {
-        image.url !== "" && (
-          <Image
-            src={image.url}
-            width={(image.width * 120) / image.height}
-            height={120}
-            quality={30}
+        image.url !== "" && optimizedImage ? (
+          <img
+            src={optimizedImage.src}
+            width={optimizedImage.attributes.width}
+            height={optimizedImage.attributes.height}
             alt=""
             loading="lazy"
             class="h-25 max-w-30 xs:max-w-60 w-auto m-0 rounded-r-lg object-cover"
           />
-        )
+        ) : image.url !== "" ? (
+          <img
+            src={image.url}
+            width={(image.width * 120) / image.height}
+            height={120}
+            alt=""
+            loading="lazy"
+            class="h-25 max-w-30 xs:max-w-60 w-auto m-0 rounded-r-lg object-cover"
+          />
+        ) : null
       }
     </div>
   </a>
