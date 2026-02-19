@@ -142,6 +142,9 @@ const getImageMeta = async (src: string) => {
       };
     }
 
+    // リダイレクト後の最終URLを使用（Astroの<Image>はリダイレクトを追従しないため）
+    const resolvedUrl = response.url || src;
+
     const buffer: Buffer = Buffer.from(await response.arrayBuffer());
     const bufferExists = buffer.length > 0;
 
@@ -160,7 +163,7 @@ const getImageMeta = async (src: string) => {
     const finalHeight = height > 0 ? height : DEFAULT_OGP_HEIGHT;
 
     return {
-      img: { url: src, width: finalWidth, height: finalHeight },
+      img: { url: resolvedUrl, width: finalWidth, height: finalHeight },
     };
   } catch {
     // fetchが完全に失敗しても、URLが存在すればデフォルトサイズで返す
