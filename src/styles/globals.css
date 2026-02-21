@@ -144,9 +144,10 @@
   main article p {
     @apply my-6;
   }
+
   /* Table */
   table {
-    @apply my-6;
+    @apply my-6 border-collapse w-full border;
   }
   table,
   thead,
@@ -154,8 +155,10 @@
   tbody,
   tr,
   td {
-    @apply p-1 px-2;
-    border: solid 1px var(--border);
+    @apply p-1 px-2 border border-(--border);
+  }
+  thead {
+    @apply bg-(--bg-thead);
   }
 
   /* List */
@@ -254,6 +257,7 @@
     --fg: #000000;
     --bg: #ffffff;
     --bg-artwork: #dddddd;
+    --bg-thead: #dddddd;
     --border: #aaaaaa;
     --link: #d50000;
     --quote: #666666;
@@ -271,6 +275,7 @@
     --fg: #ffffff;
     --bg: #000000;
     --bg-artwork: #222222;
+    --bg-thead: #222222;
     --border: #aaaaaa;
     --link: #88c0dd;
     --quote: #9c9c9c;
