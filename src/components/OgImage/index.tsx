@@ -1,6 +1,7 @@
 /** @jsxImportSource react */
 /** @jsxRuntime automatic */
 
+import { readFile } from "node:fs/promises";
 import { loadDefaultJapaneseParser } from "budoux";
 import satori from "satori";
 import sharp from "sharp";
@@ -8,8 +9,8 @@ import sharp from "sharp";
 const parser = loadDefaultJapaneseParser();
 
 const [notoFontData, iconBuffer] = await Promise.all([
-  Bun.file("./src/assets/NotoSansCJKjp-Bold.woff").arrayBuffer(),
-  Bun.file("./src/assets/omemoji.png").arrayBuffer(),
+  readFile("./src/assets/NotoSansCJKjp-Bold.woff"),
+  readFile("./src/assets/omemoji.png"),
 ]);
 
 const icon = Buffer.from(iconBuffer).toString("base64");
@@ -19,7 +20,8 @@ const ogImage = async (text: string) => {
   const svg = await satori(
     <div
       style={{
-        fontFamily: "Noto Sans CJK JP, Noto Sans CJK JP, Noto Color Emoji, sans-serif",
+        fontFamily:
+          "Noto Sans CJK JP, Noto Sans CJK JP, Noto Color Emoji, sans-serif",
         backgroundColor: "#d50000",
         color: "black",
         display: "flex",
@@ -120,7 +122,7 @@ const ogImage = async (text: string) => {
           style: "normal",
         },
       ],
-    }
+    },
   );
   const imgBuffer = sharp(Buffer.from(svg))
     .png({
