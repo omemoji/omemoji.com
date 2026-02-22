@@ -8,15 +8,12 @@ import sharp from "sharp";
 const ogArtworkImage = async (src: string) => {
   console.log(src);
   const [ArtworkBuffer] = await Promise.all([readFile(`.${src}`)]);
-  const artworkBase64 = await sharp(Buffer.from(ArtworkBuffer))
-    .toFormat("png")
-    .toBuffer();
+  const artworkBase64 = await sharp(Buffer.from(ArtworkBuffer)).toFormat("png").toBuffer();
 
   const svg = await satori(
     <div
       style={{
-        fontFamily:
-          "Noto Sans CJK JP, Noto Sans CJK JP, Noto Color Emoji, sans-serif",
+        fontFamily: "Noto Sans CJK JP, Noto Sans CJK JP, Noto Color Emoji, sans-serif",
         backgroundColor: "#d50000",
         display: "flex",
         color: "black",
@@ -40,7 +37,7 @@ const ogArtworkImage = async (src: string) => {
       width: 1200,
       height: 630,
       fonts: [],
-    },
+    }
   );
   const imgBuffer = sharp(Buffer.from(svg))
     .png({
