@@ -19,7 +19,7 @@
     "@astrojs/mdx": "^4.3.13",
     "@astrojs/react": "^4.4.2",
     "@astrojs/sitemap": "^3.7.0",
-    "@expressive-code/plugin-collapsible-sections": "^0.41.6",
+    "@expressive-code/plugin-collapsible-sections": "^0.41.7",
     "@expressive-code/plugin-line-numbers": "^0.41.6",
     "@tailwindcss/vite": "^4.2.0",
     "astro": "^5.17.3",
