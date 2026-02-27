@@ -31,7 +31,7 @@
     "react-icons": "^5.5.0",
     "satori": "^0.19.2",
     "simple-icons": "^16.9.0",
-    "tailwindcss": "^4.2.0"
+    "tailwindcss": "^4.2.1"
   },
   "devDependencies": {
     "@astrojs/ts-plugin": "^1.10.6",
