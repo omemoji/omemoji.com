@@ -33,7 +33,7 @@
         "@types/react": "^19.2.14",
         "@types/react-dom": "^19.2.3",
         "cheerio": "^1.2.0",
-        "katex": "^0.16.28",
+        "katex": "^0.16.33",
         "plaiceholder": "^3.0.0",
         "rehype-autolink-headings": "^7.1.0",
         "rehype-katex": "^7.0.1",
@@ -726,7 +726,7 @@
 
     "json5": ["json5@2.2.3", "", { "bin": { "json5": "lib/cli.js" } }, "sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg=="],
 
-    "katex": ["katex@0.16.29", "", { "dependencies": { "commander": "^8.3.0" }, "bin": { "katex": "cli.js" } }, "sha512-ef+wYUDehNgScWoA0ZhEngsNqUv9uIj4ftd/PapQmT+E85lXI6Wx6BvJO48v80Vhj3t/IjEoZWw9/ZPe8kHwHg=="],
+    "katex": ["katex@0.16.33", "", { "dependencies": { "commander": "^8.3.0" }, "bin": { "katex": "cli.js" } }, "sha512-q3N5u+1sY9Bu7T4nlXoiRBXWfwSefNGoKeOwekV+gw0cAXQlz2Ww6BLcmBxVDeXBMUDQv6fK5bcNaJLxob3ZQA=="],
 
     "kleur": ["kleur@3.0.3", "", {}, "sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w=="],
 
