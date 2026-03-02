@@ -43,6 +43,9 @@ jobs:
       - name: Lint & Format check
         run: bun run check:ci
 
+      - name: Generate Astro types
+        run: bunx astro sync
+
       - name: Type check
         run: bun run typecheck
 
