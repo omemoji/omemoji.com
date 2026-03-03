@@ -1,6 +1,16 @@
+import { createHash } from "node:crypto";
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import type { CheerioAPI } from "cheerio";
 import { load } from "cheerio";
-import { getPlaiceholder } from "plaiceholder";
+import sharp from "sharp";
+
+const OGP_LINK_DIR = join(process.cwd(), "public", "images", "ogp_link");
+
+const getThumbFilename = (url: string): string => {
+  const hash = createHash("sha256").update(url).digest("hex").slice(0, 16);
+  return `${hash}.webp`;
+};
 
 interface Metadata {
   url: string;
@@ -142,28 +152,51 @@ const getImageMeta = async (src: string) => {
       };
     }
 
-    // リダイレクト後の最終URLを使用（Astroの<Image>はリダイレクトを追従しないため）
-    const resolvedUrl = response.url || src;
-
     const buffer: Buffer = Buffer.from(await response.arrayBuffer());
     const bufferExists = buffer.length > 0;
 
-    const {
-      metadata: { width, height },
-    } = bufferExists
-      ? await getPlaiceholder(buffer).catch(() => ({
-          metadata: { width: 0, height: 0 },
-        }))
-      : {
-          metadata: { width: 0, height: 0 },
-        };
+    let width = 0;
+    let height = 0;
+    let imgUrl = src;
+
+    if (bufferExists) {
+      try {
+        const metadata = await sharp(buffer).metadata();
+        width = metadata.width ?? 0;
+        height = metadata.height ?? 0;
+
+        // サムネイル生成（120px高、quality 30のwebp）
+        const filename = getThumbFilename(src);
+        const filepath = join(OGP_LINK_DIR, filename);
+
+        // 既にファイルが存在する場合はスキップ
+        if (!existsSync(filepath)) {
+          const finalW = width > 0 ? width : DEFAULT_OGP_WIDTH;
+          const finalH = height > 0 ? height : DEFAULT_OGP_HEIGHT;
+          const thumbHeight = 120;
+          const thumbWidth = Math.round((finalW * thumbHeight) / finalH);
+          const thumbBuffer = await sharp(buffer)
+            .resize(thumbWidth, thumbHeight)
+            .webp({ quality: 30 })
+            .toBuffer();
+
+          if (!existsSync(OGP_LINK_DIR)) {
+            mkdirSync(OGP_LINK_DIR, { recursive: true });
+          }
+          writeFileSync(filepath, thumbBuffer);
+        }
+        imgUrl = `/images/ogp_link/${filename}`;
+      } catch {
+        // sharp処理失敗時は元のURLをそのまま使用
+      }
+    }
 
     // width/heightが取得できなかった場合はデフォルト値を使用
     const finalWidth = width > 0 ? width : DEFAULT_OGP_WIDTH;
     const finalHeight = height > 0 ? height : DEFAULT_OGP_HEIGHT;
 
     return {
-      img: { url: resolvedUrl, width: finalWidth, height: finalHeight },
+      img: { url: imgUrl, width: finalWidth, height: finalHeight },
     };
   } catch {
     // fetchが完全に失敗しても、URLが存在すればデフォルトサイズで返す

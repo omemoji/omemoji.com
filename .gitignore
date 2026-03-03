@@ -2,6 +2,9 @@
 dist/
 out/
 
+# generated OGP link thumbnails
+public/images/ogp_link/
+
 # generated types
 .astro/
 
