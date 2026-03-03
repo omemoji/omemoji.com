@@ -5,7 +5,12 @@ import type { CheerioAPI } from "cheerio";
 import { load } from "cheerio";
 import sharp from "sharp";
 
-const OGP_LINK_DIR = join(process.cwd(), "public", "images", "ogp_link");
+const OGP_LINK_DIR = join(
+  process.cwd(),
+  import.meta.env.PROD ? "out" : "public",
+  "images",
+  "ogp_link"
+);
 
 const getThumbFilename = (url: string): string => {
   const hash = createHash("sha256").update(url).digest("hex").slice(0, 16);
