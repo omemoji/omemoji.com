@@ -81,6 +81,19 @@ const getParentDomainUrl = (url: string): string | null => {
   }
 };
 
+// 環境間で一貫した結果を得るためブラウザ相当のヘッダーを使用
+const BROWSER_HEADERS: HeadersInit = {
+  "User-Agent":
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+  "Accept-Language": "ja,en-US;q=0.9,en;q=0.8",
+};
+
+// SPA等でOGPが取得できない場合のフォールバック用bot UA
+const BOT_HEADERS: HeadersInit = {
+  "User-Agent": "Discordbot/2.0",
+  "Accept-Language": "ja,en-US;q=0.9,en;q=0.8",
+};
+
 const fetchWithTimeout = async (
   url: string,
   options: RequestInit = {},
@@ -92,6 +105,7 @@ const fetchWithTimeout = async (
   try {
     const response = await fetch(url, {
       ...options,
+      headers: { ...BROWSER_HEADERS, ...options.headers },
       signal: controller.signal,
     });
     return response;
@@ -309,6 +323,15 @@ const detectDescription = ($: CheerioAPI) => {
   return t;
 };
 
+// OGPが存在するか判定
+const hasOgpMeta = ($: CheerioAPI): boolean => {
+  return (
+    $('meta[property="og:title"]').length > 0 ||
+    $('meta[property="og:image"]').length > 0 ||
+    $('meta[property="og:description"]').length > 0
+  );
+};
+
 export default async function fetchMeta(url: string) {
   const cachedMetadata: Metadata | undefined = metadataCache.get(url);
   if (cachedMetadata) {
@@ -322,33 +345,61 @@ export default async function fetchMeta(url: string) {
     image: { url: "", width: 0, height: 0 },
   };
 
-  try {
-    const response = await fetchWithRetry(
-      url,
-      {
-        headers: {
-          Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+  let fallbackMeta: Metadata | null = null;
+
+  // ブラウザUAとbot UAの順で試行（SPAサイトはbot UAでのみOGPを返す場合がある）
+  for (const headers of [BROWSER_HEADERS, BOT_HEADERS]) {
+    try {
+      const response = await fetchWithRetry(
+        url,
+        {
+          headers: {
+            ...headers,
+            Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+          },
         },
-      },
-      2,
-      15000
-    );
+        2,
+        15000
+      );
 
-    if (!response.ok) {
-      return metaDataEmpty;
+      if (!response.ok) {
+        continue;
+      }
+
+      const text = await response.text();
+      const $ = load(text);
+
+      // OGPが見つかればそのまま使用
+      if (hasOgpMeta($)) {
+        const meta = {
+          url: url,
+          title: detectTitle($, url),
+          description: detectDescription($),
+          image: await detectImage($, url),
+        };
+        metadataCache.set(url, meta);
+        return meta;
+      }
+
+      // OGPが無くても<title>があればフォールバック候補として保持
+      if (!fallbackMeta && $("title").text().trim() !== "") {
+        fallbackMeta = {
+          url: url,
+          title: detectTitle($, url),
+          description: detectDescription($),
+          image: await detectImage($, url),
+        };
+      }
+    } catch {
+      // エラーが発生しても次のUAでリトライ
     }
-
-    const text = await response.text();
-    const $ = load(text);
-    const meta = {
-      url: url,
-      title: detectTitle($, url),
-      description: detectDescription($),
-      image: await detectImage($, url),
-    };
-    metadataCache.set(url, meta);
-    return meta;
-  } catch {
-    return metaDataEmpty;
   }
+
+  // OGPが取れなかった場合、<title>ベースのフォールバックがあればそれを使用
+  if (fallbackMeta) {
+    metadataCache.set(url, fallbackMeta);
+    return fallbackMeta;
+  }
+
+  return metaDataEmpty;
 }
