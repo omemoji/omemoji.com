@@ -44,7 +44,7 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "cheerio": "^1.2.0",
-    "katex": "^0.16.33",
+    "katex": "^0.16.37",
     "plaiceholder": "^3.0.0",
     "rehype-autolink-headings": "^7.1.0",
     "rehype-katex": "^7.0.1",
