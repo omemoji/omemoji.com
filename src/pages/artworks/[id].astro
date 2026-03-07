@@ -19,7 +19,9 @@ interface Props {
 }
 
 const artwork = Astro.props.artwork;
-const images = import.meta.glob<{ default: ImageMetadata }>("/public/images/artworks/*");
+const images = import.meta.glob<{ default: ImageMetadata }>(
+  "/public/images/artworks/*",
+);
 const image = await images[artwork.src]();
 function getIndex(artwork_id: string, artworks: ArtworkData[]) {
   for (let i: number = 0; i < artworks.length; i++) {
@@ -57,7 +59,7 @@ const artwork_number = getIndex(artwork.id, getArtworks());
   <div class="pt-4 pb-8 caption">
     <div class="">
       <h1 class="xs:text-4xl">{artwork.title}</h1>
-      <div class="flex justify-center mb-4">
+      <div class="flex flex-wrap justify-center mb-4">
         {
           artwork.tag.map((tag: string) => (
             <a href={encodeURI("/artworks/tag/" + tag)} class="tag text-xl">
