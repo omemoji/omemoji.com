@@ -19,9 +19,7 @@ interface Props {
 }
 
 const artwork = Astro.props.artwork;
-const images = import.meta.glob<{ default: ImageMetadata }>(
-  "/public/images/artworks/*",
-);
+const images = import.meta.glob<{ default: ImageMetadata }>("/public/images/artworks/*");
 const image = await images[artwork.src]();
 function getIndex(artwork_id: string, artworks: ArtworkData[]) {
   for (let i: number = 0; i < artworks.length; i++) {
