@@ -12,64 +12,19 @@ concurrency:
 
 jobs:
   build:
-    name: Lint & Format, Typecheck & Build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-
-      - uses: actions/setup-node@v4 # Astro CLI requires newer Node.js versions
-        with:
-          node-version: lts/*
-
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-
-      - name: Cache bun dependencies
-        uses: actions/cache@v4
-        with:
-          path: ~/.bun/install/cache
-          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
-          restore-keys: |
-            bun-${{ runner.os }}-
-
-      - name: Cache Astro assets
-        uses: actions/cache@v4
-        with:
-          path: node_modules/.astro
-          key: astro-${{ runner.os }}-${{ hashFiles('src/**', 'public/images/**', 'astro.config.ts') }}
-          restore-keys: |
-            astro-${{ runner.os }}-
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
-
-      - name: Lint & Format check
-        run: bun run check:ci
-
-      - name: Generate Astro types
-        run: bunx astro sync
-
-      - name: Type check
-        run: bun run typecheck
-
-      - name: Build
-        run: bun run build
-
-      - name: Upload build artifact
-        if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.actor == 'dependabot[bot]'
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-output
-          path: ./out
-          retention-days: 1
+    uses: ./.github/workflows/ci.yml
+    with:
+      # Upload artifact if it's a push to main or a Dependabot PR that's not a patch update (since patch updates are auto-merged and don't need a deploy preview)
+      upload-artifact: >-
+        ${{
+          (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+          (github.actor == 'dependabot[bot]' && !startsWith(github.head_ref, 'dependabot/bun/patch'))
+        }}
 
   deploy:
     name: Deploy to Cloudflare Pages
     needs: build
-    if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.actor == 'dependabot[bot]'
+    if: needs.build.outputs.should-deploy == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
