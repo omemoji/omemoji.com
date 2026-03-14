@@ -19,6 +19,10 @@ jobs:
         with:
           fetch-depth: 1
 
+      - uses: actions/setup-node@v4 # Astro CLI requires newer Node.js versions
+        with:
+          node-version: lts/*
+
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
