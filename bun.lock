@@ -19,7 +19,7 @@
         "react-dom": "^19.2.4",
         "react-icons": "^5.6.0",
         "satori": "^0.26.0",
-        "simple-icons": "^16.13.0",
+        "simple-icons": "^16.14.0",
         "tailwindcss": "^4.2.2",
       },
       "devDependencies": {
@@ -1078,7 +1078,7 @@
 
     "shiki": ["shiki@4.0.2", "", { "dependencies": { "@shikijs/core": "4.0.2", "@shikijs/engine-javascript": "4.0.2", "@shikijs/engine-oniguruma": "4.0.2", "@shikijs/langs": "4.0.2", "@shikijs/themes": "4.0.2", "@shikijs/types": "4.0.2", "@shikijs/vscode-textmate": "^10.0.2", "@types/hast": "^3.0.4" } }, "sha512-eAVKTMedR5ckPo4xne/PjYQYrU3qx78gtJZ+sHlXEg5IHhhoQhMfZVzetTYuaJS0L2Ef3AcCRzCHV8T0WI6nIQ=="],
 
-    "simple-icons": ["simple-icons@16.13.0", "", {}, "sha512-N4AMZvFERU5YLEtUudtUesiM2H4O5xQ9qfS3K0oOV5II5KVtxOUAlmZ7KqBgiTSGBgCVkuLD/Z9dJKBtnI3kKQ=="],
+    "simple-icons": ["simple-icons@16.14.0", "", {}, "sha512-2Nvs3jJpCfMWQerD4zdv91g/MpnWn81a7uhyAC0reuhrjmS2MtSmwIKwewOJR6Xe97ZmfltDntCDqKJIBawQOw=="],
 
     "sisteransi": ["sisteransi@1.0.5", "", {}, "sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg=="],
 
