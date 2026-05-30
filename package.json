@@ -16,7 +16,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@astrojs/mdx": "5.0.6",
+    "@astrojs/mdx": "6.0.1",
     "@astrojs/react": "5.0.6",
     "@astrojs/sitemap": "3.7.3",
     "@expressive-code/plugin-collapsible-sections": "0.42.0",
