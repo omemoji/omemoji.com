@@ -158,7 +158,7 @@ ln -sv /usr/share/zoneinfo/<Timezone> /etc/localtime
 
 ```sh
 xbps-install -S grub-arm64-efi
-grub-install --target-arm64-efi --efi-directory=/boot/efi --bootloader-id="Void" --removable
+grub-install --target=arm64-efi --efi-directory=/boot/efi --bootloader-id="Void" --removable
 ```
 
 #### 最終確認
