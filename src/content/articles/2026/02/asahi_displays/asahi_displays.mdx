@@ -44,132 +44,54 @@ https://github.com/AsahiLinux/linux/tree/fairydust
 
 ## ハック済みLinuxカーネルをインストールする
 
+2026-07-09追記: [カスタムパッケージを配布するxbpsリポジトリ](https://github.com/omemoji/void-asahi-fairydust)を作成したので、全面的に修正した。
+
 https://elsainmac.tistory.com/1017
 
 実は、Fedora Asahi Remixでは既に成功例が存在している（詳細は上記を参照）。
-これを参考に、Void Linuxで`fairydust`ブランチのLinuxカーネルをビルドしてインストールする方法を紹介する。なお、Fedora Asahi Remixを使っている人は上記記事を直接見ることをおすすめする。
+これを参考に、Void Linuxで`fairydust`ブランチのLinuxカーネルをインストールする方法を2つ紹介する。なお、Fedora Asahi Remixを使っている人は上記記事を直接見ることをおすすめする。
 
-### void-packagesの導入
+### 1. カスタムxbpsリポジトリを導入する
 
-まず、[void-packages](https://github.com/void-linux/void-packages)をGitHubからcloneする。void-packagesは、xbps[^xbps]形式のバイナリパッケージをビルドするために必要な様々なスクリプト、およびツール類をまとめたビルドシステムである。パッケージをビルドするためのライブラリを作業ディレクトリ内に隔離した状態でインストール出来るため、システム全体を汚さずに済む。
-本記事では、これを用いてAsahi Linuxのカーネルをビルドする。
+https://github.com/omemoji/void-asahi-fairydust
 
-[^xbps]: Void Linuxのパッケージマネージャー
+`linux-asahi-fairydust`パッケージをインストール出来るカスタムxbpsリポジトリを作成したので、それを導入するのが最も早いだろう（公式リポジトリではないため、使用は自己責任）。
 
-```sh
-git clone https://github.com/void-linux/void-packages
-cd void-packages
-```
+#### 手順
 
-でリポジトリに入る。
+1. リポジトリを追加する。`/etc/xbps.d/10-void-asahi-fairydust.conf`を追加し、以下のように書く。
 
-また、`xtools`もインストールしておこう。xtoolsは、xbpsで使える便利なコマンドを取り揃えたユーティリティである。
+   ```txt title=/etc/xbps.d/10-void-asahi-fairydust.conf
+   repository=https://raw.githubusercontent.com/omemoji/void-asahi-fairydust/repository-aarch64
+   ```
 
-```sh
-sudo xbps-install -S xtools
-```
+2. リポジトリを更新し、以下のコマンドでインストールする。
 
-### 設定ファイルの編集
+   ```sh
+   sudo xbps-install -S
+   sudo xbps-install linux-asahi-fairydust
+   ```
 
-`srcpkgs/linux-asahi`配下の2ファイルを、以下のように書き換える。
+   インストールが完了したら再起動する。
 
-#### 1. `srcpkgs/linux-asahi/template`
+### 2. 自分でビルドする
 
-```diff title=template
- diff --git a/srcpkgs/linux-asahi/template b/srcpkgs/linux-asahi/template
- index 1e3c5500167..3becf94084d 100644
- --- a/srcpkgs/linux-asahi/template
- +++ b/srcpkgs/linux-asahi/template
-@@ -1,12 +1,15 @@
-# Template file for 'linux-asahi'
-pkgname=linux-asahi
--version=6.18.9+1
-+version=6.18.10+fairydust
-revision=1
-+
-+_commit=61b6e714dd19b7bee1c0e6ec4234199e640c2932
-+
-short_desc="Linux kernel and modules for Apple Silicon"
-maintainer="dkwo <npiazza@disroot.org>, Will Springer <skirmisher@protonmail.com>"
-license="GPL-2.0-only"
-homepage="https://asahilinux.org"
--distfiles="https://github.com/AsahiLinux/linux/archive/asahi-${version/+/-}.tar.gz"
-+distfiles="https://github.com/AsahiLinux/linux/archive/${_commit}.tar.gz>${pkgname}-${version}.tar.gz"
-checksum=36ba3a3e4c5308d4e3c9c91aba98f727fc03ee5cd015cb8ffb522fa4e7265425
-+wrksrc="linux-${_commit}"
+自分でパッケージをビルドする場合、上記カスタムリポジトリに加え[void-packages](https://github.com/void-linux/void-packages)リポジトリもクローンする必要がある。
 
-python_version=3
-```
-
-以上のように変更を加えた後、
+クローン後、以下の手順で`linux-asahi-fairydust`パッケージを自作する。
 
 ```sh
-./xbps-src -i linux-asahi
+cp -r srcpkg/linux-asahi-fairydust <void-packages>/srcpkgs/
+cd <void-packages>
+./xbps-src pkg linux-asahi-fairydust
 ```
 
-でファイルの整合性を検証する。
+### インストール後
 
-#### 2. `srcpkgs/linux-asahi/files/arm64-dotconfig`
-
-```diff title=arm64-dotconfig
- diff --git a/srcpkgs/linux-asahi/files/arm64-dotconfig b/srcpkgs/linux-asahi/files/arm64-dotconfig
- index 74134f02df0..06bdf7e2974 100755
- --- a/srcpkgs/linux-asahi/files/arm64-dotconfig
- +++ b/srcpkgs/linux-asahi/files/arm64-dotconfig
-@@ -2382,7 +2382,7 @@ CONFIG_NVME_VERBOSE_ERRORS=y
-# CONFIG_NVME_FC is not set
-# CONFIG_NVME_TCP is not set
-# CONFIG_NVME_HOST_AUTH is not set
--CONFIG_NVME_APPLE=m
-+CONFIG_NVME_APPLE=y
-# CONFIG_NVME_TARGET is not set
-# end of NVME Support
-
-@@ -5831,7 +5831,7 @@ CONFIG_USB_HIDDEV=y
-#
-# SPI HID support
-#
--CONFIG_SPI_HID_APPLE_OF=m
-+CONFIG_SPI_HID_APPLE_OF=y
-# end of SPI HID support
-
-CONFIG_SPI_HID_APPLE_CORE=m
-@@ -6738,7 +6738,7 @@ CONFIG_APPLE_PMGR_MISC=y
-CONFIG_APPLE_TUNABLE=m
-CONFIG_APPLE_RTKIT=y
-CONFIG_APPLE_RTKIT_HELPER=m
--CONFIG_APPLE_SART=m
-+CONFIG_APPLE_SART=y
-CONFIG_RUST_APPLE_MAILBOX=y
-CONFIG_RUST_APPLE_RTKIT=y
-CONFIG_APPLE_AOP=m
-```
-
-それぞれ、モジュールとしてではなくカーネル内に組み込むようにすると安定性が増すらしい。
-
-### ビルド
-
-```sh
-./xbps-src pkg linux-asahi
-```
-
-を実行し、ビルドする。カーネルモジュールを大量に入れるためか、ビルドが終わるまでに約20分もかかった。
-気長に待とう。
-
-### インストール
-
-```sh
-xi linux-asahi
-```
-
-でビルドしたLinuxカーネルパッケージをインストールする。
-
-### 成功！
-
-その後再起動してfairydustと記されたカーネルを選択すれば、（うまくいけば）外部モニターに画面が映るはずである。
+再起動してfairydustと記されたカーネルを選択すれば、（うまくいけば）外部モニターに画面が映るはずである。
 ただし、USB Type-C ポートは**本体左側にある2つのうち前方**のものを使う必要がある。
 
-カスタムされたLinuxカーネルを自分でビルドするのは一見ハードルが高く見えるが、void-packagesのおかげで意外と簡単に出来る。（世界に何人いるのか知らないが）Void LinuxをMacBookに入れている人、また本記事を読んで入れたくなった人は是非参考にしてほしい。
+カスタムされたLinuxカーネルを導入するのは一見ハードルが高く見えるが、void-packagesのおかげで意外と簡単に出来る。（世界に何人いるのか知らないが）Void LinuxをMacBookに入れている人、また本記事を読んで入れたくなった人は是非参考にしてほしい。
 
 ## おわりに
 
