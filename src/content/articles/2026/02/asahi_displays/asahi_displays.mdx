@@ -83,6 +83,8 @@ https://github.com/omemoji/void-asahi-fairydust
 ```sh
 cp -r srcpkg/linux-asahi-fairydust <void-packages>/srcpkgs/
 cd <void-packages>
+ln -sfn linux-asahi-fairydust srcpkgs/linux-asahi-fairydust-headers
+ln -sfn linux-asahi-fairydust srcpkgs/linux-asahi-fairydust-dbg
 ./xbps-src pkg linux-asahi-fairydust
 ```
 
