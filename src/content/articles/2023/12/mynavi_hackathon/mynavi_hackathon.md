@@ -14,20 +14,20 @@ published: true
   <p lang="ja" dir="ltr">
     <a href="https://twitter.com/hashtag/%E3%83%9E%E3%82%A4%E3%83%8A%E3%83%93%E3%83%8F%E3%83%83%E3%82%AB%E3%82%BD%E3%83%B3?src=hash&amp;ref_src=twsrc%5Etfw">
       #マイナビハッカソン
-    </a>{" "}
+    </a>
     <a href="https://twitter.com/hashtag/%E3%83%8F%E3%83%83%E3%82%AB%E3%82%BD%E3%83%B3?src=hash&amp;ref_src=twsrc%5Etfw">
       #ハッカソン
-    </a>{" "}
+    </a>
     <a href="https://twitter.com/hashtag/%E3%81%BE%E3%81%84%E3%81%AA%E3%81%B3%E3%81%A6%E3%81%A3%E3%81%8F?src=hash&amp;ref_src=twsrc%5Etfw">
       #まいなびてっく
     </a>
     <br />
     左上の人として参加してました。優勝出来てよかったです。
     <br />
-    チームメイト、メンター、そしてマイナビの皆様、8日間ありがとうございました！{" "}
+    チームメイト、メンター、そしてマイナビの皆様、8日間ありがとうございました！
     <a href="https://t.co/ugT0KVgqPv">https://t.co/ugT0KVgqPv</a>
   </p>
-  &mdash; omemoji (@omemoji_art){" "}
+  &mdash; omemoji (@omemoji_art)
   <a href="https://twitter.com/omemoji_art/status/1735580316537151591?ref_src=twsrc%5Etfw">
     December 15, 2023
   </a>
