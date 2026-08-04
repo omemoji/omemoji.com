@@ -22,21 +22,21 @@
 
 Astro が肩代わりしていた機能のうち、Hono には無いものが 4 つある。設計の争点はこの 4 つをどこに置くか。
 
-| 領域 | Astro | Hono SSG での代替 | 難度 |
-| --- | --- | --- | --- |
-| ルーティング | `src/pages/**` + `getStaticPaths` | `app.get()` + `ssgParams()` | 低 |
-| コンテンツ取得 | `astro:content`（glob loader + zod） | **自作ローダ**（`import.meta.glob` + zod） | 中 |
-| MDX | `@astrojs/mdx` | `@mdx-js/rollup`（`jsxImportSource: hono/jsx`） | 中 |
-| remark / rehype | 設定で列挙 | **そのまま流用可**（フレームワーク非依存） | 低 |
-| コードハイライト | `astro-expressive-code` | `rehype-expressive-code` + CSS の手動注入 | 中 |
-| 画像最適化 | `astro:assets` の `<Picture>` | **自作**（`vite-imagetools` or sharp パイプライン） | **高** |
-| 見出し / TOC | `render()` の戻り値 `headings` | 自作 rehype プラグインで収集 | 低 |
-| OGP 画像 | `.png.ts` エンドポイント | Hono ルートで `image/png` を返す | 低 |
-| リンクカード | `lib/fetchMeta.ts` | **ほぼそのまま流用可** | 低 |
-| サイトマップ | `@astrojs/sitemap` | 自作ルートで XML 生成 | 低 |
-| Tailwind | `@tailwindcss/vite` | **そのまま**（Vite プラグイン共通） | – |
-| 出力形式 | `format: "file"` | Hono `toSSG` の既定挙動と一致 | – |
-| デプロイ | `out/` を Cloudflare Pages | **変更なし** | – |
+| 領域             | Astro                                | Hono SSG での代替                                   | 難度   |
+| ---------------- | ------------------------------------ | --------------------------------------------------- | ------ |
+| ルーティング     | `src/pages/**` + `getStaticPaths`    | `app.get()` + `ssgParams()`                         | 低     |
+| コンテンツ取得   | `astro:content`（glob loader + zod） | **自作ローダ**（`import.meta.glob` + zod）          | 中     |
+| MDX              | `@astrojs/mdx`                       | `@mdx-js/rollup`（`jsxImportSource: hono/jsx`）     | 中     |
+| remark / rehype  | 設定で列挙                           | **そのまま流用可**（フレームワーク非依存）          | 低     |
+| コードハイライト | `astro-expressive-code`              | `rehype-expressive-code` + CSS の手動注入           | 中     |
+| 画像最適化       | `astro:assets` の `<Picture>`        | **自作**（`vite-imagetools` or sharp パイプライン） | **高** |
+| 見出し / TOC     | `render()` の戻り値 `headings`       | 自作 rehype プラグインで収集                        | 低     |
+| OGP 画像         | `.png.ts` エンドポイント             | Hono ルートで `image/png` を返す                    | 低     |
+| リンクカード     | `lib/fetchMeta.ts`                   | **ほぼそのまま流用可**                              | 低     |
+| サイトマップ     | `@astrojs/sitemap`                   | 自作ルートで XML 生成                               | 低     |
+| Tailwind         | `@tailwindcss/vite`                  | **そのまま**（Vite プラグイン共通）                 | –      |
+| 出力形式         | `format: "file"`                     | Hono `toSSG` の既定挙動と一致                       | –      |
+| デプロイ         | `out/` を Cloudflare Pages           | **変更なし**                                        | –      |
 
 ## 2. ディレクトリ構成
 
