@@ -1,70 +1,21 @@
-@import "tailwindcss";
+@layer reset, tokens, base, content, components;
 
-@theme inline {
-  --color-gray-*: initial;
-  --color-blue-*: initial;
-}
-
-@theme {
-  --breakpoint-xs: 480px;
-  --breakpoint-sm: 600px;
-  --breakpoint-md: 700px;
-
-  /* Gray palette */
-  --color-gray-50: oklch(0.985 0 0);
-  --color-gray-100: oklch(0.967 0 0);
-  --color-gray-200: oklch(0.928 0 0);
-  --color-gray-300: oklch(0.872 0 0);
-  --color-gray-400: oklch(0.707 0 0);
-  --color-gray-500: oklch(0.551 0 0);
-  --color-gray-600: oklch(0.446 0 0);
-  --color-gray-700: oklch(0.373 0 0);
-  --color-gray-800: oklch(0.269 0 0);
-  --color-gray-900: oklch(0.205 0 0);
-  --color-gray-950: oklch(0.143 0 0);
-
-  /* Blue palette */
-  --color-blue-50: oklch(0.97 0.014 254.6);
-  --color-blue-100: oklch(0.932 0.032 255.5);
-  --color-blue-200: oklch(0.882 0.059 254.1);
-  --color-blue-300: oklch(0.809 0.105 251.8);
-  --color-blue-400: oklch(0.707 0.165 254.6);
-  --color-blue-500: oklch(0.623 0.214 259.1);
-  --color-blue-600: oklch(0.546 0.245 262.8);
-  --color-blue-700: oklch(0.488 0.243 264.3);
-  --color-blue-800: oklch(0.424 0.199 265.6);
-  --color-blue-900: oklch(0.379 0.146 265.7);
-  --color-blue-950: oklch(0.282 0.091 267.9);
-}
-
-@layer base {
-  * {
-    line-height: 1.7rem;
+@layer reset {
+  *,
+  ::before,
+  ::after,
+  ::backdrop {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    /* 幅 0 の solid。border-width を指定するだけで線が引けるようにするため */
+    border: 0 solid;
   }
+
   html {
-    font-size: 16px;
-    font-family:
-      -apple-system, "Helvetica Neue", BlinkMacSystemFont, Arial,
-      "Hiragino Kaku Gothic", Roboto, "Noto Sans CJK JP", "Segoe UI",
-      sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
-      "Noto Color Emoji";
-  }
-  body {
-    color: var(--fg);
-    background: var(--bg);
-    @apply leading-8 max-w-screen-md mx-auto md:border-(--border) md:border-x;
-
     -webkit-text-size-adjust: 100%;
-  }
-
-  /* Link */
-  article a {
-    @apply hover:underline break-all;
-    color: var(--link);
-  }
-
-  main article {
-    @apply m-4 my-8 md:m-12;
+    tab-size: 4;
+    -webkit-tap-highlight-color: transparent;
   }
 
   h1,
@@ -73,215 +24,402 @@
   h4,
   h5,
   h6 {
-    @apply font-bold;
+    font-size: inherit;
+    font-weight: inherit;
   }
 
-  h1 {
-    @apply my-2 px-4 py-2 text-3xl text-center;
+  a {
+    color: inherit;
+    text-decoration: inherit;
   }
-  h2 {
-    @apply mt-16 mb-8 py-2;
-    font-size: 1.6rem;
-    line-height: 2rem;
+
+  b,
+  strong {
+    font-weight: bolder;
   }
-  h3 {
-    @apply my-8;
-    font-size: 1.3rem;
-    line-height: 1.75rem;
+
+  code,
+  kbd,
+  samp,
+  pre {
+    font-family:
+      ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+      "Courier New", monospace;
+    font-size: 1em;
   }
-  h4 {
-    @apply my-6 text-lg;
+
+  small {
+    font-size: 80%;
   }
-  h5 {
-    @apply text-base;
-  }
-  h6 {
-    @apply text-base;
-  }
-  article h2 {
+
+  /* 脚注参照が sup を使う */
+  sub,
+  sup {
     position: relative;
-    @apply py-3;
-    border-bottom: 3px solid var(--border);
+    font-size: 75%;
+    line-height: 0;
+    vertical-align: baseline;
   }
-  article h2:before {
-    position: absolute;
-    content: "";
-    width: 25%;
-    left: 0;
-    bottom: -3px;
-    border-bottom: 3px solid var(--link);
+  sub {
+    bottom: -0.25em;
   }
-  article h2:first-of-type {
-    @apply mt-0 md:mt-12;
+  sup {
+    top: -0.5em;
   }
-  article h2 a {
-    color: var(--fg);
+
+  hr {
+    height: 0;
+    color: inherit;
+    border-top-width: 1px;
   }
-  article h3 {
-    @apply mt-9 mb-6 py-2;
-    border-bottom: solid 1px var(--border);
+
+  abbr:where([title]) {
+    text-decoration: underline dotted;
   }
-  article h3 a {
-    color: var(--fg);
+
+  table {
+    border-color: inherit;
+    border-collapse: collapse;
+    text-indent: 0;
   }
-  article h4 a {
-    color: var(--fg);
+
+  /* 記事本文のリストだけ content レイヤーでマーカーを復活させる */
+  ol,
+  ul,
+  menu {
+    list-style: none;
   }
-  article h5 a {
-    color: var(--fg);
+
+  img,
+  svg,
+  video,
+  canvas,
+  audio,
+  iframe,
+  embed,
+  object {
+    display: block;
   }
-  article h6 a {
-    color: var(--fg);
+  img,
+  video {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* 目次トグル・共有ボタン用 */
+  button {
+    appearance: button;
+    font: inherit;
+    color: inherit;
+    background-color: transparent;
+    border-radius: 0;
+  }
+
+  summary {
+    display: list-item;
+  }
+
+  /* Preflight は !important を付けているが、display を宣言する規則は
+     いずれも同レイヤー内でこれより詳細度が低いため不要 */
+  [hidden]:where(:not([hidden="until-found"])) {
+    display: none;
   }
 }
 
-@layer utilities {
-  /**/
-  main article figure {
-    @apply my-6;
+@layer tokens {
+  :root {
+    color-scheme: light dark;
+
+    /* 配色 ------------------------------------------------------------- */
+    --fg: light-dark(#000000, #ffffff);
+    --bg: light-dark(#ffffff, #000000);
+    --bg-artwork: light-dark(#dddddd, #222222);
+    --bg-thead: light-dark(#dddddd, #222222);
+    --border: #aaaaaa;
+    --link: light-dark(#d50000, #88c0dd);
+    --quote: light-dark(#666666, #9c9c9c);
+    --linkcard: light-dark(#aaaaaa, #666666);
+    --menu: light-dark(#666666, #9c9c9c);
+    --code-fg: light-dark(#222222, #dddddd);
+    --code-bg: light-dark(#eeeeee, #222222);
+
+    /* グレーランプ（ホバー時の背景などに使う） --------------------------- */
+    --gray-50: oklch(0.985 0 0);
+    --gray-100: oklch(0.967 0 0);
+    --gray-200: oklch(0.928 0 0);
+    --gray-300: oklch(0.872 0 0);
+    --gray-400: oklch(0.707 0 0);
+    --gray-500: oklch(0.551 0 0);
+    --gray-600: oklch(0.446 0 0);
+    --gray-700: oklch(0.373 0 0);
+    --gray-800: oklch(0.269 0 0);
+    --gray-900: oklch(0.205 0 0);
+    --gray-950: oklch(0.143 0 0);
+
+    /* 寸法 --------------------------------------------------------------- */
+    --content-width: 700px;
+
+    /*
+      ブレークポイント: xs 480px / sm 600px / md 700px
+      カスタムプロパティは @media の条件部では使えないため、
+      メディアクエリ側は直値で書く。値を変える際はここのコメントも更新すること。
+    */
+  }
+}
+
+@layer base {
+  html {
+    font-size: 16px;
+    font-family:
+      -apple-system, "Helvetica Neue", BlinkMacSystemFont, Arial,
+      "Hiragino Kaku Gothic", Roboto, "Noto Sans CJK JP", "Segoe UI",
+      sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+      "Noto Color Emoji";
   }
 
-  main article p {
-    @apply my-6;
+  body {
+    max-inline-size: var(--content-width);
+    margin-inline: auto;
+    color: var(--fg);
+    background: var(--bg);
+    line-height: 1.7;
+
+    @media (min-width: 700px) {
+      border-inline: 1px solid var(--border);
+    }
   }
 
-  /* Table */
+  /* 見出し ------------------------------------------------------------- */
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-weight: 700;
+  }
+
+  h1 {
+    margin-block: 0.5rem;
+    padding-block: 0.5rem;
+    padding-inline: 1rem;
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+    text-align: center;
+  }
+
+  h2 {
+    margin-block: 4rem 2rem;
+    padding-block: 0.5rem;
+    font-size: 1.6rem;
+    line-height: 2rem;
+  }
+
+  h3 {
+    margin-block: 2rem;
+    font-size: 1.3rem;
+    line-height: 1.75rem;
+  }
+
+  h4 {
+    margin-block: 1.5rem;
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+  }
+
+  h5,
+  h6 {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+
+  /* 記事内の見出し装飾 --------------------------------------------------- */
+
+  article h2 {
+    position: relative;
+    padding-block: 0.75rem;
+    border-block-end: 3px solid var(--border);
+
+    /* 下線の左 25% だけをアクセント色にする */
+    &::before {
+      content: "";
+      position: absolute;
+      inset-block-end: -3px;
+      inset-inline-start: 0;
+      inline-size: 25%;
+      border-block-end: 3px solid var(--link);
+    }
+
+    &:first-of-type {
+      margin-block-start: 0;
+
+      @media (min-width: 700px) {
+        margin-block-start: 3rem;
+      }
+    }
+  }
+
+  article h3 {
+    margin-block: 2.25rem 1.5rem;
+    padding-block: 0.5rem;
+    border-block-end: 1px solid var(--border);
+  }
+
+  /* 見出しは rehype-autolink-headings により a で包まれるため、
+     リンク色ではなく本文色を維持する */
+  article :is(h2, h3, h4, h5, h6) a {
+    color: var(--fg);
+  }
+
+  /* リンク ------------------------------------------------------------- */
+
+  article a {
+    color: var(--link);
+    word-break: break-all;
+
+    @media (hover: hover) {
+      &:hover {
+        text-decoration-line: underline;
+      }
+    }
+  }
+
+  /* 表 ----------------------------------------------------------------- */
+
   table {
-    @apply my-6 border-collapse w-full border;
+    inline-size: 100%;
+    margin-block: 1.5rem;
   }
+
   table,
   thead,
   th,
   tbody,
   tr,
   td {
-    @apply p-1 px-2 border border-(--border);
-  }
-  thead {
-    @apply bg-(--bg-thead);
+    padding-block: 0.25rem;
+    padding-inline: 0.5rem;
+    border: 1px solid var(--border);
   }
 
-  /* List */
-  main article img {
-    @apply my-4;
+  thead {
+    background-color: var(--bg-thead);
   }
-  main article ul {
-    @apply pl-6 my-6;
-  }
-  main article ul li {
-    @apply list-disc;
-  }
-  main article ul li ul {
-    @apply my-0;
-  }
-  main article ul li p {
-    @apply my-0;
-  }
-  main article ol {
-    @apply pl-6 my-6;
-  }
-  main article ol li {
-    @apply list-decimal;
-  }
-  main article ol li ol {
-    @apply my-0;
-  }
-  main article ol li p {
-    @apply my-0;
-  }
+
+  /* コード ------------------------------------------------------------- */
 
   pre {
-    @apply mb-6 py-4 px-8 overflow-auto rounded-lg;
-    max-height: 540px;
+    max-block-size: 540px;
+    margin-block-end: 1.5rem;
+    padding-block: 1rem;
+    padding-inline: 2rem;
+    overflow: auto;
+    border-radius: 0.5rem;
   }
 
-  p code {
-    @apply text-sm;
+  /* 段落・リスト中のインラインコード */
+  :is(p, li) code {
     padding: 2px 6px;
-    border-radius: 4px;
-    background-color: var(--code-bg);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
     color: var(--code-fg);
-  }
-  li code {
-    @apply text-sm;
-    padding: 2px 6px;
-    border-radius: 4px;
     background-color: var(--code-bg);
-    color: var(--code-fg);
+    border-radius: 4px;
   }
+
   code span {
-    @apply text-sm;
-    margin-top: 2px;
-    margin-bottom: 2px;
+    margin-block: 2px;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
   }
+
+  /* 引用 --------------------------------------------------------------- */
 
   blockquote {
-    @apply m-6 px-4;
+    margin: 1.5rem;
+    padding-inline: 1rem;
     color: var(--quote);
-    border-left: solid 4px var(--quote);
+    border-inline-start: 4px solid var(--quote);
+  }
+
+  iframe {
+    inline-size: 100%;
+  }
+}
+
+@layer content {
+  main article {
+    margin-block: 2rem;
+    margin-inline: 1rem;
+
+    @media (min-width: 700px) {
+      margin: 3rem;
+    }
+
+    :is(p, figure) {
+      margin-block: 1.5rem;
+    }
+
+    img {
+      margin-block: 1rem;
+    }
+
+    :is(ul, ol) {
+      margin-block: 1.5rem;
+      padding-inline-start: 1.5rem;
+    }
+
+    ul li {
+      list-style-type: disc;
+    }
+
+    ol li {
+      list-style-type: decimal;
+    }
+
+    /* 入れ子のリストと、リスト項目内の段落は余白を持たせない */
+    li :is(ul, ol, p) {
+      margin-block: 0;
+    }
   }
 }
 
 @layer components {
   .content-image {
-    @apply w-full h-auto;
-    max-height: 540px;
+    inline-size: 100%;
+    block-size: auto;
+    max-block-size: 540px;
     background-color: var(--bg-artwork);
   }
+
   .caption {
-    border-top: solid 4px var(--link);
+    border-block-start: 4px solid var(--link);
   }
+
   .tag {
-    @apply inline-block mr-1 hover:underline;
+    display: inline-block;
+    margin-inline-end: 0.25rem;
     color: var(--link);
+
+    @media (hover: hover) {
+      &:hover {
+        text-decoration-line: underline;
+      }
+    }
   }
 
   .emoji {
-    height: 120px;
+    block-size: 120px;
     font-size: 100px;
+    line-height: 1.2;
   }
+
   .top-article {
-    border-bottom: solid 1px var(--border);
+    border-block-end: 1px solid var(--border);
   }
 
-  iframe {
-    width: 100%;
-  }
   .expressive-code {
-    @apply my-6;
-  }
-}
-
-@media {
-  :root {
-    --fg: #000000;
-    --bg: #ffffff;
-    --bg-artwork: #dddddd;
-    --bg-thead: #dddddd;
-    --border: #aaaaaa;
-    --link: #d50000;
-    --quote: #666666;
-    --linkcard: #aaaaaa;
-    --menu: #666666;
-    --code-fg: #222222;
-    --code-bg: #eeeeee;
-
-    /* --link: #4070ff; */
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --fg: #ffffff;
-    --bg: #000000;
-    --bg-artwork: #222222;
-    --bg-thead: #222222;
-    --border: #aaaaaa;
-    --link: #88c0dd;
-    --quote: #9c9c9c;
-    --linkcard: #666666;
-    --menu: #9c9c9c;
-    --code-fg: #dddddd;
-    --code-bg: #222222;
+    margin-block: 1.5rem;
   }
 }
