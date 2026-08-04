@@ -10,14 +10,7 @@ omemoji のポートフォリオ
 
 https://omemoji.com
 
-## 使用している技術
-
-- Astro
-- Tailwind CSS
-- TypeScript
-- Cloudflare Pages
-
-## Todo
+## 機能
 
 ### 全般
 
@@ -48,7 +41,3 @@ https://omemoji.com
 - [ ] リンクカード
   - [ ] 画像を最適化
 - [ ] 目次
-
-## 備考
-
-- [ ] Honoで書き直す
