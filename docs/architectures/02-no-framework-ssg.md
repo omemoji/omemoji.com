@@ -120,16 +120,46 @@ AVIF エンコードの実測値は §7 を参照。
 
 ---
 
-## 3. テンプレート → Preact
+## 3. テンプレート → React
 
 フレームワークなしでも JSX は使う。85 ページ分のマークアップをテンプレート文字列で書くのは現実的でない。
 
-- `preact` + `preact-render-to-string`
-- ビルド時のみの依存。クライアントには一切出力されない
-- **JSX が React 互換**のため、将来 Astro / Next / Hono へコンポーネントをほぼそのまま持ち込める
-- satori は React 形状の要素を受け取るため、OGP 生成のコードを現状のまま流用できる
+- `react` + `react-dom/server`（`renderToStaticMarkup`）
+- **ビルド時のみの依存。クライアントには一切出力されない**
+- satori・`hast-util-to-jsx-runtime` がいずれも React 前提で型定義されており、キャストや互換層が要らない
+- 現行の OGP コンポーネントは既に React JSX（`/** @jsxImportSource react */`）で書かれており、無改修で流用できる
 
-Markdown のコンポーネント差し替え（`img` → `ImageHandler`、`a` → `LinkHandler`）は、`hast-util-to-jsx-runtime` に Preact の jsx runtime と components マップを渡して実現する。**MDX コンパイラが不要**になるため、`.mdx` → `.md` への変換とも整合する。
+```jsonc
+// tsconfig.json
+{ "jsx": "react-jsx", "jsxImportSource": "react" }
+```
+
+Markdown のコンポーネント差し替え（`img` → `ImageHandler`、`a` → `LinkHandler`）は、`hast-util-to-jsx-runtime` に React の jsx runtime と components マップを渡して実現する。**MDX コンパイラが不要**になるため、`.mdx` → `.md` への変換とも整合する。
+
+### Preact を採らない理由
+
+当初は Preact を選定していたが、実測の結果、この構成では選ぶ理由がないと判断した。
+
+| | 85 ページのレンダリング | インストールサイズ |
+| --- | --- | --- |
+| React 19 | 18.4ms | 約 8.2MB |
+| Preact | 8.4ms | 約 4.6MB |
+
+Preact は 2 倍速いが、**差は 10 ミリ秒**。画像変換に 10〜43 秒かかるビルド（§7.1）において誤差にすぎない。インストールサイズもビルド時限定かつ CI でキャッシュされるため効かない。
+
+**Preact の利点はほぼすべてクライアントバンドルサイズに由来する。** クライアントに 1 バイトも出さない構成では、その利点が丸ごと消える。残るのは以下のコストだけになる。
+
+- satori や `hast-util-to-jsx-runtime` の React 前提の型と噛み合わない
+- React の型を得るには npm alias（`"react": "npm:@preact/compat"`）が必要になり、「react という名前が実は preact」という中間層を抱える
+- Preact の JSX 型は React より緩く（`class` / `for` / 文字列 `style` を許容）、React へ持ち込めないコードが混入しうる
+
+将来クライアント側でインタラクティブな部品が必要になった場合は、**その部品にだけ** Preact を使えばよい。今から全体を寄せる理由にはならない。
+
+### 実装時の注意点
+
+- **`NODE_ENV=production` でビルドする。** 開発モードの React は `key` 警告などを出力し、レンダリングも遅い
+- `renderToStaticMarkup` は `<!doctype html>` を出力しないため、手前で連結する
+- `react-dom/server` の条件付き exports は Bun / Node のいずれでも正しく解決されることを実測で確認済み
 
 ---
 
@@ -266,7 +296,7 @@ Vitest は Vite の上に建っている。バンドラ不要と判断して外�
 | unified パイプライン                  | 文字列比較 / スナップショット     |
 | `fetchMeta` のフォールバック分岐      | fetch の差し替え                  |
 | ビルド成果物の検証                    | ファイルシステム走査              |
-| Preact コンポーネントの描画           | JSX のトランスパイル + 文字列比較 |
+| React コンポーネントの描画            | JSX のトランスパイル + 文字列比較 |
 
 JSX は Bun がネイティブにトランスパイルする（`tsconfig.json` の `jsxImportSource` を参照）。DOM が必要になった場合は `@happy-dom/global-registrator` を登録すれば動く。
 
@@ -462,12 +492,13 @@ sharp は libuv のスレッドプールを使うため、`Promise.all` + 同時
 | 項目         | 依存ライブラリ                                        |
 | ------------ | ----------------------------------------------------- |
 | ランタイム   | Bun（コードは Node API で記述）                       |
-| テンプレート | preact, preact-render-to-string                       |
+| テンプレート | react, react-dom（`react-dom/server`）                |
 | Markdown     | unified, remark-*, rehype-*, hast-util-to-jsx-runtime |
 | ハイライト   | rehype-expressive-code                                |
 | 画像         | sharp                                                 |
 | OGP          | satori, budoux                                        |
 | リンクカード | cheerio                                               |
+| front matter | remark-frontmatter, yaml                              |
 | データ検証   | zod, zod-to-json-schema（`_schema.json` の生成用）    |
 | 品質         | @biomejs/biome, typescript                            |
 | テスト       | bun test（追加依存なし）                              |
