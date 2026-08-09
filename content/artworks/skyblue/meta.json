@@ -1,4 +1,5 @@
 {
+  "$schema": "../_schema.json",
   "title": "skyblue",
   "description": "音楽を奏でるクジラと少女",
   "date": "2021-03-01",

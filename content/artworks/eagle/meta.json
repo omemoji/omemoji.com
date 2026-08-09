@@ -1,4 +1,5 @@
 {
+  "$schema": "../_schema.json",
   "title": "ワシの戦士",
   "description": "ジェットエンジンを背負った空の戦士",
   "date": "2023-04-15",

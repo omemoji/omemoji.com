@@ -1,4 +1,5 @@
 {
+  "$schema": "../_schema.json",
   "title": "Lux",
   "description": "がらくたで構成された、かわいい猫の姫",
   "date": "2022-12-30",

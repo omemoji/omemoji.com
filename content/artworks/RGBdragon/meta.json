@@ -1,4 +1,5 @@
 {
+  "$schema": "../_schema.json",
   "title": "RGBdragon",
   "description": "光の三原色に彩られた龍",
   "date": "2021-03-02",

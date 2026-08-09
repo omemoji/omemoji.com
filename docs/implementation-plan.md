@@ -56,7 +56,7 @@ src/
 
 UI なしで記事と作品を型付きで読み出せる状態にする。
 
-1. **zod スキーマ** — 記事 / 作品。**タグを `z.enum` 化**し、命名の揺れ（`Adobe_Illustrator` / `OriginalCharacter` / `図画団`）を整理
+1. **zod スキーマ** — 記事 / 作品。
 2. **作品データの移行**（使い捨てスクリプト）— `src/data/db.json` の 23 件 → `content/artworks/<id>/meta.json`。画像を各ディレクトリへ移動
    - `src` の Vite glob キー（`/public/images/artworks/...`）を相対パスへ
    - 配列順（`toReversed()`）から `date` を起こす。元の並び順を保持できる値を割り当てる

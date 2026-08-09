@@ -1,6 +1,7 @@
 import * as z from "zod";
 
-const artworkSchema = z.object({
+export const artworkSchema = z.object({
+  $schema: z.string().optional(),
   title: z.string(),
   description: z.string().optional(),
   date: z.string(),

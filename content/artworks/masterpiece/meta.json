@@ -1,4 +1,5 @@
 {
+  "$schema": "../_schema.json",
   "title": "The Creator",
   "description": "絵筆を持った神",
   "date": "2023-03-30",

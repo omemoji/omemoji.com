@@ -1,4 +1,5 @@
 {
+  "$schema": "../_schema.json",
   "title": "Helios",
   "description": "Warrior of the Sun",
   "date": "2023-08-06",

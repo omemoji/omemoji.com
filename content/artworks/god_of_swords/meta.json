@@ -1,4 +1,5 @@
 {
+  "$schema": "../_schema.json",
   "title": "剣神",
   "description": "虹の剣を持つ神",
   "date": "2021-11-28",

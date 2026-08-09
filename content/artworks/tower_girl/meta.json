@@ -1,4 +1,5 @@
 {
+  "$schema": "../_schema.json",
   "title": "鉄塔少女",
   "description": "夕暮れの鉄塔に佇む少女",
   "date": "2021-11-06",

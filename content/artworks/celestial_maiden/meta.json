@@ -1,4 +1,5 @@
 {
+  "$schema": "../_schema.json",
   "title": "天女",
   "description": "絵の具を自在に操る天女",
   "date": "2023-03-18",

@@ -1,4 +1,5 @@
 {
+  "$schema": "../_schema.json",
   "title": "2022 Happy New Year! ",
   "description": "年賀状",
   "date": "2022-01-01",
