@@ -1,4 +1,3 @@
-import type { ImageMetadata } from "astro";
 import artworks_json from "../data/db.json";
 import { ARTWORKS_PER_PAGE } from "./constant";
 
@@ -13,20 +12,16 @@ export interface ArtworkData {
   description?: string;
 }
 
-export const getThumbnailSize = (image: ImageMetadata, image_size: number) => {
-  const w = image.width;
-  const h = image.height;
-  if (w > h) {
+export const getThumbnailSize = (width: number, height: number, image_size: number) => {
+  if (width > height) {
     return {
-      src: image,
-      width: image_size * (w / h),
+      width: image_size * (width / height),
       height: image_size,
     };
   } else {
     return {
-      src: image,
       width: image_size,
-      height: image_size * (h / w),
+      height: image_size * (height / width),
     };
   }
 };

@@ -5,12 +5,7 @@ import type { CheerioAPI } from "cheerio";
 import { load } from "cheerio";
 import sharp from "sharp";
 
-const OGP_LINK_DIR = join(
-  process.cwd(),
-  import.meta.env.PROD ? "out" : "public",
-  "images",
-  "ogp_link"
-);
+const OGP_LINK_DIR = join(process.cwd(), ".cache", "images", "ogp_link");
 
 const getThumbFilename = (url: string): string => {
   const hash = createHash("sha256").update(url).digest("hex").slice(0, 16);
@@ -27,20 +22,27 @@ interface Metadata {
 const DEFAULT_OGP_WIDTH = 1200;
 const DEFAULT_OGP_HEIGHT = 630;
 
+const isCountryTLD = (parts: readonly string[]): boolean => {
+  const [sld, tld] = parts.slice(-2);
+  return (
+    typeof sld === "string" &&
+    typeof tld === "string" &&
+    parts.length === 3 &&
+    ["co", "com", "net", "org", "ac", "go", "ne"].includes(sld) &&
+    tld.length === 2 // 国別コードトップレベルドメイン（ccTLD）の長さは通常2文字
+  );
+};
+
 // サブドメインかどうかを判定
 const isSubdomain = (url: string): boolean => {
   try {
     const hostname = new URL(url).hostname;
-    const parts = hostname.split(".");
+    const parts: string[] = hostname.split(".");
     // 例: blog.example.com -> ["blog", "example", "com"]
     // www.example.com は通常のドメインとして扱う
     if (parts.length > 2) {
       // co.jp, com.au などの国別ドメインを考慮
-      const isCountryTLD =
-        parts.length === 3 &&
-        ["co", "com", "net", "org", "ac", "go", "ne"].includes(parts[1]) &&
-        parts[2].length === 2;
-      if (isCountryTLD) {
+      if (isCountryTLD(parts)) {
         return false;
       }
       // www は除外
@@ -64,11 +66,7 @@ const getParentDomainUrl = (url: string): string | null => {
 
     if (parts.length > 2) {
       // co.jp などを考慮
-      const isCountryTLD =
-        parts.length === 3 &&
-        ["co", "com", "net", "org", "ac", "go", "ne"].includes(parts[1]) &&
-        parts[2].length === 2;
-      if (isCountryTLD) {
+      if (isCountryTLD(parts)) {
         return null;
       }
       // サブドメインを削除して親ドメインを取得
