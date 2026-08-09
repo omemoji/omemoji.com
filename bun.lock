@@ -11,6 +11,7 @@
         "cheerio": "1.2.0",
         "hast-util-to-jsx-runtime": "2.3.6",
         "katex": "0.18.1",
+        "mdast-util-to-hast": "^13.2.1",
         "react": "19.2.8",
         "react-dom": "19.2.8",
         "rehype-autolink-headings": "7.1.0",
