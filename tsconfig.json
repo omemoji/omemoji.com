@@ -5,6 +5,9 @@
   "compilerOptions": {
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
+    "paths": {
+      "@/*": ["./src/*"]
+    },
     "module": "esnext",
     "moduleResolution": "bundler",
     "target": "esnext",

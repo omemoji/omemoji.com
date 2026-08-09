@@ -3,8 +3,8 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "dev": "bun run dev",
-    "build": "bun run build",
+    "dev": "bun run scripts/dev.ts",
+    "build": "bun run scripts/build.ts",
     "lint": "biome lint .",
     "lint:fix": "biome lint --fix .",
     "format": "biome format --write .",

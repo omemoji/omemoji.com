@@ -1,5 +1,5 @@
+import { ARTWORKS_PER_PAGE } from "@/config";
 import artworks_json from "../data/db.json";
-import { ARTWORKS_PER_PAGE } from "./constant";
 
 const { artworks } = JSON.parse(JSON.stringify(artworks_json));
 
