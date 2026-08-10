@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import fs from "node:fs";
 import path from "node:path";
 
-import { artworks, artworksDir as baseDir } from "@/test/content";
+import { artworks, artworksDir as baseDir } from "@/tests/content";
 
 // 落ちたら作品データを直す
 describe("実データ（content/artworks）", () => {

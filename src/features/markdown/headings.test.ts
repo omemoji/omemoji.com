@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 
 import { collectHeadings } from "@/features/markdown/headings";
 import { mdToHast } from "@/features/markdown/pipeline";
-import { articles } from "@/test/content";
+import { articles } from "@/tests/content";
 
 const toc = async (markdown: string) => collectHeadings(await mdToHast(markdown));
 

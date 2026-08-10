@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { toHtml } from "hast-util-to-html";
 
 import { mdToHast } from "@/features/markdown/pipeline";
-import { articles } from "@/test/content";
+import { articles } from "@/tests/content";
 
 const render = async (markdown: string): Promise<string> => toHtml(await mdToHast(markdown));
 

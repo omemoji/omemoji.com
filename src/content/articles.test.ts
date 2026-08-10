@@ -5,7 +5,7 @@ import path from "node:path";
 import { parse as parseYaml } from "yaml";
 
 import { articleSchema, loadArticles } from "@/content/articles";
-import { articles, articlesDir as baseDir } from "@/test/content";
+import { articles, articlesDir as baseDir } from "@/tests/content";
 
 // 落ちたら記事の書き方を直す
 describe("実データ（content/articles）", () => {
