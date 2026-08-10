@@ -12,7 +12,9 @@
     "format:check": "biome format .",
     "check": "biome check --fix .",
     "check:ci": "biome check .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "bun test",
+    "test:coverage": "bun test --coverage"
   },
   "dependencies": {
     "@expressive-code/plugin-collapsible-sections": "0.44.1",

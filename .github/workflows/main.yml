@@ -1,0 +1,53 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.head_ref || github.ref }}-${{ github.actor }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    name: CI
+    uses: ./.github/workflows/_ci.yml
+
+  # 検査が通ってからビルドする（壊れたコードを成果物にしないため）
+  build:
+    name: Build
+    needs: ci
+    uses: ./.github/workflows/_build.yml
+
+  # 全ジョブの成否を代表する。ブランチ保護はこのジョブだけを見ればよい
+  ci-success:
+    name: CI Success
+    needs: [ci, build]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      # needs.* を使うため、ジョブを追加しても needs に足すだけで済む
+      - name: Verify all jobs succeeded
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+        run: |
+          echo "::error::One or more checks failed"
+          exit 1
+      - run: echo "All checks passed"
+
+  deploy:
+    name: Deploy
+    needs: build
+    # main への push、または dependabot の major 更新 PR（patch は自動マージされるためプレビュー不要）
+    if: >-
+      ${{
+        (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+        (github.actor == 'dependabot[bot]' && startsWith(github.head_ref, 'dependabot/bun/major'))
+      }}
+    permissions:
+      contents: read
+      deployments: write
+      pull-requests: write
+    secrets: inherit
+    uses: ./.github/workflows/_deploy.yml

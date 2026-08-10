@@ -1,35 +1,13 @@
-name: Build & Deploy
+name: Deploy
 
+# 成果物を Cloudflare Pages へ公開するだけ。デプロイするかどうかは呼び出し側が決める
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-
-concurrency:
-  group: ci-${{ github.head_ref || github.ref }}-${{ github.actor }}
-  cancel-in-progress: true
+  workflow_call:
 
 jobs:
-  build:
-    uses: ./.github/workflows/ci.yml
-    with:
-      # Upload artifact if it's a push to main or a Dependabot PR that's not a patch update (since patch updates are auto-merged and don't need a deploy preview)
-      upload-artifact: >-
-        ${{
-          (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
-          (github.actor == 'dependabot[bot]' && startsWith(github.head_ref, 'dependabot/bun/major'))
-        }}
-
   deploy:
     name: Deploy to Cloudflare Pages
-    needs: build
-    if: needs.build.outputs.should-deploy == 'true'
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      deployments: write
-      pull-requests: write
     steps:
       - name: Download build artifact
         uses: actions/download-artifact@v4

@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  workflow_call:
+
+jobs:
+  # 並列実行: Lint & Format（biome check は両方をまとめて見る）
+  check:
+    name: Lint & Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: ./.github/actions/setup
+      - run: bun run check:ci
+
+  # 並列実行: Type check
+  typecheck:
+    name: Typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: ./.github/actions/setup
+      - run: bun run typecheck
+
+  # 並列実行: Test with Coverage
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: ./.github/actions/setup
+      - run: bun run test:coverage
