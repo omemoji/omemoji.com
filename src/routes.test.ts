@@ -103,6 +103,25 @@ describe("実データ", () => {
     expect(broken.map((route) => route.path)).toEqual([]);
   });
 
+  test("トップページはサイトマップに載る", () => {
+    expect(routes.find((route) => route.path === "/")?.indexable).toBe(true);
+  });
+
+  test("サイトマップに載せるのは詳細ページと一覧の 1 ページ目だけ", () => {
+    // 同じ記事が複数の URL から辿れるため、絞り込みと 2 ページ目以降は除く。
+    // パス末尾の数字では判定できない（artwork.idが数字になるケースを許容しているため）
+    const wrong = routes.filter((route) => {
+      const expected =
+        route.page === "ArticlesList" || route.page === "ArtworksList"
+          ? route.props.page === 1 && route.props.tag === undefined
+          : true;
+
+      return route.indexable !== expected;
+    });
+
+    expect(wrong.map((route) => route.path)).toEqual([]);
+  });
+
   test(`全ての作品にちょうど 1 つの詳細ページがある（${artworks.length} 件）`, () => {
     const paths = routes.filter((route) => route.page === "ArtworkPage").map((route) => route.path);
 
