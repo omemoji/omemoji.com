@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import * as z from "zod";
 
+import { sortByDate } from "@/content/query";
 import { TAGS } from "@/content/tags";
 
 export const artworkSchema = z.object({
@@ -15,15 +16,20 @@ export const artworkSchema = z.object({
   href: z.string().optional(),
 });
 
-export type Artwork = { id: string } & z.infer<typeof artworkSchema>;
+/** date はスキーマでは文字列だが、ドメイン型では記事と揃えて Date で持つ */
+export type Artwork = { id: string; date: Date } & Omit<z.infer<typeof artworkSchema>, "date">;
 
 export function loadArtworks(baseDir: string): Artwork[] {
-  return fs
+  const artworks = fs
     .readdirSync(baseDir, { withFileTypes: true })
     .filter((entry) => entry.isDirectory())
     .map((entry) => {
       const raw = fs.readFileSync(path.join(baseDir, entry.name, "meta.json"), "utf-8");
-      return { id: entry.name, ...artworkSchema.parse(JSON.parse(raw)) };
+      const meta = artworkSchema.parse(JSON.parse(raw));
+      return { id: entry.name, ...meta, date: new Date(meta.date) };
     })
-    .sort((a, b) => a.id.localeCompare(b.id)); // 作品idの昇順でソート
+    // 日付が同じ作品の並びを確定させるため、まず id 順に整える
+    .sort((a, b) => a.id.localeCompare(b.id));
+
+  return sortByDate(artworks); // 日付の降順でソート
 }

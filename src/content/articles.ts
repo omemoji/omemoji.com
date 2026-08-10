@@ -3,6 +3,7 @@ import path from "node:path";
 import { parse as parseYaml } from "yaml";
 import * as z from "zod";
 
+import { sortByDate } from "@/content/query";
 import { TAGS } from "@/content/tags";
 
 /** 先頭の frontmatter ブロック。行頭にアンカーしないと本文中の水平線を拾う */
@@ -31,7 +32,7 @@ export type Article = {
  * `<baseDir>/<年>/<月>/<slug>/<任意>.md` を走査して読み込む。
  */
 export function loadArticles(baseDir: string): Article[] {
-  return fs
+  const articles = fs
     .readdirSync(baseDir, { recursive: true, encoding: "utf-8" })
     .filter((file) => file.endsWith(".md"))
     .map((file) => {
@@ -50,6 +51,7 @@ export function loadArticles(baseDir: string): Article[] {
         body: raw.slice(matched[0].length),
         ...meta.data,
       };
-    })
-    .sort((a, b) => b.date.getTime() - a.date.getTime()); // 日付の降順でソート
+    });
+
+  return sortByDate(articles); // 日付の降順でソート
 }
