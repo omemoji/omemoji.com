@@ -83,7 +83,7 @@ UI なしで記事と作品を型付きで読み出せる状態にする。
 2. **目次収集**（`headings.ts`）— depth ≤ 3
 3. **expressive-code**（`highlight.ts`）— テーマ・プラグイン・`defaultProps` を移植。**CSS を手動注入**（自動注入がない）。
 4. **hast → React**（`render.tsx`）— `toReact(tree, components)` として**汎用に保つ**。差し替え表は `components/MarkdownComponent.tsx` が供給する
-5. KaTeX CSS を `globals.css` から `@import`
+5. KaTeX CSS を `globals.css` から `@import` (optional)
 
 ### テスト
 
