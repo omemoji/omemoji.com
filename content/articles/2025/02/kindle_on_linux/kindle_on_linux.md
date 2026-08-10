@@ -1,6 +1,5 @@
 ---
 emoji: "📕"
-slug: "kindle_on_linux"
 title: "Linux（Waydroid）でKindleを使ってみよう"
 description: "Waydroidを導入し、LinuxでもKindleで本を読めるようにする"
 date: 2025-02-03

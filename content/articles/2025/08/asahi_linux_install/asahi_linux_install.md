@@ -1,6 +1,5 @@
 ---
 emoji: "🍎"
-slug: "asahi_linux_install"
 title: "M2 MacBookにVoid Linuxをインストールする"
 description: "Asahi LinuxベースのVoid LinuxをMacBook Air (M2, 2022) にインストールし、普段使いする"
 date: 2025-08-18

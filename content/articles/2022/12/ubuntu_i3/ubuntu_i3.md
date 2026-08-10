@@ -1,6 +1,5 @@
 ---
 emoji: "💻"
-slug: "ubuntu_i3"
 title: "Ubuntu Server を普段使いしてみよう "
 description: "Ubuntu Server 22.04 にGUI環境を入れて普段使い"
 date: 2022-12-24

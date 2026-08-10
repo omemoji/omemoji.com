@@ -1,6 +1,5 @@
 ---
 emoji: "🦖"
-slug: "fukui_travel"
 title: "卒業旅行（福井）に行ってきました"
 description: "1 泊 2 日の福井旅行記"
 date: 2025-04-05

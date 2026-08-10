@@ -1,6 +1,5 @@
 ---
 emoji: "🐧"
-slug: "void_linux"
 title: "Void Linuxをインストールする"
 description: "Void Linuxのインストール及びi3デスクトップ環境の構築"
 date: 2023-07-24

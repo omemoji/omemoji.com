@@ -1,6 +1,5 @@
 ---
 emoji: "🍚"
-slug: "terminal_browser"
 title: "ターミナルでブラウザを使ってみよう"
 description: "CSS対応のTUIブラウザ「Chawan」を使って快適ブラウジング"
 date: 2025-06-18

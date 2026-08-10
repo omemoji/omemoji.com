@@ -1,6 +1,5 @@
 ---
 emoji: "🎨"
-slug: "linux_painting"
 title: "Linuxで絵を描いてみよう"
 description: "Linux上で安価なお絵描き環境を構築する"
 date: 2023-11-21

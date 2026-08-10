@@ -1,6 +1,5 @@
 ---
 emoji: "⛏"
-slug: "minecraft_linux"
 title: "LinuxでMinecraftを遊んでみよう"
 description: "LinuxでMinecraftをインストールする方法とプレイ記録"
 date: 2026-02-23

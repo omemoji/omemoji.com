@@ -1,6 +1,5 @@
 ---
 emoji: "🐇"
-slug: "new_years_card_2023"
 title: "2023年度年賀状イラストを作る"
 description: "Inkscapeで年賀状イラストを作成"
 date: 2023-01-01

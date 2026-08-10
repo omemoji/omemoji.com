@@ -1,6 +1,5 @@
 ---
 emoji: "💨"
-slug: "void_in_my_life"
 title: "Void (Linux) in my life"
 description: "Void Linuxを約1年半使ってみての所感、及びTips"
 date: 2025-02-27

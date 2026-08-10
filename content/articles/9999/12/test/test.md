@@ -1,6 +1,5 @@
 ---
 emoji: "🤖"
-slug: "test"
 title: "Test"
 description: "テスト"
 date: 9999-12-31

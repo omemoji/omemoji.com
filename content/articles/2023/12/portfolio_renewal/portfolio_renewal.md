@@ -1,6 +1,5 @@
 ---
 emoji: "🚀"
-slug: "portfolio_renewal"
 title: "ポートフォリオをNext.jsでリニューアルする"
 description: "ポートフォリオをNext.jsで実装し直し、機能を改善する"
 date: 2023-12-19

@@ -1,6 +1,5 @@
 ---
 emoji: "🐺"
-slug: "golden_kamuy"
 title: "漫画『ゴールデンカムイ』感想 ── 和風闇鍋ウエスタン"
 description: "漫画『ゴールデンカムイ』の感想と考察"
 date: 2025-03-01

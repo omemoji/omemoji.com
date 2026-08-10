@@ -1,6 +1,5 @@
 ---
 emoji: "✌"
-slug: "hello_world"
 title: "Hello, world!"
 description: "最初の記事、自己紹介"
 date: 2022-12-17
