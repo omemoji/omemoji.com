@@ -45,6 +45,37 @@ describe("プラグインの配線", () => {
   });
 });
 
+describe("プラグインの順序", () => {
+  // .use() の並びには互いに依存する制約があり、破ると症状がばらばらに現れる。
+  // 機能別のテストに散らすと順序の問題として結びつかないため、ここに集める
+  test("順序に依存する変換がすべて成立している", async () => {
+    const constraints = [
+      [
+        "slug / autolink は rehype-katex より前（後だと MathML の読みを slug が拾う）",
+        "## $E = mc^2$ の話",
+        'id="e--mc2-の話"',
+      ],
+      [
+        "rehype-katex は expressive-code より前（後だと language-math として食われる）",
+        "$$\nE = mc^2\n$$",
+        `<span class="katex-display">`,
+      ],
+      [
+        "expressive-code は rehype-raw より前（後だと直列化で data.meta が消える）",
+        '```ts title="lib/data.ts"\nconst a = 1;\n```',
+        "lib/data.ts",
+      ],
+    ] as const;
+
+    const violated: string[] = [];
+    for (const [constraint, source, marker] of constraints) {
+      if (!(await render(source)).includes(marker)) violated.push(constraint);
+    }
+
+    expect(violated).toEqual([]);
+  });
+});
+
 // 自作プラグインの分岐そのものなので、境界を 1 件ずつ主張する
 describe("リンクカードの判定", () => {
   test("単独の段落に置かれた裸の外部リンクは linkcard になる", async () => {

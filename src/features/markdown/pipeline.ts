@@ -1,6 +1,7 @@
 import type { Root as HastRoot } from "hast";
 import type { Root as MdastRoot } from "mdast";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import rehypeExpressiveCode from "rehype-expressive-code";
 import rehypeKatex from "rehype-katex";
 import rehypeRaw from "rehype-raw";
 import rehypeSlug from "rehype-slug";
@@ -14,6 +15,7 @@ import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import { unified } from "unified";
 
+import { expressiveCodeOptions, getRenderer } from "@/features/markdown/highlight";
 import remarkLinkcard from "@/features/markdown/plugins/remark-link-card";
 
 /**
@@ -33,12 +35,22 @@ const processor = unified()
   .use(remarkMath)
   .use(remarkLinkcard)
   .use(remarkRehype, { allowDangerousHtml: true, footnoteLabel: "脚注" })
-  // allowDangerousHtml で残した生 HTML を実際の要素へ組み立てる。
-  // 見出しに id を振る前に置く必要がある（生 HTML 内の見出しも対象にするため）
-  .use(rehypeRaw)
+  // 以降の並びは相互に依存しているため、動かす際は下記の理由を確認すること。
+  //
+  // slug / autolink は数式の展開より前。KaTeX 展開後に id を振ると、
+  // MathML の読みまで拾って slug が壊れる（例: emc2e--mc2emc2-の話）。
+  // 生 HTML で書かれた見出しには id が付かなくなるが、そのような記事は無い
   .use(rehypeSlug)
   .use(rehypeAutolinkHeadings, { behavior: "wrap" })
+  // 数式は expressive-code より前。$$...$$ は language-math のコードブロックとして
+  // 出力されるため、先に変換しないとハイライト対象として食われる
   .use(rehypeKatex)
+  // expressive-code は rehype-raw より前。rehype-raw は木を HTML へ直列化して読み直すため、
+  // コードフェンスの meta（title= など）を保持している data が失われる。
+  // レンダラは getRenderer が 1 度だけ構築したものを共有する
+  .use(rehypeExpressiveCode, { ...expressiveCodeOptions, customCreateRenderer: getRenderer })
+  // allowDangerousHtml で残した生 HTML を実際の要素へ組み立てる
+  .use(rehypeRaw)
   .use(rehypeUnwrapImages)
   .freeze();
 
