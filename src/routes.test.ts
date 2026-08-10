@@ -1,12 +1,7 @@
 import { expect, test } from "bun:test";
-import path from "node:path";
 
-import { loadArticles } from "@/content/articles";
-import { loadArtworks } from "@/content/artworks";
 import { routes } from "@/routes";
-
-const artworks = loadArtworks(path.join(import.meta.dirname, "../content/artworks"));
-const articles = loadArticles(path.join(import.meta.dirname, "../content/articles"));
+import { articles, artworks } from "@/test/content";
 
 const listRoutes = routes.filter(
   (route) => route.page === "ArticlesList" || route.page === "ArtworksList"

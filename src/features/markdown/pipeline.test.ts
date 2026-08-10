@@ -1,9 +1,8 @@
 import { describe, expect, test } from "bun:test";
-import path from "node:path";
 import { toHtml } from "hast-util-to-html";
 
-import { loadArticles } from "@/content/articles";
 import { mdToHast } from "@/features/markdown/pipeline";
+import { articles } from "@/test/content";
 
 const render = async (markdown: string): Promise<string> => toHtml(await mdToHast(markdown));
 
@@ -74,8 +73,6 @@ describe("リンクカードの判定", () => {
 });
 
 describe("実データ（content/articles）", () => {
-  const articles = loadArticles(path.join(import.meta.dirname, "../../../content/articles"));
-
   test(`全ての記事が例外なく変換できる（${articles.length} 件）`, async () => {
     const failed: { slug: string; message: string }[] = [];
 

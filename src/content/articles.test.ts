@@ -5,9 +5,7 @@ import path from "node:path";
 import { parse as parseYaml } from "yaml";
 
 import { articleSchema, loadArticles } from "@/content/articles";
-
-const baseDir = path.join(import.meta.dirname, "../../content/articles");
-const articles = loadArticles(baseDir);
+import { articles, articlesDir as baseDir } from "@/test/content";
 
 // 落ちたら記事の書き方を直す
 describe("実データ（content/articles）", () => {
