@@ -1,13 +1,25 @@
 import path from "node:path";
 
+import { ARTWORKS_PER_PAGE, COUNT_PER_PAGE } from "@/config";
 import { type Article, loadArticles } from "@/content/articles";
-import type { Artwork } from "@/content/artworks";
-import { loadArtworks } from "@/content/artworks";
+import { type Artwork, loadArtworks } from "@/content/artworks";
+import { pageCount, pageIdGen, paginate } from "@/content/paginate";
+import { collectTags, filterByTag } from "@/content/query";
+
+/** 一覧ページ（タグ別・ページネーション込み）が受け取る props */
+type ListProps<T> = {
+  items: T[];
+  /** 1 始まり */
+  page: number;
+  pageCount: number;
+  /** タグで絞り込んでいる場合のみ持つ */
+  tag?: string;
+};
 
 type PageProps = {
   About: undefined;
-  ArticlesList: undefined;
-  ArtworksList: undefined;
+  ArticlesList: ListProps<Article>;
+  ArtworksList: ListProps<Artwork>;
   ArticlePage: { article: Article };
   ArtworkPage: { artwork: Artwork };
 };
@@ -18,17 +30,56 @@ type Route = {
     : { props: PageProps[P] });
 }[keyof PageProps];
 
-const artworksRoutes: Route[] = loadArtworks(
-  path.join(import.meta.dirname, "../content/artworks")
-).map((artwork) => ({
+const artworks = loadArtworks(path.join(import.meta.dirname, "../content/artworks"));
+const articles = loadArticles(path.join(import.meta.dirname, "../content/articles"));
+
+/**
+ * 1 つの一覧を perPage 件ずつのページ群に割る。
+ * 1 ページ目は基点の URL そのままとし、2 ページ目以降に番号を付ける（旧実装の URL を維持する）。
+ * page 名は呼び出し側で付けるため、ここでは path と props だけを返す。
+ */
+const paginateRoutes = <T>(
+  basePath: string,
+  items: T[],
+  perPage: number,
+  tag?: string
+): { path: string; props: ListProps<T> }[] => {
+  // 0 件でも一覧そのものは存在させる
+  const count = Math.max(1, pageCount(items, perPage));
+
+  return pageIdGen(count).map((page) => ({
+    path: page === 1 ? basePath : `${basePath}/${page}`,
+    props: {
+      items: paginate(items, perPage, page),
+      page,
+      pageCount: count,
+      ...(tag ? { tag } : {}),
+    },
+  }));
+};
+
+const artworksListRoutes: Route[] = [
+  ...paginateRoutes("/artworks", artworks, ARTWORKS_PER_PAGE),
+  // タグは実データから集める。TAGS を使うと記事専用タグの空ページが生まれる
+  ...collectTags(artworks).flatMap((tag) =>
+    paginateRoutes(`/artworks/tag/${tag}`, filterByTag(artworks, tag), ARTWORKS_PER_PAGE, tag)
+  ),
+].map(({ path, props }) => ({ path, page: "ArtworksList", props }));
+
+const articlesListRoutes: Route[] = [
+  ...paginateRoutes("/articles", articles, COUNT_PER_PAGE),
+  ...collectTags(articles).flatMap((tag) =>
+    paginateRoutes(`/articles/tag/${tag}`, filterByTag(articles, tag), COUNT_PER_PAGE, tag)
+  ),
+].map(({ path, props }) => ({ path, page: "ArticlesList", props }));
+
+const artworkRoutes: Route[] = artworks.map((artwork) => ({
   path: `/artworks/${artwork.id}`,
   page: "ArtworkPage",
   props: { artwork },
 }));
 
-const articlesRoutes: Route[] = loadArticles(
-  path.join(import.meta.dirname, "../content/articles")
-).map((article) => ({
+const articleRoutes: Route[] = articles.map((article) => ({
   path: `/articles/${article.slug}`,
   page: "ArticlePage",
   props: { article },
@@ -37,9 +88,9 @@ const articlesRoutes: Route[] = loadArticles(
 export const routes: Route[] = [
   { path: "/", page: "About" },
   // 作品
-  { path: "/artworks", page: "ArtworksList" },
-  ...artworksRoutes,
+  ...artworksListRoutes,
+  ...artworkRoutes,
   // 記事
-  { path: "/articles", page: "ArticlesList" },
-  ...articlesRoutes,
+  ...articlesListRoutes,
+  ...articleRoutes,
 ];
