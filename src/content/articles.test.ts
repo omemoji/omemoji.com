@@ -57,3 +57,10 @@ test("一覧に無いタグは受け付けない", () => {
   expect(articleSchema.safeParse({ ...valid, tags: ["Tech"] }).success).toBe(true);
   expect(articleSchema.safeParse({ ...valid, tags: ["NotARegisteredTag"] }).success).toBe(false);
 });
+
+test("全ての記事の body が空でない", () => {
+  const empty = articles
+    .filter((article) => article.body.trim() === "")
+    .map((article) => article.slug);
+  expect(empty).toEqual([]);
+});

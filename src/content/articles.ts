@@ -18,8 +18,14 @@ export const articleSchema = z.object({
   published: z.boolean(),
 });
 
-/** slug は記事ディレクトリ名から導出する。frontmatter には持たせない */
-export type Article = { slug: string } & z.infer<typeof articleSchema>;
+export type Article = {
+  /** 記事ディレクトリ名から導出する。frontmatter には持たせない */
+  slug: string;
+  /** baseDir からの相対パス。本文中の相対参照はこのディレクトリを基準に解決する */
+  file: string;
+  /** frontmatter を除いた本文 */
+  body: string;
+} & z.infer<typeof articleSchema>;
 
 /**
  * `<baseDir>/<年>/<月>/<slug>/<任意>.md` を走査して読み込む。
@@ -38,7 +44,12 @@ export function loadArticles(baseDir: string): Article[] {
       if (!meta.success) {
         throw new Error(`Invalid frontmatter in ${file}: ${z.prettifyError(meta.error)}`);
       }
-      return { slug: path.basename(path.dirname(file)), ...meta.data };
+      return {
+        slug: path.basename(path.dirname(file)),
+        file,
+        body: raw.slice(matched[0].length),
+        ...meta.data,
+      };
     })
     .sort((a, b) => b.date.getTime() - a.date.getTime()); // 日付の降順でソート
 }
