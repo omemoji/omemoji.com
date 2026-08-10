@@ -20,12 +20,16 @@
 - `globals.css` の Tailwind 除去（レイヤー構成・`light-dark()`）
 - **Phase 0** — `package.json` / `tsconfig.json` / `biome.json`、依存インストール、ディレクトリ骨組み
 - コンテンツを **リポジトリルートの `content/`** へ移動（`src/` はコードのみ）
-- 移植済み: `features/link-card/fetch-meta.ts`、`features/markdown/plugins/*`、`content/query.ts`、`content/paginate.ts`、`features/image/size.ts`、`config.ts`
+- **Phase 1** — スキーマ・作品データ移行・`_schema.json`・ローダ。`src/data/db.json` と `public/images/artworks/` は削除済み
+- **Phase 2** — unified パイプライン・目次収集・expressive-code・hast → React
+- **Phase 8**（前倒し）— CI を `main.yml` + `_ci.yml` / `_build.yml` / `_deploy.yml` に再編し、`bun test` を追加
+- `routes.ts` — Phase 5 で予定していた一覧・タグ別・作品詳細まで生成済み（93 ルート）
 
 ### 未着手
 
-`content/articles.ts`、`features/**` の大半、`pages/**`、`routes.ts`、`scripts/**` はファイルのみ作成済みで中身は空。
-作品データは `src/data/db.json` のままで、`content/artworks/` は空。
+`pages/**` は 6 ファイルとも空。`scripts/build.ts` / `dev.ts` も空。
+`features/image/**`、`features/og/**`、`features/link-card/parse.ts` は未着手。
+`src/layouts/` は未作成。
 
 ### ディレクトリ構成
 
@@ -43,12 +47,14 @@ src/
 ├── features/                # ビルドのステージ
 │   ├── markdown/  image/  og/  link-card/
 ├── components/  pages/  layouts/  styles/  assets/
+└── tests/                   # テスト用フィクスチャ（実データを 1 度だけ読む）
 ```
 
 **規則 2 つ:**
 
 - ドメインでディレクトリを切り、各ドメイン内で **I/O を関数の内側に閉じる**（import 時に副作用を起こさない）
-- **`src/features/**` は `components` / `layouts` / `pages` / `routes` を import しない** — テストで検査する
+  - `routes.ts` は `buildRoutes(content)` としてコンテンツを注入で受け取る。読み込みは `build.ts` / `dev.ts` の責務
+- **`src/features/**` は `components` / `layouts` / `pages` / `routes` を import しない** — テストで検査する（**未実装**）
 
 ---
 
@@ -81,7 +87,9 @@ UI なしで記事と作品を型付きで読み出せる状態にする。
 
 1. **unified 移植** — remark: frontmatter / gemoji / denden-ruby / math / link-card、`remarkRehype`（`allowDangerousHtml`, `footnoteLabel: "脚注"`）、rehype: slug / autolink-headings / katex / unwrap-images
 2. **目次収集**（`headings.ts`）— depth ≤ 3
-3. **expressive-code**（`highlight.ts`）— テーマ・プラグイン・`defaultProps` を移植。**CSS を手動注入**（自動注入がない）。
+3. **expressive-code**（`highlight.ts`）— テーマ・プラグイン・`defaultProps` を移植
+   - **CSS と JS は `rehype-expressive-code` が hast へ自動注入する**（`codeStyles()` と完全一致する 24 KB が木の中にある）。`<head>` にも入れると二重になる
+   - `.use()` の順序に相互依存がある（slug/autolink → katex → expressive-code → raw）。理由は `pipeline.ts` のコメントとテストを参照
 4. **hast → React**（`render.tsx`）— `toReact(tree, components)` として**汎用に保つ**。差し替え表は `components/MarkdownComponent.tsx` が供給する
 5. KaTeX CSS を `globals.css` から `@import` (optional)
 
@@ -99,14 +107,29 @@ UI なしで記事と作品を型付きで読み出せる状態にする。
 
 記事 1 本がブラウザで正しく読める状態にする。**最初の大きなマイルストーン。**
 
-1. **`src/routes.ts`** — `{ path, indexable, render }` の配列。この時点では記事詳細のみ
-   - ページ群を作る `paginatedRoutes` ヘルパーをここに置く（一覧・タグで 4 回使う）
-2. **`scripts/build.ts`** — ルートテーブルを走査して `out/` へ書き出し
-3. **`scripts/dev.ts`** — **同じ `routes.ts` を使うオンデマンド生成**（§7.3）。ライブリロードは Phase 7
-4. **コンポーネント第 1 弾** — `Layout` / `Header` / `Footer` / `Top` / `Back` / `ArticleToc`
+`routes.ts` は Phase 5 相当まで生成済みだが、**この Phase で書くページは `ArticlePage` だけ**とする。
+残りのページは空のままにし、`build.ts` が未実装ページを飛ばす。縦に 1 本通す原則を優先する。
+
+1. **`src/routes.ts` の補完** — 生成箇所が 4 つに集まっている今のうちに済ませる
+   - **`indexable` を `Route` に追加**（Phase 6 のサイトマップが `filter(r => r.indexable)` を前提にしている）。詳細ページと一覧 1 ページ目のみ `true`、タグ別とページネーション 2 ページ目以降は `false`
+   - ページ名をファイル名に合わせる（`About` → `AboutPage`）。ビルドがページ名からコンポーネントを引くため、機械的に対応している必要がある
+   - `render` は持たせない。ページ名の文字列で参照し、実体の解決はビルド側に置く（`routes.ts` が全ページを import しないため）
+2. **`scripts/build.ts`** — コンテンツを読み込み → `buildRoutes` → `out/` へ書き出し
+   - 出力は `build.format: "file"` 相当（`/articles/2.html`）
+   - **未実装ページはスキップ**する
+   - **下書きの除外をここで行う**（`published: false`。本番のみ除外し、dev では表示する）
+3. **コンポーネント第 1 弾** — `Layout` / `Header` / `Footer` / `Top` / `Back` / `ArticleToc`（`src/layouts/` は未作成なので新規に切る）
    - `.astro` → React JSX（`class` → `className`、`<slot />` の書き換え）
    - **Tailwind ユーティリティをセマンティックなクラス名へ**
+   - expressive-code の CSS は木に入っているので `<head>` に足さない（Phase 2 の注記）
+4. **`ArticlePage`** — 目次・本文・前後リンク
 5. `globals.css` と `public/` を `out/` へコピー
+6. **`scripts/dev.ts`** — **同じ `routes.ts` を使うオンデマンド生成**（§7.3）。ライブリロードは Phase 7
+
+### テスト
+
+`indexable` の割り当て（タグ別・2 ページ目以降が `false`）/ 下書きが本番ビルドで除外され dev では残ること /
+`out/` に想定のパスが生成されること / **`src/features/**` が `components` などを import していないこと**（構成の規則。ここで入れる）
 
 ### 完了条件
 
@@ -133,12 +156,13 @@ AVIF が出力され `aspect-ratio` が付く / **2 回目のビルドで画像�
 ## Phase 5: 残りのページ
 
 - **コンポーネント第 2 弾** — `ArticlesList` / `PageBar` / `Gallery` / `GalleryRow` / `TopArticle` / `SNSList` / `shareButton`
-- 記事一覧・記事タグ別・作品一覧・作品詳細・作品タグ別・About・404 を `routes.ts` に追加
+- 残りのページ（`ArticlesList` / `ArtworksList` / `ArtworkPage` / `AboutPage` / `NotFoundPage`）を実装し、Phase 3 のスキップを解消する
+  - **ルート自体は `routes.ts` に生成済み**。ただし 404 だけはルートが無いので追加する
 - `scripts/new-artwork.ts`（[03](./architectures/03-cms.md) §1）
 
 ### 完了条件
 
-85 ページ生成 / `out/404.html` が存在 / 下書きが本番ビルドに含まれない
+93 ページ生成（本番は下書きを除いた数）/ `out/404.html` が存在 / 下書きが本番ビルドに含まれない
 
 ---
 
@@ -165,10 +189,13 @@ AVIF が出力され `aspect-ratio` が付く / **2 回目のビルドで画像�
 
 ---
 
-## Phase 8: CI / CD
+## Phase 8: CI / CD（完了・前倒し）
 
-- `ci.yml` — `bunx astro sync` を削除、Astro キャッシュを `.cache/` に差し替え、**`bun test` を追加**
-- `deploy.yml` は**変更不要**
+- トリガーを持つ入口を `main.yml` 1 本にし、各工程を `_ci.yml` / `_build.yml` / `_deploy.yml` へ切り出した
+  - `_ci.yml` は Lint & Format / Typecheck / Test を**並列実行**。共通のセットアップは `.github/actions/setup`
+  - デプロイの条件は `main.yml` の `deploy` ジョブに置き、CI 側から入出力を排した
+  - ブランチ保護は `CI Success` ジョブのみを見ればよい
+- 残件: `bun run build` が成果物を出さないため、`upload-artifact` は空振りする（Phase 3 で解消）
 
 ---
 
@@ -187,7 +214,7 @@ AVIF が出力され `aspect-ratio` が付く / **2 回目のビルドで画像�
 | リスク                                 | 対処                                                                                                        |
 | -------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
 | 画像パイプラインが重い                 | 独立フェーズにしてある。ステージ境界を切ってあるので最悪 sharp を CLI（`vips` / `avifenc`）に差し替えられる |
-| expressive-code の CSS 注入が動かない  | **Phase 2 で早期に潰す**。最悪 Shiki 直接利用へ後退（枠線・折りたたみを失う）                               |
+| ~~expressive-code の CSS 注入が動かない~~ | **解消**。Phase 2 で確認したとおり hast へ自動注入される                                                    |
 | ルビ・KaTeX の出力が変わる             | Phase 2 のスナップショットと Phase 9 の差分比較で検出                                                       |
 | 作品の `date` 割り当てで並び順が変わる | Phase 1 でテストにより順序を固定                                                                            |
 | タグ enum 化で URL が変わる            | 上記 Phase 1 の注記を参照                                                                                   |
