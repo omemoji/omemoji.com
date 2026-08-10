@@ -81,7 +81,7 @@ UI なしで記事と作品を型付きで読み出せる状態にする。
 
 1. **unified 移植** — remark: frontmatter / gemoji / denden-ruby / math / link-card、`remarkRehype`（`allowDangerousHtml`, `footnoteLabel: "脚注"`）、rehype: slug / autolink-headings / katex / unwrap-images
 2. **目次収集**（`headings.ts`）— depth ≤ 3
-3. **expressive-code**（`highlight.ts`）— テーマ・プラグイン・`defaultProps` を移植。**CSS を手動注入**（自動注入がない）。**Caddyfile 文法をディスクキャッシュ**
+3. **expressive-code**（`highlight.ts`）— テーマ・プラグイン・`defaultProps` を移植。**CSS を手動注入**（自動注入がない）。
 4. **hast → React**（`render.tsx`）— `toReact(tree, components)` として**汎用に保つ**。差し替え表は `components/MarkdownComponent.tsx` が供給する
 5. KaTeX CSS を `globals.css` から `@import`
 
@@ -91,7 +91,7 @@ UI なしで記事と作品を型付きで読み出せる状態にする。
 
 ### 完了条件
 
-実際の記事 20 本が例外なく変換でき、**ネットワークを切断してもビルドが通る**
+実際の記事 20 本が例外なく変換できる
 
 ---
 
