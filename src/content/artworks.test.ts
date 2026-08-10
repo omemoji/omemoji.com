@@ -1,28 +1,31 @@
 import { expect, test } from "bun:test";
+import fs from "node:fs";
 import path from "node:path";
 
 import { loadArtworks } from "@/content/artworks";
 
-const artworks = loadArtworks(path.join(import.meta.dirname, "../../content/artworks"));
+const baseDir = path.join(import.meta.dirname, "../../content/artworks");
+const artworks = loadArtworks(baseDir);
 
-test("作品を1件以上ロードする", () => {
+test(`全ての作品がスキーマを通る（${artworks.length} 件）`, () => {
   expect(artworks.length).toBeGreaterThan(0);
 });
 
-test("先頭と末尾は異なる作品である", () => {
-  expect(artworks.length).toBeGreaterThan(1);
-  expect(artworks[0]?.id).not.toBe(artworks.at(-1)?.id);
+test("id がサイト全体で一意である", () => {
+  const ids = artworks.map((artwork) => artwork.id);
+  expect(new Set(ids).size).toBe(ids.length);
 });
 
-test.each([
-  ["先頭", artworks[0]],
-  ["末尾", artworks.at(-1)],
-])("%s の作品が必須フィールドを持つ", (_position, artwork) => {
-  expect(artwork).toMatchObject({
-    id: expect.any(String),
-    title: expect.any(String),
-    date: expect.any(String),
-    src: expect.any(String),
-    tags: expect.any(Array),
-  });
+test("id の昇順に並んでいる", () => {
+  const ids = artworks.map((artwork) => artwork.id);
+  expect(ids).toEqual([...ids].sort((a, b) => a.localeCompare(b)));
+});
+
+test("全ての作品の src が実在する", () => {
+  // スキーマは文字列であることしか見ないため、ファイルの有無はここで検査する
+  const missing = artworks
+    .map((artwork) => path.join(baseDir, artwork.id, artwork.src))
+    .filter((file) => !fs.existsSync(file));
+
+  expect(missing).toEqual([]);
 });
