@@ -1,7 +1,11 @@
-import { expect, test } from "bun:test";
+import { describe, expect, test } from "bun:test";
 
-import { routes } from "@/routes";
+import { ARTWORKS_PER_PAGE } from "@/config";
+import type { Artwork } from "@/content/artworks";
+import { buildRoutes } from "@/routes";
 import { articles, artworks } from "@/test/content";
+
+const routes = buildRoutes({ articles, artworks });
 
 const listRoutes = routes.filter(
   (route) => route.page === "ArticlesList" || route.page === "ArtworksList"
@@ -16,13 +20,13 @@ const listGroups = Object.entries(
   pages: [...group].sort((a, b) => a.props.page - b.props.page),
 }));
 
+const duplicatesOf = (paths: string[]): string[] =>
+  paths.filter((p, index) => paths.indexOf(p) !== index);
+
 test(`パスが重複しない（全 ${routes.length} ルート）`, () => {
   // /artworks/<ページ番号> と /artworks/<id> は名前空間を共有している。
   // 現に id が 2022 / 2023 の作品があり、衝突しても型では防げない
-  const paths = routes.map((route) => route.path);
-  const duplicated = paths.filter((p, index) => paths.indexOf(p) !== index);
-
-  expect(duplicated).toEqual([]);
+  expect(duplicatesOf(routes.map((route) => route.path))).toEqual([]);
 });
 
 test(`一覧のページ番号が 1 からの連番である（${listGroups.length} 一覧）`, () => {
@@ -110,4 +114,30 @@ test(`全ての記事にちょうど 1 つの詳細ページがある（${articl
   expect(paths.toSorted()).toEqual(
     articles.map((article) => `/articles/${article.slug}`).toSorted()
   );
+});
+
+describe("合成データ", () => {
+  const artwork = (id: string, date: string): Artwork => ({
+    id,
+    title: id,
+    date: new Date(date),
+    src: `${id}.png`,
+    tags: ["Illustration"],
+  });
+
+  test("ページ番号と衝突する id を重複検査が捕まえる", () => {
+    const artworks = [...Array(ARTWORKS_PER_PAGE + 1)].map((_, index) =>
+      // id が "2" の作品は、2 ページ目の URL と同じ /artworks/2 になる
+      artwork(index === 0 ? "2" : `artwork-${index}`, "2026-01-01")
+    );
+    const paths = buildRoutes({ articles: [], artworks }).map((route) => route.path);
+
+    expect(duplicatesOf(paths)).toEqual(["/artworks/2"]);
+  });
+
+  test("コンテンツが空でも一覧ページは存在する", () => {
+    const paths = buildRoutes({ articles: [], artworks: [] }).map((route) => route.path);
+
+    expect(paths).toEqual(["/", "/artworks", "/articles"]);
+  });
 });
