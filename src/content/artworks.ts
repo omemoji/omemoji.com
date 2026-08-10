@@ -2,13 +2,16 @@ import fs from "node:fs";
 import path from "node:path";
 import * as z from "zod";
 
+import { TAGS } from "@/content/tags";
+
 export const artworkSchema = z.object({
   $schema: z.string().optional(),
   title: z.string(),
   description: z.string().optional(),
-  date: z.string(),
+  // 変換は付けない。z.toJSONSchema が変換を含むスキーマを表現できないため
+  date: z.iso.date(),
   src: z.string(),
-  tags: z.array(z.string()),
+  tags: z.array(z.enum(TAGS)),
   href: z.string().optional(),
 });
 
