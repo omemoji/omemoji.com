@@ -14,15 +14,19 @@ type ListProps<T> = {
   tag?: string;
 };
 
-type PageProps = {
+export type PageProps = {
   AboutPage: undefined;
   ArticlesList: ListProps<Article>;
   ArtworksList: ListProps<Artwork>;
-  ArticlePage: { article: Article };
+  /**
+   * 前後リンクは日付の新旧で表す。articles は降順に並んでいるが、
+   * 「前 / 次」だけでは配列順か時系列かが曖昧になるため名前で固定する。
+   */
+  ArticlePage: { article: Article; older?: Article; newer?: Article };
   ArtworkPage: { artwork: Artwork };
 };
 
-type Route = {
+export type Route = {
   [P in keyof PageProps]: {
     path: string;
     /** サイトマップに載せるか。タグ別とページネーション 2 ページ目以降は false */
@@ -92,12 +96,18 @@ export function buildRoutes({ articles, artworks }: Content): Route[] {
     props: { artwork },
   }));
 
-  const articleRoutes: Route[] = articles.map((article) => ({
-    path: `/articles/${article.slug}`,
-    indexable: true,
-    page: "ArticlePage",
-    props: { article },
-  }));
+  // articles は日付の降順。1 つ後ろが古い記事、1 つ前が新しい記事になる
+  const articleRoutes: Route[] = articles.map((article, index) => {
+    const older = articles[index + 1];
+    const newer = articles[index - 1];
+
+    return {
+      path: `/articles/${article.slug}`,
+      indexable: true,
+      page: "ArticlePage",
+      props: { article, ...(older ? { older } : {}), ...(newer ? { newer } : {}) },
+    };
+  });
 
   return [
     { path: "/", indexable: true, page: "AboutPage" },

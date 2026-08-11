@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "scripts": {
     "build": "bun run scripts/build.ts",
-    "dev": "bun run scripts/dev.ts",
+    "dev": "bun --hot scripts/dev.ts",
     "generate:schema": "bun run scripts/gen-schema.ts && biome check --fix content/artworks/_schema.json",
     "lint": "biome lint .",
     "lint:fix": "biome lint --fix .",
@@ -41,6 +41,7 @@
     "remark-rehype": "11.1.2",
     "satori": "0.29.0",
     "sharp": "0.35.3",
+    "simple-icons": "^16.28.0",
     "unified": "11.0.5",
     "unist-util-visit": "5.1.0",
     "yaml": "2.9.0",
