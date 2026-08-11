@@ -15,6 +15,7 @@ import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import { unified } from "unified";
 
+import { rewriteImageUrls } from "@/features/image/assets";
 import { expressiveCodeOptions, getRenderer } from "@/features/markdown/highlight";
 import remarkLinkcard from "@/features/markdown/plugins/remark-link-card";
 
@@ -54,9 +55,17 @@ const processor = unified()
   .use(rehypeUnwrapImages)
   .freeze();
 
+type Options = {
+  /** 本文中の相対的な画像参照を解決する基点。features/image の imageBase が供給する */
+  imageBase?: string;
+};
+
 /** Markdown 本文を hast へ変換する */
-export async function mdToHast(markdown: string): Promise<HastRoot> {
+export async function mdToHast(markdown: string, options: Options = {}): Promise<HastRoot> {
   const mdast = processor.parse(markdown) satisfies MdastRoot;
   // expressive-code の変換が非同期のため、同期版は使わない
-  return (await processor.run(mdast)) satisfies HastRoot;
+  const tree = (await processor.run(mdast)) satisfies HastRoot;
+
+  // プロセッサは freeze して使い回すため、記事ごとに変わる値はここで適用する
+  return options.imageBase ? rewriteImageUrls(tree, options.imageBase) : tree;
 }

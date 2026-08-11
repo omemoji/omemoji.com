@@ -1,8 +1,9 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { buildRoutes } from "@/routes";
-import { loadContent, publicDir, renderRoute, stylesheet } from "./build";
+import { collectImages } from "@/features/image/assets";
+import { buildRoutes, type Content } from "@/routes";
+import { contentDir, imageSources, loadContent, publicDir, renderRoute, stylesheet } from "./build";
 
 // 分割代入で受ける。process.env はインデックスシグネチャを持つため、
 // ドットアクセスは tsconfig の noPropertyAccessFromIndexSignature に触れ、
@@ -19,18 +20,29 @@ const normalize = (pathname: string): string => {
   return stripped === "" ? "/" : stripped;
 };
 
-/** public/ 配下と globals.css を返す。ビルドが out/ へ複製するのと同じ 2 つ */
-function staticResponse(pathname: string): Response | undefined {
+const fileResponse = (file: string, root: string): Response | undefined => {
+  // 指定した根の外へ出る参照を弾く
+  if (!file.startsWith(root) || !fs.existsSync(file) || !fs.statSync(file).isFile()) {
+    return undefined;
+  }
+  return new Response(Bun.file(file));
+};
+
+/** ビルドが out/ へ複製するのと同じものを、原本のまま返す */
+function staticResponse(pathname: string, content: Content): Response | undefined {
   if (pathname === `/${stylesheet.href}`) {
     // out/ へコピーしたものではなく原本を返すため、編集がそのまま反映される
     return new Response(Bun.file(stylesheet.file));
   }
-  const file = path.join(publicDir, pathname);
-  // public/ の外へ出る参照を弾く
-  if (!file.startsWith(publicDir) || !fs.existsSync(file) || !fs.statSync(file).isFile()) {
-    return undefined;
+
+  // 画像は content/ に置いたまま配信する。URL の対応はビルドと同じ表から引くので、
+  // dev だけ別の場所を指すということが起きない
+  const image = collectImages(imageSources(content)).find(({ to }) => `/${to}` === pathname);
+  if (image) {
+    return fileResponse(image.from, contentDir);
   }
-  return new Response(Bun.file(file));
+
+  return fileResponse(path.join(publicDir, pathname), publicDir);
 }
 
 const page = (status: number, title: string, body: string) =>
@@ -47,14 +59,16 @@ const server = Bun.serve({
   async fetch(request) {
     const pathname = decodeURIComponent(new URL(request.url).pathname);
 
-    const asset = staticResponse(pathname);
+    // 毎回読み直す。記事を書き換えたらリロードだけで反映される。
+    // 下書きも表示する（build.ts は本番として除外する）
+    const content = loadContent({ includeDrafts: true });
+
+    const asset = staticResponse(pathname, content);
     if (asset) {
       return asset;
     }
 
-    // 毎回読み直す。記事を書き換えたらリロードだけで反映される。
-    // 下書きも表示する（build.ts は本番として除外する）
-    const routes = buildRoutes(loadContent({ includeDrafts: true }));
+    const routes = buildRoutes(content);
     const route = routes.find((r) => r.path === normalize(pathname));
 
     if (!route) {

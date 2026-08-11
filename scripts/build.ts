@@ -5,6 +5,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 
 import { loadArticles } from "@/content/articles";
 import { loadArtworks } from "@/content/artworks";
+import { collectImages, type ImageSource } from "@/features/image/assets";
 import ArticlePage from "@/pages/ArticlePage";
 import { buildRoutes, type Content, type PageProps, type Route } from "@/routes";
 
@@ -37,6 +38,25 @@ const assets: { from: string; to: string }[] = [
   { from: publicDir, to: "." },
   { from: stylesheet.file, to: stylesheet.href },
 ];
+
+/**
+ * コンテンツに同梱された画像の複製元を列挙する。
+ * 配置と参照 URL の対応は features/image/assets.ts が決める。
+ */
+export function imageSources({ articles, artworks }: Content): ImageSource[] {
+  return [
+    ...articles.map((article) => ({
+      kind: "articles" as const,
+      id: article.slug,
+      dir: path.join(contentDir, "articles", path.dirname(article.file)),
+    })),
+    ...artworks.map((artwork) => ({
+      kind: "artworks" as const,
+      id: artwork.id,
+      dir: path.join(contentDir, "artworks", artwork.id),
+    })),
+  ];
+}
 
 /**
  * コンテンツを読み込む。下書きの扱いはここで決める。
@@ -74,9 +94,11 @@ export async function renderRoute(route: Route): Promise<string | undefined> {
   return `<!doctype html>${renderToStaticMarkup(element)}`;
 }
 
-/** globals.css と public/ を出力先へ複製する */
-export function copyAssets(target: string): string[] {
-  return assets.flatMap(({ from, to }) => {
+/** globals.css・public/・コンテンツの画像を出力先へ複製する */
+export function copyAssets(target: string, content: Content): string[] {
+  const targets = [...assets, ...collectImages(imageSources(content))];
+
+  return targets.flatMap(({ from, to }) => {
     if (!fs.existsSync(from)) {
       return [];
     }
@@ -91,11 +113,12 @@ export function copyAssets(target: string): string[] {
 export async function build(
   target: string = outDir
 ): Promise<{ written: string[]; skipped: Route["page"][] }> {
-  const routes = buildRoutes(loadContent({ includeDrafts: false }));
+  const content = loadContent({ includeDrafts: false });
+  const routes = buildRoutes(content);
 
   // 消えたページの残骸を残さないため作り直す
   fs.rmSync(target, { recursive: true, force: true });
-  copyAssets(target);
+  copyAssets(target, content);
 
   const written: string[] = [];
   const skipped: Route["page"][] = [];

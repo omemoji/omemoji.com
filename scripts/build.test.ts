@@ -3,8 +3,9 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
+import { collectImages } from "@/features/image/assets";
 import { buildRoutes } from "@/routes";
-import { build, loadContent, outputPath } from "./build";
+import { build, imageSources, loadContent, outputPath } from "./build";
 
 const production = loadContent({ includeDrafts: false });
 const dev = loadContent({ includeDrafts: true });
@@ -86,6 +87,34 @@ describe("ビルド出力", () => {
     expect(skipped.length).toBeGreaterThan(0);
     expect(exists("index.html")).toBe(false);
     expect(exists("articles.html")).toBe(false);
+  });
+
+  test("コンテンツの画像が記事・作品ごとに分かれて出力される", () => {
+    const images = collectImages(imageSources(production));
+    const missing = images.map(({ to }) => to).filter((file) => !exists(file));
+
+    expect(missing).toEqual([]);
+    // 平置きなら同名で潰れる。名前空間が効いていることを出力先の一意性で見る
+    expect(new Set(images.map(({ to }) => to)).size).toBe(images.length);
+  });
+
+  test("HTML 内のルート絶対な参照が全て実ファイルに解決する", () => {
+    const htmlFiles = fs
+      .readdirSync(target, { recursive: true, encoding: "utf-8" })
+      .filter((file) => file.endsWith(".html"));
+
+    const broken = htmlFiles.flatMap((file) => {
+      const html = fs.readFileSync(path.join(target, file), "utf-8");
+      return (
+        [...html.matchAll(/(?:src|href)="(\/[^"]+)"/g)]
+          .map((matched) => decodeURIComponent(matched[1] ?? ""))
+          // 拡張子を持つものだけを対象にする。ページへのリンクは別の検査
+          .filter((href) => path.extname(href) !== "" && !exists(href.slice(1)))
+          .map((href) => ({ file, href }))
+      );
+    });
+
+    expect(broken).toEqual([]);
   });
 
   test.each(["globals.css", "favicon.ico", "robots.txt", "omemoji.png"])(

@@ -23,6 +23,7 @@
 - **Phase 1** — スキーマ・作品データ移行・`_schema.json`・ローダ。`src/data/db.json` と `public/images/artworks/` は削除済み
 - **Phase 2** — unified パイプライン・目次収集・expressive-code・hast → React
 - **Phase 3** — `build.ts` / `dev.ts` / `ArticlePage` / 共通レイアウト。記事 15 本が生成できる
+- **Phase 4** — 画像の URL 規則（`/images/<種別>/<id>/<ファイル名>`）・複製・`Image` の境界
 - **Phase 9**（前倒し）— CI を `main.yml` + `_ci.yml` / `_build.yml` / `_deploy.yml` に再編し、`bun test` を追加
 
 ### 未着手
@@ -145,27 +146,44 @@ UI なしで記事と作品を型付きで読み出せる状態にする。
 
 ---
 
-## Phase 4: 画像の配線
+## Phase 4: 画像の配線（完了）
 
 **最適化の前に、画像が「出る」状態にする。** ここは最適化ではなくアセットの配線であり、
 これが無いと Phase 5 の作品ページ（中身が画像そのもの）を検証できない。
 
-1. **画像の URL 設計** — `content/**` の画像を `out/` のどこへ置き、HTML からどう参照するか
-   - Markdown は `![alt](void_linux.jpeg)` と**記事ディレクトリからの相対**で書かれている
-   - 記事は `/articles/<slug>` と `/articles/tag/<tag>` の異なる深さに出るため、参照の解決規則を先に決める
-   - **`build.ts` の出力構造に関わるため、ページが増える前に確定させる**
+1. **画像の URL 設計** — `features/image/assets.ts` が単一の定義元
+
+   ```
+   /images/articles/<slug>/<ファイル名>
+   /images/artworks/<id>/<ファイル名>
+   ```
+
+   **ルート絶対**にする。相対にすると参照元の深さで解決先が変わり、詳細ページでしか正しく動かない。
+   実測では `/articles`（一覧 1 ページ目）と `/articles/2`（2 ページ目）ですら解決先が違う。
+   一覧にサムネイルを並べる Phase 5 で必ず破綻する。
+
+   **`<slug>` / `<id>` で区切る**。平置きにすると記事をまたいだ同名画像が上書きされる
+   （実際に `fastfetch.png` が 2 記事にある）。
+
+   HTML と同じ階層（`out/articles/<slug>/`）に入れる案もあるが、`out/articles/<slug>.html` と
+   ディレクトリが併存し、Cloudflare Pages がどちらへ解決するかの確認が要る。`images/` に分ければ不要。
+
 2. **原寸画像のコピー** — `copyAssets` の延長。`public/` と同じ扱いで `out/` へ複製する
-3. **`Image` / `ImageHandler` の骨格** — この時点の実装は `<img>` に `width` / `height` を付けるだけでよい
-   - **コンポーネントの境界をここで固定する。**Phase 6 は内側だけを差し替え、ページには触れない
-   - 本文画像はキャプションあり、作品画像はなし
+   - dev は `content/` に置いたまま、**ビルドと同じ対応表**から引いて配信する
+3. **`Image` / `ImageHandler` の骨格** — 現時点の実装は原寸をそのまま出すだけ
+   - **コンポーネントの境界をここで固定した。**Phase 6 は内側だけを差し替え、ページには触れない
+   - 本文画像はキャプションあり（`<figure>` + `<figcaption>`）、作品画像はなし
+   - 本文の相対参照（`![alt](fastfetch.png)`）は `mdToHast` の `imageBase` オプションで書き換える。
+     プロセッサは freeze して使い回すため、記事ごとに変わる値はプラグインではなく後処理で当てる
 
 ### テスト
 
-`out/` に全記事・全作品の画像が存在すること / HTML 内の画像参照がすべて実ファイルに解決すること
+`out/` に全記事・全作品の画像が存在すること / **HTML 内のルート絶対な参照がすべて実ファイルに解決すること**（15 ページ・109 参照）
 
 ### 完了条件
 
-`/articles/<slug>` と `/artworks/<id>` の画像がブラウザに表示される（AVIF 化は未対応でよい）
+`/articles/<slug>` の画像がブラウザに表示される（AVIF 化は未対応でよい）。
+`/artworks/<id>` は Phase 5 でページを実装した時点で確認する
 
 ---
 

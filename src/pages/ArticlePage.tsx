@@ -1,6 +1,7 @@
 import ArticleToc from "@/components/ArticleToc";
 import { markdownComponents } from "@/components/MarkdownComponent";
 import TopArticle from "@/components/TopArticle";
+import { imageBase } from "@/features/image/assets";
 import { collectHeadings } from "@/features/markdown/headings";
 import { mdToHast } from "@/features/markdown/pipeline";
 import { toReact } from "@/features/markdown/render";
@@ -12,7 +13,7 @@ import type { PageProps } from "@/routes";
  * ビルド側が await してから静的マークアップへ流す。
  */
 export default async function ArticlePage({ article, older, newer }: PageProps["ArticlePage"]) {
-  const tree = await mdToHast(article.body);
+  const tree = await mdToHast(article.body, { imageBase: imageBase("articles", article.slug) });
   const headings = collectHeadings(tree);
 
   return (
