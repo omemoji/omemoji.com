@@ -3,9 +3,9 @@ import { describe, expect, test } from "bun:test";
 import { ARTWORKS_PER_PAGE } from "@/config";
 import type { Artwork } from "@/content/artworks";
 import { buildRoutes } from "@/routes";
-import { articles, artworks } from "@/tests/content";
+import { about, articles, artworks } from "@/tests/content";
 
-const routes = buildRoutes({ articles, artworks });
+const routes = buildRoutes({ articles, artworks, about });
 
 const listRoutes = routes.filter(
   (route) => route.page === "ArticlesList" || route.page === "ArtworksList"
@@ -111,6 +111,11 @@ describe("実データ", () => {
     // 同じ記事が複数の URL から辿れるため、絞り込みと 2 ページ目以降は除く。
     // パス末尾の数字では判定できない（artwork.idが数字になるケースを許容しているため）
     const wrong = routes.filter((route) => {
+      if (route.page === "NotFoundPage") {
+        // 404 は実在するページではないので載せない
+        return route.indexable !== false;
+      }
+
       const expected =
         route.page === "ArticlesList" || route.page === "ArtworksList"
           ? route.props.page === 1 && route.props.tag === undefined
@@ -153,14 +158,14 @@ describe("合成データ", () => {
       // id が "2" の作品は、2 ページ目の URL と同じ /artworks/2 になる
       artwork(index === 0 ? "2" : `artwork-${index}`, "2026-01-01")
     );
-    const paths = buildRoutes({ articles: [], artworks }).map((route) => route.path);
+    const paths = buildRoutes({ articles: [], artworks, about }).map((route) => route.path);
 
     expect(duplicatesOf(paths)).toEqual(["/artworks/2"]);
   });
 
   test("コンテンツが空でも一覧ページは存在する", () => {
-    const paths = buildRoutes({ articles: [], artworks: [] }).map((route) => route.path);
+    const paths = buildRoutes({ articles: [], artworks: [], about }).map((route) => route.path);
 
-    expect(paths).toEqual(["/", "/artworks", "/articles"]);
+    expect(paths).toEqual(["/", "/artworks", "/articles", "/404"]);
   });
 });

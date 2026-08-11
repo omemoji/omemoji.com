@@ -15,7 +15,9 @@ type ListProps<T> = {
 };
 
 export type PageProps = {
-  AboutPage: undefined;
+  /** about.md の本文。記事と違い 1 件しかないためスキーマを持たない */
+  AboutPage: { body: string };
+  NotFoundPage: undefined;
   ArticlesList: ListProps<Article>;
   ArtworksList: ListProps<Artwork>;
   /**
@@ -23,7 +25,8 @@ export type PageProps = {
    * 「前 / 次」だけでは配列順か時系列かが曖昧になるため名前で固定する。
    */
   ArticlePage: { article: Article; older?: Article; newer?: Article };
-  ArtworkPage: { artwork: Artwork };
+  /** 一覧の帯（GalleryRow）が全作品を必要とするため、詳細でも全件を渡す */
+  ArtworkPage: { artwork: Artwork; artworks: Artwork[] };
 };
 
 export type Route = {
@@ -38,6 +41,8 @@ export type Route = {
 export type Content = {
   articles: Article[];
   artworks: Artwork[];
+  /** about.md の本文 */
+  about: string;
 };
 
 /**
@@ -73,7 +78,7 @@ const paginateRoutes = <T>(
  * 読み込みは呼び出し側（build.ts / dev.ts）の責務とし、ここでは I/O を行わない。
  * dev はファイル変更時に読み直して呼び直すだけで済み、テストは合成データを渡せる。
  */
-export function buildRoutes({ articles, artworks }: Content): Route[] {
+export function buildRoutes({ articles, artworks, about }: Content): Route[] {
   const artworksListRoutes: Route[] = [
     ...paginateRoutes("/artworks", artworks, ARTWORKS_PER_PAGE),
     // タグは実データから集める。TAGS を使うと記事専用タグの空ページが生まれる
@@ -93,7 +98,7 @@ export function buildRoutes({ articles, artworks }: Content): Route[] {
     path: `/artworks/${artwork.id}`,
     indexable: true,
     page: "ArtworkPage",
-    props: { artwork },
+    props: { artwork, artworks },
   }));
 
   // articles は日付の降順。1 つ後ろが古い記事、1 つ前が新しい記事になる
@@ -110,12 +115,14 @@ export function buildRoutes({ articles, artworks }: Content): Route[] {
   });
 
   return [
-    { path: "/", indexable: true, page: "AboutPage" },
+    { path: "/", indexable: true, page: "AboutPage", props: { body: about } },
     // 作品
     ...artworksListRoutes,
     ...artworkRoutes,
     // 記事
     ...articlesListRoutes,
     ...articleRoutes,
+    // 404。Cloudflare Pages が out/404.html を拾う。サイトマップには載せない
+    { path: "/404", indexable: false, page: "NotFoundPage" },
   ];
 }

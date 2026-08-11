@@ -64,14 +64,23 @@ describe("ビルド出力", () => {
     fs.rmSync(target, { recursive: true, force: true });
   });
 
-  test("公開記事のページが全て出力される", () => {
-    const missing = production.articles
-      .map((article) => `articles/${article.slug}.html`)
+  test("全てのルートが出力される", () => {
+    const missing = buildRoutes(production)
+      .map((route) => outputPath(route.path))
       .filter((file) => !exists(file));
 
     expect(missing).toEqual([]);
-    expect(written.length).toBe(production.articles.length);
+    // スキップされるページが無くなったこと自体を検査する
+    expect(skipped).toEqual([]);
+    expect(written.length).toBe(buildRoutes(production).length);
   });
+
+  test.each(["index.html", "404.html", "articles.html", "artworks.html"])(
+    "%s が出力される",
+    (file) => {
+      expect(exists(file)).toBe(true);
+    }
+  );
 
   test("下書きの記事は出力されない", () => {
     const drafts = dev.articles
@@ -80,13 +89,6 @@ describe("ビルド出力", () => {
       .filter((file) => exists(file));
 
     expect(drafts).toEqual([]);
-  });
-
-  test("未実装のページは出力されない", () => {
-    // 実装が済んだらこのテストを消す。スキップが残っている間だけの検査
-    expect(skipped.length).toBeGreaterThan(0);
-    expect(exists("index.html")).toBe(false);
-    expect(exists("articles.html")).toBe(false);
   });
 
   test("コンテンツの画像が記事・作品ごとに分かれて出力される", () => {

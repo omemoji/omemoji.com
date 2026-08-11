@@ -24,12 +24,13 @@
 - **Phase 2** — unified パイプライン・目次収集・expressive-code・hast → React
 - **Phase 3** — `build.ts` / `dev.ts` / `ArticlePage` / 共通レイアウト。記事 15 本が生成できる
 - **Phase 4** — 画像の URL 規則（`/images/<種別>/<id>/<ファイル名>`）・複製・`Image` の境界
+- **Phase 5** — 残りの 5 ページとコンポーネント第 2 弾。**本番ビルドが 85 ページ**を出す
 - **Phase 9**（前倒し）— CI を `main.yml` + `_ci.yml` / `_build.yml` / `_deploy.yml` に再編し、`bun test` を追加
 
 ### 未着手
 
-`pages/**` は `ArticlePage` 以外の 5 ファイルが空（84 ルート中 69 がスキップされる）。
-`features/image/**`、`features/og/**`、`features/link-card/parse.ts` は未着手。
+`features/image/` は配線のみで最適化は未着手。`features/og/**`、`features/link-card/parse.ts` は未着手。
+`scripts/new-artwork.ts` も未着手。
 
 ### ディレクトリ構成
 
@@ -187,19 +188,30 @@ UI なしで記事と作品を型付きで読み出せる状態にする。
 
 ---
 
-## Phase 5: 残りのページ
+## Phase 5: 残りのページ（完了）
 
-サイトとして繋がった状態にする。ここで 84 ルートのスキップが解消される。
+サイトとして繋がった状態にする。スキップは解消され、**本番ビルドは 85 ページ**になった。
 
-- **コンポーネント第 2 弾** — `ArticlesList` / `PageBar` / `Gallery` / `GalleryRow` / `Top` / `Back` / `shareButton`
-- 残りのページ（`ArticlesList` / `ArtworksList` / `ArtworkPage` / `AboutPage` / `NotFoundPage`）を実装し、Phase 3 のスキップを解消する
-  - **ルート自体は `routes.ts` に生成済み**。ただし 404 だけはルートが無いので追加する
-- `scripts/new-artwork.ts`（[03](./architectures/03-cms.md) §1）
+- **コンポーネント第 2 弾** — `ArticlesList` / `PageBar` / `Gallery` / `GalleryRow` / `Top` / `Back` / `ShareButton`
+- 残りのページ（`ArticlesList` / `ArtworksList` / `ArtworkPage` / `AboutPage` / `NotFoundPage`）を実装
+  - **ルート自体は `routes.ts` に生成済み**だった。404 だけはルートが無いので追加した（`indexable: false`）
+  - `about.md` は 1 件しかなく frontmatter も無いため、`content/about.ts` はスキーマを持たない
+- 移植時の判断
+  - 一覧カードは `div` で組む。`article` にすると本文向けの `article h2` の装飾を拾う
+  - ページ送りの URL 規則は `routes.ts` の `paginateRoutes` と同じ（1 ページ目だけ番号を付けない）。
+    **ずれるとリンク先が 404 になる**ため、`PageBar` は基点のパスを受け取る形にした
+  - `PageBar` / `Back` の矢印は `react-icons` を入れず inline SVG にした
+  - `GalleryRow` の初期スクロール位置だけは CSS で決められないため、最小限のスクリプトを添える
+  - `Header` の `category` は省略可能。404 はどのメニューも現在地にしない
 
 ### 完了条件
 
-全ルートが生成される（本番は下書きを除いた数）/ `out/404.html` が存在 / 下書きが本番ビルドに含まれない /
+全ルートが生成される（本番は下書きを除いた 85）/ `out/404.html` が存在 / 下書きが本番ビルドに含まれない /
 `build.ts` の「未実装のページは出力されない」テストを削除できている
+
+### 残件
+
+`scripts/new-artwork.ts`（[03](./architectures/03-cms.md) §1）は未着手
 
 ---
 

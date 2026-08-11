@@ -6,8 +6,8 @@ import { HOST } from "@/config";
 type Props = {
   title: string;
   description: string;
-  /** ヘッダのどのメニューを現在地として示すか */
-  category: Category;
+  /** ヘッダのどのメニューを現在地として示すか。省くとどれも示さない */
+  category?: Category;
   /** 先頭が `/` のルートパス。og:url の組み立てに使う */
   path: string;
   children: ReactNode;

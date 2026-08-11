@@ -6,11 +6,6 @@ const COMMENT_FORM =
 export default function Footer() {
   return (
     <footer className="site-footer">
-      <div className="site-footer-comment">
-        <a href={COMMENT_FORM} target="_blank" rel="noopener">
-          コメントはこちらから
-        </a>
-      </div>
       <div className="site-footer-meta">
         <small>© 2023 - {new Date().getFullYear()} omemoji</small>
         <SNSList />

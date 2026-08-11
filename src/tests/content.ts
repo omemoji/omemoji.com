@@ -1,5 +1,6 @@
 import path from "node:path";
 
+import { loadAbout } from "@/content/about";
 import { loadArticles } from "@/content/articles";
 import { loadArtworks } from "@/content/artworks";
 
@@ -13,5 +14,8 @@ import { loadArtworks } from "@/content/artworks";
 export const articlesDir = path.join(import.meta.dirname, "../../content/articles");
 export const artworksDir = path.join(import.meta.dirname, "../../content/artworks");
 
+export const aboutDir = path.join(import.meta.dirname, "../../content/about");
+
 export const articles = loadArticles(articlesDir);
 export const artworks = loadArtworks(artworksDir);
+export const about = loadAbout(aboutDir);

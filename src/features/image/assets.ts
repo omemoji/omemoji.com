@@ -31,6 +31,10 @@ export const imageBase = (kind: ImageKind, id: string): string =>
 /** 出力先での配置。imageBase と対になる */
 export const imageDir = (kind: ImageKind, id: string): string => path.join(ROOT, kind, id);
 
+/** 1 枚の画像を指す URL。meta.json の src のように、ファイル名が分かっている場合に使う */
+export const imageUrl = (kind: ImageKind, id: string, file: string): string =>
+  `${imageBase(kind, id)}/${encodeURIComponent(file)}`;
+
 export const isImage = (file: string): boolean =>
   EXTENSIONS.includes(path.extname(file).toLowerCase());
 

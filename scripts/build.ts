@@ -3,10 +3,16 @@ import path from "node:path";
 import type { ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
+import { loadAbout } from "@/content/about";
 import { loadArticles } from "@/content/articles";
 import { loadArtworks } from "@/content/artworks";
 import { collectImages, type ImageSource } from "@/features/image/assets";
+import AboutPage from "@/pages/AboutPage";
 import ArticlePage from "@/pages/ArticlePage";
+import ArticlesList from "@/pages/ArticlesList";
+import ArtworkPage from "@/pages/ArtworkPage";
+import ArtworksList from "@/pages/ArtworksList";
+import NotFoundPage from "@/pages/NotFoundPage";
 import { buildRoutes, type Content, type PageProps, type Route } from "@/routes";
 
 export const rootDir = path.join(import.meta.dirname, "..");
@@ -23,7 +29,12 @@ export const outDir = path.join(rootDir, "out");
 const pages: {
   [P in keyof PageProps]?: (props: PageProps[P]) => ReactNode | Promise<ReactNode>;
 } = {
+  AboutPage,
+  NotFoundPage,
+  ArticlesList,
   ArticlePage,
+  ArtworksList,
+  ArtworkPage,
 };
 
 /** そのまま配信する静的ファイル。dev サーバもこの 2 つを見る */
@@ -70,6 +81,7 @@ export function loadContent({ includeDrafts }: { includeDrafts: boolean }): Cont
   return {
     articles: includeDrafts ? articles : articles.filter((article) => article.published),
     artworks: loadArtworks(path.join(contentDir, "artworks")),
+    about: loadAbout(path.join(contentDir, "about")),
   };
 }
 

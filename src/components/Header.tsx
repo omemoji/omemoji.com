@@ -7,7 +7,8 @@ const menus = [
 
 export type Category = (typeof menus)[number]["category"];
 
-export default function Header({ category }: { category: Category }) {
+/** category を省くとどのメニューも現在地にならない（404 など、一覧に属さないページ） */
+export default function Header({ category }: { category?: Category | undefined }) {
   return (
     <header className="site-header">
       <h2 className="site-title">
