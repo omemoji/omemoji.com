@@ -16,12 +16,20 @@ jobs:
     uses: ./.github/workflows/_ci.yml
 
   # 検査が通ってからビルドする（壊れたコードを成果物にしないため）
+  #
+  # ビルドが通ること自体は scripts/build.test.ts が実データで検証しているため、
+  # ここは成果物を作るためだけに動かす。デプロイしないなら回す意味が無い。
+  # 条件は deploy と共通で、この 1 箇所で両方を制御する（deploy は needs: build）
   build:
     name: Build
     needs: ci
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     uses: ./.github/workflows/_build.yml
 
   # 全ジョブの成否を代表する。ブランチ保護はこのジョブだけを見ればよい
+  #
+  # build は PR では skip されるが、needs には残す。skip は failure でも cancelled でも
+  # ないため PR の判定は素通りし、main への push では成否がそのまま反映される
   ci-success:
     name: CI Success
     needs: [ci, build]
@@ -36,18 +44,12 @@ jobs:
           exit 1
       - run: echo "All checks passed"
 
+  # 動く条件は build が持つ。build が skip されればこのジョブも skip される
   deploy:
     name: Deploy
     needs: build
-    # main への push、または dependabot の major 更新 PR（patch は自動マージされるためプレビュー不要）
-    if: >-
-      ${{
-        (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
-        (github.actor == 'dependabot[bot]' && startsWith(github.head_ref, 'dependabot/bun/major'))
-      }}
     permissions:
       contents: read
       deployments: write
-      pull-requests: write
     secrets: inherit
     uses: ./.github/workflows/_deploy.yml
