@@ -57,11 +57,16 @@ describe("ビルド出力", () => {
 
   const exists = (relative: string) => fs.existsSync(path.join(target, relative));
 
-  beforeAll(async () => {
-    target = fs.mkdtempSync(path.join(os.tmpdir(), "omemoji-build-"));
-    // キャッシュは手元・CI と共有する。変換をやり直さずに済む
-    ({ written, skipped, images } = await build(target));
-  });
+  beforeAll(
+    async () => {
+      target = fs.mkdtempSync(path.join(os.tmpdir(), "omemoji-build-"));
+      // キャッシュは手元・CI と共有する。変換をやり直さずに済む
+      ({ written, skipped, images } = await build(target));
+    },
+    // 画像のキャッシュが冷えていると変換に 10 秒以上かかる。既定の 5 秒では足りない。
+    // しかもフックが時間切れになっても変換は走り続け、後続のテストから CPU を奪う
+    120_000
+  );
 
   afterAll(() => {
     fs.rmSync(target, { recursive: true, force: true });

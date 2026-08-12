@@ -35,4 +35,13 @@ jobs:
         with:
           fetch-depth: 1
       - uses: ./.github/actions/setup
+
+      # 統合テストが実際にビルドする。Build ジョブと同じキャッシュを共有して変換を避ける
+      - name: Restore image cache
+        uses: actions/cache@v4
+        with:
+          path: .cache/images
+          key: images-${{ hashFiles('content/**/*.png', 'content/**/*.jpg', 'content/**/*.jpeg', 'content/**/*.webp') }}
+          restore-keys: images-
+
       - run: bun run test:coverage
