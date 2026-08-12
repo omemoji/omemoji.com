@@ -1,5 +1,6 @@
 import type { Artwork } from "@/content/artworks";
 import { imageUrl } from "@/features/image/assets";
+import { resolveImage } from "@/features/image/manifest";
 
 type Props = {
   artworks: Artwork[];
@@ -19,20 +20,25 @@ export default function GalleryRow({ artworks, current }: Props) {
   return (
     <div className="gallery-row" data-current={index}>
       <div className="gallery-row-track">
-        {artworks.map((artwork) => (
-          <a
-            key={artwork.id}
-            href={`/artworks/${artwork.id}`}
-            aria-current={artwork.id === current ? "page" : undefined}
-          >
-            <img
-              src={imageUrl("artworks", artwork.id, artwork.src)}
-              alt={artwork.title}
-              loading="lazy"
-              decoding="async"
-            />
-          </a>
-        ))}
+        {artworks.map((artwork) => {
+          // 帯も正方形に切り抜くため、寸法は付けず URL の差し替えだけを行う
+          const src = imageUrl("artworks", artwork.id, artwork.src);
+
+          return (
+            <a
+              key={artwork.id}
+              href={`/artworks/${artwork.id}`}
+              aria-current={artwork.id === current ? "page" : undefined}
+            >
+              <img
+                src={resolveImage(src)?.src ?? src}
+                alt={artwork.title}
+                loading="lazy"
+                decoding="async"
+              />
+            </a>
+          );
+        })}
       </div>
     </div>
   );
