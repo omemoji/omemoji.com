@@ -48,16 +48,32 @@ export function displaySize(
 }
 
 /**
- * キャッシュのキー。入力バイト + 変換パラメータ + パイプラインのバージョン。
+ * 変換器のバージョン。AVIF の出力を左右するものだけを拾う。
+ *
+ * sharp を上げてもキーが変わらないと、古いエンコーダの出力がキャッシュから
+ * 出続ける。CI は緑のまま生成物だけが据え置かれ、一番気付きにくい形になる。
+ * pango や fontconfig まで含めると無関係な更新で全件を焼き直すことになるため入れない。
+ */
+export const encoderVersion = (): string =>
+  JSON.stringify(
+    (["sharp", "vips", "aom", "heif"] as const).map((lib) => `${lib}@${sharp.versions[lib]}`)
+  );
+
+/**
+ * キャッシュのキー。入力バイト + 変換パラメータ + パイプラインのバージョン + 変換器のバージョン。
  *
  * ファイル名や mtime は含めない。同じ画像が別の記事にあれば変換は 1 回で済み、
  * `git clone` で mtime が変わっても作り直しにならない。
  */
-export function cacheKey(bytes: Uint8Array, params: ImageParams): string {
+export function cacheKey(
+  bytes: Uint8Array,
+  params: ImageParams,
+  encoder: string = encoderVersion()
+): string {
   return crypto
     .createHash("sha256")
     .update(bytes)
-    .update(JSON.stringify({ ...params, version: PIPELINE_VERSION }))
+    .update(JSON.stringify({ ...params, version: PIPELINE_VERSION, encoder }))
     .digest("hex")
     .slice(0, 16);
 }

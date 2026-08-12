@@ -9,6 +9,7 @@ import {
   AVIF_PARAMS,
   cacheKey,
   displaySize,
+  encoderVersion,
   measureImages,
   optimizeImages,
 } from "@/features/image/optimize";
@@ -45,6 +46,20 @@ describe("キャッシュのキー", () => {
   test("パラメータが違えば違う", () => {
     // ここが効かないと quality を変えても古い出力が残る
     expect(cacheKey(bytes, AVIF_PARAMS)).not.toBe(cacheKey(bytes, { ...AVIF_PARAMS, quality: 50 }));
+  });
+
+  test("変換器のバージョンが違えば違う", () => {
+    // sharp を上げても当たり続けると、古いエンコーダの出力が残る
+    expect(cacheKey(bytes, AVIF_PARAMS, "sharp@0.35.3")).not.toBe(
+      cacheKey(bytes, AVIF_PARAMS, "sharp@0.36.0")
+    );
+  });
+
+  test("変換器のバージョンには AVIF の出力を左右するものだけが入る", () => {
+    // 無関係な更新（フォント周りなど）で全件の焼き直しにならないこと
+    expect(encoderVersion()).toContain("vips@");
+    expect(encoderVersion()).toContain("aom@");
+    expect(encoderVersion()).not.toContain("pango");
   });
 });
 
