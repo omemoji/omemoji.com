@@ -289,7 +289,8 @@ AVIF が出力され `aspect-ratio` が付く / **2 回目のビルドで画像�
 
 ## Phase 10: 検証と切り替え
 
-1. **本番同等ビルド**（dev の簡略化を無効化）
+1. **本番同等ビルド**（dev の簡略化を無効化）— `bun run build && bun run preview` で `out/` をそのまま配信して見る。
+   `scripts/preview.ts` は拡張子の補完（`/articles/2` → `articles/2.html`）だけを Cloudflare Pages と同じに真似る
 2. **現行サイトとの差分比較** — `https://omemoji.com/` から全ページを取得し、**テキスト内容**を照合するスクリプトを書く（クラス名は変わるので完全一致は目指さない）
 3. **リンク切れ検査** — `out/` 内の内部リンクの参照先がすべて存在すること
 4. `README.md` の「使用している技術」を更新

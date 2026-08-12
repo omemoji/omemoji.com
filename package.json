@@ -5,6 +5,7 @@
   "scripts": {
     "build": "bun run scripts/build.ts",
     "dev": "bun --hot scripts/dev.ts",
+    "preview": "bun run scripts/preview.ts",
     "generate:schema": "bun run scripts/gen-schema.ts && biome check --fix content/artworks/_schema.json",
     "lint": "biome lint .",
     "lint:fix": "biome lint --fix .",
