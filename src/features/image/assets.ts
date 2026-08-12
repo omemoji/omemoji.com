@@ -13,8 +13,13 @@ export type ImageKind = "articles" | "artworks";
 /** 複製元のディレクトリと、それが属するコンテンツ */
 export type ImageSource = { kind: ImageKind; id: string; dir: string };
 
-/** 複製元の絶対パスと、出力先ディレクトリからの相対パス */
-export type ImageAsset = { from: string; to: string };
+/**
+ * 複製元の絶対パスと、出力先ディレクトリからの相対パス、そして配信 URL。
+ *
+ * url は最適化のマニフェストのキーになる。ここで `imageUrl` から起こしておくことで、
+ * ページ側が組み立てる URL と必ず同じ文字列になる（エンコードのずれが起きない）。
+ */
+export type ImageAsset = { from: string; to: string; url: string };
 
 /**
  * 画像を参照するときの基点 URL。
@@ -47,6 +52,7 @@ export function collectImages(sources: ImageSource[]): ImageAsset[] {
       .map((entry) => ({
         from: path.join(dir, entry.name),
         to: path.join(imageDir(kind, id), entry.name),
+        url: imageUrl(kind, id, entry.name),
       }))
   );
 }
