@@ -1,8 +1,10 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { collectImages } from "@/features/image/assets";
-import { buildRoutes, type Content } from "@/routes";
+import { collectImages, type ImageAsset } from "@/features/image/assets";
+import { setImageManifest } from "@/features/image/manifest";
+import { type ImageManifest, measureImages } from "@/features/image/optimize";
+import { buildRoutes } from "@/routes";
 import { contentDir, imageSources, loadContent, publicDir, renderRoute, stylesheet } from "./build";
 
 // 分割代入で受ける。process.env はインデックスシグネチャを持つため、
@@ -29,7 +31,7 @@ const fileResponse = (file: string, root: string): Response | undefined => {
 };
 
 /** ビルドが out/ へ複製するのと同じものを、原本のまま返す */
-function staticResponse(pathname: string, content: Content): Response | undefined {
+function staticResponse(pathname: string, images: ImageAsset[]): Response | undefined {
   if (pathname === `/${stylesheet.href}`) {
     // out/ へコピーしたものではなく原本を返すため、編集がそのまま反映される
     return new Response(Bun.file(stylesheet.file));
@@ -37,12 +39,28 @@ function staticResponse(pathname: string, content: Content): Response | undefine
 
   // 画像は content/ に置いたまま配信する。URL の対応はビルドと同じ表から引くので、
   // dev だけ別の場所を指すということが起きない
-  const image = collectImages(imageSources(content)).find(({ to }) => `/${to}` === pathname);
+  const image = images.find(({ to }) => `/${to}` === pathname);
   if (image) {
     return fileResponse(image.from, contentDir);
   }
 
   return fileResponse(path.join(publicDir, pathname), publicDir);
+}
+
+/**
+ * 寸法マニフェストを覚えておく。AVIF の変換は dev では走らせない（1 枚 100ms 近くかかる）。
+ *
+ * 測るのはヘッダだけだが、それでも全リクエストで 100 枚読むのは無駄なので、
+ * ファイルの構成と更新時刻が変わらない限り測り直さない。
+ */
+let measured: { stamp: string; manifest: ImageManifest } | undefined;
+
+async function imageManifest(images: ImageAsset[]): Promise<ImageManifest> {
+  const stamp = images.map(({ from }) => `${from}:${fs.statSync(from).mtimeMs}`).join("\n");
+  if (measured?.stamp !== stamp) {
+    measured = { stamp, manifest: await measureImages(images) };
+  }
+  return measured.manifest;
 }
 
 const page = (status: number, title: string, body: string) =>
@@ -62,11 +80,15 @@ const server = Bun.serve({
     // 毎回読み直す。記事を書き換えたらリロードだけで反映される。
     // 下書きも表示する（build.ts は本番として除外する）
     const content = loadContent({ includeDrafts: true });
+    const images = collectImages(imageSources(content));
 
-    const asset = staticResponse(pathname, content);
+    const asset = staticResponse(pathname, images);
     if (asset) {
       return asset;
     }
+
+    // 原寸を配信したまま寸法だけを出す。本番と同じく場所が確保され、見た目のずれが起きない
+    setImageManifest(await imageManifest(images));
 
     const routes = buildRoutes(content);
     const route = routes.find((r) => r.path === normalize(pathname));

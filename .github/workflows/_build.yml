@@ -12,6 +12,15 @@ jobs:
         with:
           fetch-depth: 1
       - uses: ./.github/actions/setup
+
+      # 画像の変換結果を持ち越す。キーは入力バイトから起こしているので古い結果は当たらない
+      - name: Restore image cache
+        uses: actions/cache@v4
+        with:
+          path: .cache/images
+          key: images-${{ hashFiles('content/**/*.png', 'content/**/*.jpg', 'content/**/*.jpeg', 'content/**/*.webp') }}
+          restore-keys: images-
+
       - run: bun run build
 
       - name: Upload build artifact

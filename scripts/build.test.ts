@@ -4,6 +4,7 @@ import os from "node:os";
 import path from "node:path";
 
 import { collectImages } from "@/features/image/assets";
+import type { OptimizeResult } from "@/features/image/optimize";
 import { buildRoutes } from "@/routes";
 import { build, imageSources, loadContent, outputPath } from "./build";
 
@@ -52,12 +53,14 @@ describe("ビルド出力", () => {
   let target = "";
   let written: string[] = [];
   let skipped: string[] = [];
+  let images: OptimizeResult;
 
   const exists = (relative: string) => fs.existsSync(path.join(target, relative));
 
   beforeAll(async () => {
     target = fs.mkdtempSync(path.join(os.tmpdir(), "omemoji-build-"));
-    ({ written, skipped } = await build(target));
+    // キャッシュは手元・CI と共有する。変換をやり直さずに済む
+    ({ written, skipped, images } = await build(target));
   });
 
   afterAll(() => {
@@ -98,6 +101,27 @@ describe("ビルド出力", () => {
     expect(missing).toEqual([]);
     // 平置きなら同名で潰れる。名前空間が効いていることを出力先の一意性で見る
     expect(new Set(images.map(({ to }) => to)).size).toBe(images.length);
+  });
+
+  test("全ての画像が AVIF として出力される", () => {
+    const raster = collectImages(imageSources(production)).filter(({ from }) =>
+      /\.(png|jpe?g|webp|avif)$/i.test(from)
+    );
+    const missing = raster
+      .map(({ to }) => to.replace(/\.[^.]+$/, ".avif"))
+      .filter((file) => !exists(file));
+
+    expect(missing).toEqual([]);
+    // 変換したかキャッシュから引いたかは問わない。全枚数が処理されていること
+    expect(images.converted + images.cached).toBe(raster.length);
+  });
+
+  test("本文の画像に寸法が付く", () => {
+    const html = fs.readFileSync(path.join(target, "articles/void_linux.html"), "utf-8");
+
+    // レイアウトのずれ（CLS）を防ぐのが目的。マニフェストが描画まで届いていることの確認でもある
+    expect(html).toMatch(/<img[^>]+\.avif"[^>]+width="\d+"[^>]+height="\d+"/);
+    expect(html).toContain("aspect-ratio:");
   });
 
   test("HTML 内のルート絶対な参照が全て実ファイルに解決する", () => {

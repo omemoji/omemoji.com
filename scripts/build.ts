@@ -7,6 +7,8 @@ import { loadAbout } from "@/content/about";
 import { loadArticles } from "@/content/articles";
 import { loadArtworks } from "@/content/artworks";
 import { collectImages, type ImageSource } from "@/features/image/assets";
+import { setImageManifest } from "@/features/image/manifest";
+import { type OptimizeResult, optimizeImages } from "@/features/image/optimize";
 import AboutPage from "@/pages/AboutPage";
 import ArticlePage from "@/pages/ArticlePage";
 import ArticlesList from "@/pages/ArticlesList";
@@ -18,6 +20,8 @@ import { buildRoutes, type Content, type PageProps, type Route } from "@/routes"
 export const rootDir = path.join(import.meta.dirname, "..");
 export const contentDir = path.join(rootDir, "content");
 export const outDir = path.join(rootDir, "out");
+/** ビルドをまたいで残す変換結果。キーに入力バイトを含むので使い回しても古くならない */
+export const imageCacheDir = path.join(rootDir, ".cache/images");
 
 /**
  * 実装済みのページだけを載せる。ここに無いページはスキップされる。
@@ -123,14 +127,22 @@ export function copyAssets(target: string, content: Content): string[] {
 
 /** 出力先を差し替えられるようにしてある。テストが実際の out/ を壊さずに検証するため */
 export async function build(
-  target: string = outDir
-): Promise<{ written: string[]; skipped: Route["page"][] }> {
+  target: string = outDir,
+  { cacheDir = imageCacheDir }: { cacheDir?: string } = {}
+): Promise<{ written: string[]; skipped: Route["page"][]; images: OptimizeResult }> {
   const content = loadContent({ includeDrafts: false });
   const routes = buildRoutes(content);
 
   // 消えたページの残骸を残さないため作り直す
   fs.rmSync(target, { recursive: true, force: true });
   copyAssets(target, content);
+
+  // 描画より先に済ませる。Image が寸法を引けるのはマニフェストを差し込んだ後
+  const images = await optimizeImages(collectImages(imageSources(content)), {
+    outDir: target,
+    cacheDir,
+  });
+  setImageManifest(images.manifest);
 
   const written: string[] = [];
   const skipped: Route["page"][] = [];
@@ -147,12 +159,15 @@ export async function build(
     written.push(outputPath(route.path));
   }
 
-  return { written, skipped };
+  return { written, skipped, images };
 }
 
 if (import.meta.main) {
-  const { written, skipped } = await build();
+  const { written, skipped, images } = await build();
   console.log(`built ${written.length} pages -> ${path.relative(process.cwd(), outDir)}/`);
+  console.log(
+    `images: ${images.converted} converted, ${images.cached} cached, ${images.passthrough} as-is`
+  );
 
   if (skipped.length > 0) {
     const counts = new Map<string, number>();
