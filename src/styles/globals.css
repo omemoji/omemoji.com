@@ -391,10 +391,12 @@
     block-size: auto;
     max-block-size: 540px;
     background-color: var(--bg-artwork);
+    object-fit: contain;
   }
 
   .caption {
-    border-block-start: 4px solid var(--link);
+    color: var(--gray-500);
+    text-align: center;
   }
 
   .tag {
