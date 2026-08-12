@@ -116,12 +116,29 @@ describe("ビルド出力", () => {
     expect(images.converted + images.cached).toBe(raster.length);
   });
 
-  test("本文の画像に寸法が付く", () => {
+  test("本文の画像は AVIF を source に出し、寸法を付ける", () => {
     const html = fs.readFileSync(path.join(target, "articles/void_linux.html"), "utf-8");
 
+    expect(html).toMatch(/<source srcset="[^"]+\.avif" type="image\/avif"\/?>/i);
     // レイアウトのずれ（CLS）を防ぐのが目的。マニフェストが描画まで届いていることの確認でもある
-    expect(html).toMatch(/<img[^>]+\.avif"[^>]+width="\d+"[^>]+height="\d+"/);
+    expect(html).toMatch(/<img[^>]+width="\d+"[^>]+height="\d+"/);
     expect(html).toContain("aspect-ratio:");
+  });
+
+  test("AVIF が出る画像には必ず原寸のフォールバックが付く", () => {
+    const htmlFiles = fs
+      .readdirSync(target, { recursive: true, encoding: "utf-8" })
+      .filter((file) => file.endsWith(".html"));
+
+    // source だけで img が無い picture は、非対応の環境で空白になる
+    const orphans = htmlFiles.filter((file) => {
+      const html = fs.readFileSync(path.join(target, file), "utf-8");
+      return [...html.matchAll(/<picture>(.*?)<\/picture>/gs)].some(
+        (matched) => !matched[1]?.includes("<img")
+      );
+    });
+
+    expect(orphans).toEqual([]);
   });
 
   test("HTML 内のルート絶対な参照が全て実ファイルに解決する", () => {
@@ -132,7 +149,9 @@ describe("ビルド出力", () => {
     const broken = htmlFiles.flatMap((file) => {
       const html = fs.readFileSync(path.join(target, file), "utf-8");
       return (
-        [...html.matchAll(/(?:src|href)="(\/[^"]+)"/g)]
+        // srcset も見る。picture の source が壊れていても img で表示されてしまい気付けない。
+        // React が source の属性を srcSet と大文字混じりで書き出すため i を付ける
+        [...html.matchAll(/(?:src|href|srcset)="(\/[^"]+)"/gi)]
           .map((matched) => decodeURIComponent(matched[1] ?? ""))
           // 拡張子を持つものだけを対象にする。ページへのリンクは別の検査
           .filter((href) => path.extname(href) !== "" && !exists(href.slice(1)))

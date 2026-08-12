@@ -106,6 +106,14 @@
     height: auto;
   }
 
+  /*
+   * AVIF のフォールバック用に img を picture で包むが、レイアウトは包む前と同じにしたい。
+   * display: contents なら箱を作らないので、img の包含ブロックは picture の親のままになる。
+   */
+  picture {
+    display: contents;
+  }
+
   /* 目次トグル・共有ボタン用 */
   button {
     appearance: button;
