@@ -4,6 +4,11 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    # 更新の種類ごとに分ける。全部を 1 本の PR にまとめない。
+    #
+    # まとめると 1 パッケージが落ちただけで他の更新まで止まり、原因の切り分けに
+    # 二分探索が要る。種類で分かれていれば、自動マージの対象（patch / minor）と
+    # 人が読む対象（major）も PR 単位でそのまま一致する
     groups:
       patch:
         update-types:
