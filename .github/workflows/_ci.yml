@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  workflow_call:
+
+jobs:
+  # 並列実行: Lint & Format（biome check は両方をまとめて見る）
+  check:
+    name: Lint & Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: ./.github/actions/setup
+      - run: bun run check:ci
+
+  # 並列実行: Type check
+  typecheck:
+    name: Typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: ./.github/actions/setup
+      - run: bun run typecheck
+
+  # 並列実行: Test with Coverage
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: ./.github/actions/setup
+
+      # 統合テストが実際にビルドする。Build ジョブと同じキャッシュを共有して変換を避ける
+      - name: Restore image cache
+        uses: actions/cache@v4
+        with:
+          path: .cache/images
+          key: images-${{ hashFiles('content/**/*.png', 'content/**/*.jpg', 'content/**/*.jpeg', 'content/**/*.webp') }}
+          restore-keys: images-
+
+      - run: bun run test:coverage

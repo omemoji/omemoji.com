@@ -17,8 +17,14 @@ jobs:
         id: metadata
         uses: dependabot/fetch-metadata@v2
 
-      - name: Auto merge patch updates
-        if: steps.metadata.outputs.update-type == 'version-update:semver-patch'
+      # patch と minor まで。CI は実データで 85 ページを書き出し、HTML 内の参照が
+      # 全て解決することまで見ているため、この範囲の回帰はここで落ちる。
+      #
+      # major は自動化しない。破壊的変更こそ人が変更点を読むべきで、頻度も低い
+      - name: Auto merge patch and minor updates
+        if: |
+          steps.metadata.outputs.update-type == 'version-update:semver-patch' ||
+          steps.metadata.outputs.update-type == 'version-update:semver-minor'
         run: gh pr merge "$PR_URL" --auto --merge
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}

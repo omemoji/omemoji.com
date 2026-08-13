@@ -1,0 +1,55 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.head_ref || github.ref }}-${{ github.actor }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    name: CI
+    uses: ./.github/workflows/_ci.yml
+
+  # 検査が通ってからビルドする（壊れたコードを成果物にしないため）
+  #
+  # ビルドが通ること自体は scripts/build.test.ts が実データで検証しているため、
+  # ここは成果物を作るためだけに動かす。デプロイしないなら回す意味が無い。
+  # 条件は deploy と共通で、この 1 箇所で両方を制御する（deploy は needs: build）
+  build:
+    name: Build
+    needs: ci
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/_build.yml
+
+  # 全ジョブの成否を代表する。ブランチ保護はこのジョブだけを見ればよい
+  #
+  # build は PR では skip されるが、needs には残す。skip は failure でも cancelled でも
+  # ないため PR の判定は素通りし、main への push では成否がそのまま反映される
+  ci-success:
+    name: CI Success
+    needs: [ci, build]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      # needs.* を使うため、ジョブを追加しても needs に足すだけで済む
+      - name: Verify all jobs succeeded
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+        run: |
+          echo "::error::One or more checks failed"
+          exit 1
+      - run: echo "All checks passed"
+
+  # 動く条件は build が持つ。build が skip されればこのジョブも skip される
+  deploy:
+    name: Deploy
+    needs: build
+    permissions:
+      contents: read
+      deployments: write
+    secrets: inherit
+    uses: ./.github/workflows/_deploy.yml

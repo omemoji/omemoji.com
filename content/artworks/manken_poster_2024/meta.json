@@ -1,0 +1,8 @@
+{
+  "$schema": "../_schema.json",
+  "title": "漫画研究会新歓ポスター",
+  "description": "漫画研究会の2024年度新歓ポスター",
+  "date": "2024-04-28",
+  "src": "manken_poster_2024.png",
+  "tags": ["Krita", "漫画研究会", "Illustration"]
+}

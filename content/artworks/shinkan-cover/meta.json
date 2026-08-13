@@ -1,0 +1,8 @@
+{
+  "$schema": "../_schema.json",
+  "title": "SHINKAN Booklet 2021",
+  "description": "2021年度情報科学類新歓パンフレットの表紙",
+  "date": "2021-03-21",
+  "src": "shinkan-cover.png",
+  "tags": ["Adobe_Illustrator", "Bird", "Illustration"]
+}

@@ -10,14 +10,7 @@ omemoji のポートフォリオ
 
 https://omemoji.com
 
-## 使用している技術
-
-- Astro
-- Tailwind CSS
-- TypeScript
-- Cloudflare Pages
-
-## Todo
+## 機能
 
 ### 全般
 
@@ -25,7 +18,6 @@ https://omemoji.com
 - [x] サイトマップ
 - [x] ページネーション
   - [x] タグページのページネーション
-- [x] OGP 画像をビルド時に生成
 - [ ] RSS
 
 ### About
@@ -37,7 +29,8 @@ https://omemoji.com
 - [x] 個別の作品ページを動的ルーティング
 - [x] 作品一覧
 - [x] Tag 機能
-- [x] 管理画面から作品とその情報をアップロード出来るようにする
+- [ ] 管理画面から作品とその情報をアップロード出来るようにする
+- [x] OGP 画像をビルド時に生成
 - [x] 横スクロールの作品選択欄（Pixiv みたいな）
 
 ### Articles
@@ -46,10 +39,5 @@ https://omemoji.com
 - [x] 個別の記事を動的ルーティング
 - [x] Tag 機能
 - [x] リンクカード
-  - [x] 画像を最適化
+- [x] 画像を最適化
 - [x] 目次
-
-## 備考
-
-- [x] Astro で書き直した
-- [x] HonoX で書き直す可能性あり 

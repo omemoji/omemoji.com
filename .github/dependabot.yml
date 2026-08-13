@@ -4,6 +4,13 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    # 公開直後のリリースは拾わない。patch / minor は人が見ないまま本番へ出るため、
+    # 乗っ取られた版が取り下げられるまでの猶予を挟む。
+    #
+    # semver-*-days は bun エコシステムでは効かない（NPM / Yarn などのみ）ので
+    # default-days で一律に置く
+    cooldown:
+      default-days: 5
     groups:
       patch:
         update-types:

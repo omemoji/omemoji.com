@@ -36,10 +36,6 @@
     }
   },
   "css": {
-    "parser": {
-      "cssModules": true,
-      "tailwindDirectives": true
-    },
     "formatter": {
       "enabled": true
     },
@@ -53,11 +49,10 @@
     }
   },
   "files": {
-    "includes": ["**", "!node_modules", "!out", "!.astro", "!bun.lock", "!public", "!*.min.js"]
+    "includes": ["**", "!node_modules", "!out", "!bun.lock", "!public", "!*.min.js"]
   },
   "overrides": [
     {
-      "includes": ["**/*.astro"],
       "formatter": {
         "enabled": true
       },

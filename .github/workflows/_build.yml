@@ -1,0 +1,49 @@
+name: Build
+
+on:
+  workflow_call:
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: ./.github/actions/setup
+
+      # 画像の変換結果を持ち越す。キーは入力バイトから起こしているので古い結果は当たらない
+      - name: Restore image cache
+        uses: actions/cache@v4
+        with:
+          path: .cache/images
+          key: images-${{ hashFiles('content/**/*.png', 'content/**/*.jpg', 'content/**/*.jpeg', 'content/**/*.webp') }}
+          restore-keys: images-
+
+      # 取得済みのリンク先メタデータを持ち越す。当たった URL は取得しに行かない
+      - name: Restore link card cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .cache/link-meta.json
+            .cache/link-card
+          key: link-cards-${{ hashFiles('content/articles/**/*.md', 'content/about/*.md') }}
+          restore-keys: link-cards-
+
+      # 生成済みの OGP 画像を持ち越す。入力バイトからキーを起こしている
+      - name: Restore OGP image cache
+        uses: actions/cache@v4
+        with:
+          path: .cache/og
+          key: og-${{ hashFiles('content/artworks/**') }}
+          restore-keys: og-
+
+      - run: bun run build
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: ./out
+          retention-days: 1

@@ -1,0 +1,25 @@
+name: Deploy
+
+# 成果物を Cloudflare Pages へ公開するだけ。デプロイするかどうかは呼び出し側が決める
+on:
+  workflow_call:
+
+jobs:
+  deploy:
+    name: Deploy to Cloudflare Pages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output
+          path: ./out
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: >-
+            pages deploy ./out
+            --project-name=${{ secrets.CLOUDFLARE_PROJECT_NAME }}

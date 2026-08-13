@@ -2,6 +2,9 @@
 dist/
 out/
 
+# persistent build caches (regenerable; keyed by content hash)
+.cache/
+
 # generated OGP link thumbnails
 public/images/ogp_link/
 

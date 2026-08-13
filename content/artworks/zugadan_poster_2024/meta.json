@@ -1,0 +1,8 @@
+{
+  "$schema": "../_schema.json",
+  "title": "図画団新歓ポスター",
+  "description": "筑波大学図画団の2024年度新歓ポスター",
+  "date": "2024-04-28",
+  "src": "zugadan_poster_2024.png",
+  "tags": ["Krita", "図画団", "Dragon", "Illustration"]
+}
