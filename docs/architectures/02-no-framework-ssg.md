@@ -33,6 +33,9 @@
 | リンクカード           | `fetchMeta.ts`（fetch + cheerio + sharp） | なし               |
 | 画像最適化             | sharp                                     | なし               |
 | OGP 画像生成           | satori + sharp + budoux                   | なし               |
+
+> **移植後の実態**: OGP 画像は**作品のみ**とし、satori と budoux は使っていない（実装計画 Phase 7-2）。
+> 作品用は画像を額装するだけで文字が無く、sharp だけで足りる。
 | シンタックスハイライト | expressive-code（rehype 版が存在）        | なし               |
 
 フレームワークが提供していたのは実質 3 つだけである。
@@ -496,7 +499,7 @@ sharp は libuv のスレッドプールを使うため、`Promise.all` + 同時
 | Markdown     | unified, remark-*, rehype-*, hast-util-to-jsx-runtime |
 | ハイライト   | rehype-expressive-code                                |
 | 画像         | sharp                                                 |
-| OGP          | satori, budoux                                        |
+| OGP          | sharp（satori と budoux は削除。実装計画 Phase 7-2 のメモを参照） |
 | リンクカード | cheerio                                               |
 | front matter | remark-frontmatter, yaml                              |
 | データ検証   | zod, zod-to-json-schema（`_schema.json` の生成用）    |

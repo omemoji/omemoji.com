@@ -279,7 +279,28 @@ AVIF が出力され `aspect-ratio` が付く / **2 回目のビルドで画像�
      文字が無ければレイアウトエンジンもフォントも要らず、sharp だけで同じ絵が出る
    - `Layout` がマニフェストから引き、無ければ共通の画像へ倒す。**ページ側は何も渡さない**
    - キャッシュは Phase 6 と同方式（`.cache/og`）。dev は生成しないため常に共通の画像
-   - 残件: satori と budoux が未使用になった。記事の OGP を将来作らないなら依存から外せる
+   - **satori と budoux は依存から削除した**（未使用になったため）。復活のさせ方は下記
+
+> ### メモ: 記事の OGP 画像を作りたくなったら
+>
+> 削除したのは `satori`（React → SVG のレイアウトエンジン）と `budoux`（日本語の文節分割）の
+> **2 つだけ**で、必要になれば `bun add satori budoux` で戻せる。作り方は以下。
+>
+> - **フォントは `src/assets/NotoSansCJKjp-Bold.woff` に残してある**（567 KB・現在は未使用）。
+>   satori はフォントのバイト列を渡さないと文字を描けないため、これが要る。
+>   記事の OGP を作らないと確定したら消してよい
+> - 移植元の絵柄: 背景 `#d50000` の外枠 + 白いカード、タイトルを 4rem で中央寄せ、
+>   サイトのアイコン（`public/omemoji.png`）を添える
+> - **日本語は budoux で文節に分け、`<span style="display: block">` 単位で折り返す。**
+>   satori には日本語の禁則処理が無く、そのまま流すと単語の途中で切れる
+> - satori の出力は SVG なので、`sharp(Buffer.from(svg)).png()` で PNG にする
+>   （作品用と同じ後段に載せられる）
+> - 置き場は `features/og/`。ステージの形（生成元の一覧 → PNG + マニフェスト）と
+>   キャッシュ・`Layout` の引き方はそのまま使えるので、**足すのは絵を作る関数だけ**。
+>   `ogSources` に記事を足し、`generate.ts` が生成元の種類で描き分ければよい
+> - 記事を `summary_large_image` にする判断も同時に戻すこと（`Layout` は
+>   マニフェストに載っているページを大きいカードにしている）
+
 3. **サイトマップ** — `routes().filter(r => r.indexable)` から生成。収録ルールを [`requirements.md`](./requirements.md) §9 に沿って書き直す
 
 ### テスト

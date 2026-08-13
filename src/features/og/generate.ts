@@ -52,6 +52,9 @@ const cacheKey = (bytes: Uint8Array, params: OgParams): string =>
  * 移植元も作品用は画像 1 枚を額装するだけで、文字を載せていなかった
  * （文字を載せていたのは記事用で、そちらは共通の画像へ倒す方針にした）。
  * 文字が無ければレイアウトエンジンもフォントも要らず、sharp だけで同じ絵が出る。
+ *
+ * 文字入りの OGP が要るようになったら satori と budoux を入れ直す。
+ * 手順は docs/implementation-plan.md の Phase 7-2 のメモに残してある。
  */
 async function render(bytes: Uint8Array, params: OgParams): Promise<Buffer> {
   return await sharp(bytes)
