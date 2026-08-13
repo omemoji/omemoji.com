@@ -133,7 +133,9 @@ UI なしで記事と作品を型付きで読み出せる状態にする。
    - **Tailwind ユーティリティをセマンティックなクラス名へ**
    - expressive-code の CSS は木に入っているので `<head>` に足さない（Phase 2 の注記）
    - 現在地の表示は class ではなく `aria-current="page"`、目次の折りたたみはスクリプトではなく `<details>` に置き換えた
-4. **`ArticlePage`** — 目次・本文・前後リンク。`TopArticle` / `SNSList` も併せて移植した
+4. **`ArticlePage`** — 目次・本文。`TopArticle` / `SNSList` も併せて移植した
+   - 当初は前後の記事へのリンクを置いたが、**現行サイトに合わせて一覧へ戻る導線（`Back`）に変更した**。
+     これに伴い `ArticlePage` の props から `older` / `newer` を落としている
 5. `globals.css` と `public/` を `out/` へコピー
 6. **`scripts/dev.ts`** — **同じ `routes.ts` を使うオンデマンド生成**（§7.3）。`build.ts` と `renderRoute` を共有するため、dev だけ出力が違うことは起き得ない
 

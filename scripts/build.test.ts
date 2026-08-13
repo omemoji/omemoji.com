@@ -188,6 +188,14 @@ describe("ビルド出力", () => {
     expect(missing).toEqual([]);
   });
 
+  test("記事の末尾は一覧へ戻る導線にする", () => {
+    const html = fs.readFileSync(path.join(target, "articles/void_linux.html"), "utf-8");
+
+    // 現行サイトと同じ。前後の記事へのリンクは置かない
+    expect(html).toContain('<a class="back-link" href="/articles"');
+    expect(html).not.toContain("article-nav");
+  });
+
   describe("KaTeX", () => {
     // CSS が無いと MathML と HTML の両方が見え、式が二重になる
     const mathArticle = () =>

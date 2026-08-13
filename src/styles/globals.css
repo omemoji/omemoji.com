@@ -709,35 +709,6 @@
 
   /* 前後の記事 --------------------------------------------------------- */
 
-  .article-nav {
-    display: flex;
-    border-block-start: 1px solid var(--border);
-
-    a {
-      flex: 1 1 0;
-      padding: 1rem;
-      transition: background-color 150ms;
-
-      @media (hover: hover) {
-        &:hover {
-          background-color: color-mix(in srgb, var(--gray-400) 30%, transparent);
-        }
-      }
-    }
-
-    span {
-      display: block;
-      font-size: 0.875rem;
-      color: var(--menu);
-    }
-  }
-
-  /* 前の記事が無いときも、次の記事を右端に寄せる */
-  .article-nav-newer {
-    margin-inline-start: auto;
-    text-align: end;
-  }
-
   /* ページ先頭 ---------------------------------------------------------- */
 
   .top {

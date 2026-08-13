@@ -1,4 +1,5 @@
 import ArticleToc from "@/components/ArticleToc";
+import Back from "@/components/Back";
 import { markdownComponents } from "@/components/MarkdownComponent";
 import TopArticle from "@/components/TopArticle";
 import { imageBase } from "@/features/image/assets";
@@ -13,7 +14,7 @@ import type { PageProps } from "@/routes";
  * 記事ページ。Markdown の変換が非同期のため、要素を Promise で返す。
  * ビルド側が await してから静的マークアップへ流す。
  */
-export default async function ArticlePage({ article, older, newer }: PageProps["ArticlePage"]) {
+export default async function ArticlePage({ article }: PageProps["ArticlePage"]) {
   const tree = await mdToHast(article.body, { imageBase: imageBase("articles", article.slug) });
   const headings = collectHeadings(tree);
 
@@ -37,20 +38,12 @@ export default async function ArticlePage({ article, older, newer }: PageProps["
 
       <article>{toReact(tree, markdownComponents)}</article>
 
-      <nav className="article-nav" aria-label="前後の記事">
-        {older ? (
-          <a className="article-nav-older" href={`/articles/${older.slug}`}>
-            <span>前の記事</span>
-            {older.title}
-          </a>
-        ) : null}
-        {newer ? (
-          <a className="article-nav-newer" href={`/articles/${newer.slug}`}>
-            <span>次の記事</span>
-            {newer.title}
-          </a>
-        ) : null}
-      </nav>
+      <Back
+        href="/articles"
+        path={`/articles/${article.slug}`}
+        title={`${article.title} | 創作物紹介`}
+        tags={article.tags}
+      />
     </Layout>
   );
 }
