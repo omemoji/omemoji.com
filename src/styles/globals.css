@@ -467,6 +467,7 @@
 
   .link-card-image {
     block-size: 100%;
+    margin:0;
     inline-size: auto;
     max-inline-size: 7.5rem;
     object-fit: cover;
