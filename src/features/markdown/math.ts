@@ -12,7 +12,7 @@ export function hasMath(tree: Root): boolean {
   let found = false;
 
   visit(tree, "element", (node) => {
-    const className = node.properties?.["className"];
+    const className = node.properties?.className;
     if (Array.isArray(className) && className.includes("katex")) {
       found = true;
     }

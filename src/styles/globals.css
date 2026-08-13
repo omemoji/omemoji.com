@@ -369,10 +369,6 @@
       margin-block: 1.5rem;
     }
 
-    img {
-      margin-block: 1rem;
-    }
-
     :is(ul, ol) {
       margin-block: 1.5rem;
       padding-inline-start: 1.5rem;
@@ -400,6 +396,12 @@
     max-block-size: 540px;
     background-color: var(--bg-artwork);
     object-fit: contain;
+  }
+
+  article .content-image {
+    margin-block: 1rem;
+    border-block-start: 1px solid var(--border);
+    border-block-end: 1px solid var(--border);
   }
 
   .caption {
