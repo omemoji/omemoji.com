@@ -6,6 +6,7 @@ import path from "node:path";
 import { collectImages } from "@/features/image/assets";
 import type { OptimizeResult } from "@/features/image/optimize";
 import { collectAllLinkCardUrls, collectLinkCardUrls } from "@/features/link-card/urls";
+import { ogUrl } from "@/features/og/generate";
 import { buildRoutes } from "@/routes";
 import {
   build,
@@ -185,6 +186,45 @@ describe("ビルド出力", () => {
     });
 
     expect(missing).toEqual([]);
+  });
+
+  describe("OGP", () => {
+    const meta = (file: string, name: string): string | undefined => {
+      const html = fs.readFileSync(path.join(target, file), "utf-8");
+      const matched = html.match(new RegExp(`<meta (?:property|name)="${name}" content="([^"]*)"`));
+      return matched?.[1];
+    };
+
+    test("作品は個別の画像と大きいカードを持つ", () => {
+      const artwork = production.artworks[0];
+      const file = `artworks/${artwork?.id}.html`;
+
+      expect(meta(file, "og:image")).toBe(
+        `https://omemoji.com${ogUrl(`/artworks/${artwork?.id}`)}`
+      );
+      expect(meta(file, "og:image:width")).toBe("1200");
+      expect(meta(file, "twitter:card")).toBe("summary_large_image");
+      expect(meta(file, "og:type")).toBe("article");
+    });
+
+    test("全ての作品ページの OGP 画像が実ファイルに解決する", () => {
+      const missing = production.artworks
+        .map((artwork) => ogUrl(`/artworks/${artwork.id}`))
+        .filter((url) => !exists(decodeURIComponent(url).slice(1)));
+
+      expect(missing).toEqual([]);
+    });
+
+    test.each(["index.html", "articles/void_linux.html", "artworks.html"])(
+      "%s は共通の画像と通常のカードを使う",
+      (file) => {
+        // 記事に個別の画像は作らない。トップと同じ扱いにするという判断
+        expect(meta(file, "og:image")).toBe("https://omemoji.com/omemoji.png");
+        expect(meta(file, "og:image:width")).toBe("720");
+        expect(meta(file, "twitter:card")).toBe("summary");
+        expect(meta(file, "og:type")).toBe("website");
+      }
+    );
   });
 
   test("本文の画像は AVIF を source に出し、寸法を付ける", () => {

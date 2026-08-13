@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import Footer from "@/components/Footer";
 import Header, { type Category } from "@/components/Header";
 import { HOST } from "@/config";
+import { resolveOg } from "@/features/og/manifest";
 
 type Props = {
   title: string;
@@ -14,6 +15,14 @@ type Props = {
 };
 
 /**
+ * 個別の OGP 画像を持たないページが使う共通の画像。
+ *
+ * 記事も含めてほとんどのページがこちら。正方形なので大きいカードには向かず、
+ * Twitter Card は summary（小さいカード）にする
+ */
+const DEFAULT_OG = { src: "/omemoji.png", width: 720, height: 720 };
+
+/**
  * 全ページ共通の外枠。`<head>` の組み立てをここに集約する。
  *
  * expressive-code の CSS と JS は hast の中に既に入っているため、
@@ -22,6 +31,11 @@ type Props = {
 export default function Layout({ title, description, category, path, children }: Props) {
   const site = `https://${HOST}`;
   const url = `${site}${path}`;
+
+  // 個別の OGP 画像はビルドが用意する（features/og）。ページ側は何も渡さない。
+  // dev は生成しないため常に共通の画像になる
+  const og = resolveOg(path);
+  const image = og ?? DEFAULT_OG;
 
   return (
     <html lang="ja">
@@ -41,6 +55,12 @@ export default function Layout({ title, description, category, path, children }:
         <meta property="og:description" content={description} />
         <meta property="og:url" content={url} />
         <meta property="og:site_name" content="創作物紹介" />
+        {/* og:image は絶対 URL でなければクローラが解決できない */}
+        <meta property="og:image" content={`${site}${image.src}`} />
+        <meta property="og:image:width" content={String(image.width)} />
+        <meta property="og:image:height" content={String(image.height)} />
+        <meta property="og:type" content={og ? "article" : "website"} />
+        <meta name="twitter:card" content={og ? "summary_large_image" : "summary"} />
         <meta name="twitter:site" content="@omemoji_art" />
         <meta name="twitter:creator" content="@omemoji_art" />
         <meta name="twitter:title" content={title} />

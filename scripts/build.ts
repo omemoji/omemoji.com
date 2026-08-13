@@ -20,6 +20,8 @@ import {
 import { type CollectResult, collectLinkCards } from "@/features/link-card/collect";
 import { setLinkCardManifest } from "@/features/link-card/manifest";
 import { collectAllLinkCardUrls } from "@/features/link-card/urls";
+import { type GenerateResult, generateOgImages, type OgSource } from "@/features/og/generate";
+import { setOgManifest } from "@/features/og/manifest";
 import AboutPage from "@/pages/AboutPage";
 import ArticlePage from "@/pages/ArticlePage";
 import ArticlesList from "@/pages/ArticlesList";
@@ -36,6 +38,8 @@ export const imageCacheDir = path.join(rootDir, ".cache/images");
 /** リンク先のメタデータ。取得済みの URL は再取得しない */
 export const linkCacheFile = path.join(rootDir, ".cache/link-meta.json");
 export const linkCacheDir = path.join(rootDir, ".cache/link-card");
+/** 生成済みの OGP 画像 */
+export const ogCacheDir = path.join(rootDir, ".cache/og");
 
 /**
  * 実装済みのページだけを載せる。ここに無いページはスキップされる。
@@ -101,6 +105,20 @@ export function imageVariants({ artworks }: Content): Variant[] {
     { name: CONTENT_VARIANT, params: AVIF_PARAMS },
     { name: THUMB_VARIANT, params: THUMB_PARAMS, match: (asset) => gallery.has(asset.url) },
   ];
+}
+
+/**
+ * OGP 画像を持たせるページ。
+ *
+ * **作品だけ**が個別の画像を持つ。記事と一覧はサイト共通の画像（720x720）へ倒す。
+ * 記事は satori で文字を載せた画像を作っていたが、フォントとレイアウトエンジンを
+ * 抱える割に得るものが小さいため、移植では作らないことにした。
+ */
+export function ogSources({ artworks }: Content): OgSource[] {
+  return artworks.map((artwork) => ({
+    path: `/artworks/${artwork.id}`,
+    from: path.join(contentDir, "artworks", artwork.id, artwork.src),
+  }));
 }
 
 /**
@@ -182,6 +200,7 @@ export async function build(
   skipped: Route["page"][];
   images: OptimizeResult;
   links: CollectResult;
+  og: GenerateResult;
 }> {
   const content = loadContent({ includeDrafts: false });
   const routes = buildRoutes(content);
@@ -207,6 +226,10 @@ export async function build(
   });
   setLinkCardManifest(links.manifest);
 
+  // これも描画より前。持たないページは Layout が共通の画像へ倒す
+  const og = await generateOgImages(ogSources(content), { outDir: target, cacheDir: ogCacheDir });
+  setOgManifest(og.manifest);
+
   const written: string[] = [];
   const skipped: Route["page"][] = [];
 
@@ -222,16 +245,17 @@ export async function build(
     written.push(outputPath(route.path));
   }
 
-  return { written, skipped, images, links };
+  return { written, skipped, images, links, og };
 }
 
 if (import.meta.main) {
-  const { written, skipped, images, links } = await build();
+  const { written, skipped, images, links, og } = await build();
   console.log(`built ${written.length} pages -> ${path.relative(process.cwd(), outDir)}/`);
   console.log(
     `images: ${images.converted} converted, ${images.cached} cached, ${images.passthrough} as-is`
   );
   console.log(`link cards: ${links.fetched} fetched, ${links.cached} cached`);
+  console.log(`og images: ${og.generated} generated, ${og.cached} cached`);
 
   if (links.failed.length > 0) {
     // カードにならないだけでページは出る。素のリンクとして描画されている
