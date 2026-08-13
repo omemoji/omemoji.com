@@ -96,7 +96,11 @@ UI なしで記事と作品を型付きで読み出せる状態にする。
    - **CSS と JS は `rehype-expressive-code` が hast へ自動注入する**（`codeStyles()` と完全一致する 24 KB が木の中にある）。`<head>` にも入れると二重になる
    - `.use()` の順序に相互依存がある（slug/autolink → katex → expressive-code → raw）。理由は `pipeline.ts` のコメントとテストを参照
 4. **hast → React**（`render.tsx`）— `toReact(tree, components)` として**汎用に保つ**。差し替え表は `components/MarkdownComponent.tsx` が供給する
-5. KaTeX CSS を `globals.css` から `@import` (optional)
+5. **KaTeX CSS**（Phase 7 で実施）— `globals.css` からの `@import` ではなく、
+   `out/katex/` へ複製して**数式のあるページだけ** `<link>` で読む。
+   バンドラが無いため `node_modules` への `@import` はブラウザで解決できない。
+   **CSS が無いと MathML と HTML の両方が見えて式が二重になる**（一方を隠すのが CSS の役目）。
+   フォントは woff2 のみ複製する（1.2 MB → 296 KB）
 
 ### テスト
 
