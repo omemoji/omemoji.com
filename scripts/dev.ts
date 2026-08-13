@@ -47,6 +47,57 @@ globalThis.__liveReload ??= (() => {
 const { reload } = globalThis.__liveReload;
 
 /**
+ * 取得を試した URL。`bun --hot` の差し替えを跨いで残す。
+ *
+ * 取れなかった URL を毎リクエスト取り直すと、リンク先が落ちている間ずっと
+ * 待たされ続ける。取り直したいときは dev サーバを立ち上げ直す
+ */
+declare global {
+  var __linkCardAttempts: Set<string> | undefined;
+}
+
+globalThis.__linkCardAttempts ??= new Set<string>();
+const attempted = globalThis.__linkCardAttempts;
+
+/** 取得中かどうか。同じ URL に何本も走らせない */
+let warming: Promise<void> | undefined;
+
+/**
+ * まだキャッシュに無いリンク先を裏で取りに行く。
+ *
+ * **リクエストは待たせない。**リンク先が遅いと 1 ページの表示に何十秒もかかるため、
+ * その場は素のリンクで返し、取得できた時点でライブリロードで知らせる。
+ * 画像は本番と同じサムネイルを同じキャッシュに作る（dev はそこを配信している）ので、
+ * 次の本番ビルドはこの結果をそのまま使える
+ */
+function warmLinkCards(urls: string[]): void {
+  const targets = urls.filter((url) => !attempted.has(url));
+  if (warming || targets.length === 0) {
+    return;
+  }
+
+  for (const url of targets) {
+    attempted.add(url);
+  }
+  console.log(`fetching ${targets.length} link card(s)...`);
+
+  warming = collectLinkCards(targets, { cacheFile: linkCacheFile, cacheDir: linkCacheDir })
+    .then(({ fetched, failed }) => {
+      console.log(
+        `link cards: ${fetched} fetched${failed.length > 0 ? `, ${failed.length} failed` : ""}`
+      );
+      if (fetched > 0) {
+        // 取得できた分をカードとして出し直す
+        reload.notify("reload");
+      }
+    })
+    .catch((error: unknown) => console.error(error))
+    .finally(() => {
+      warming = undefined;
+    });
+}
+
+/**
  * リクエストされたパスを routes.ts のパスへ正規化する。
  * `/articles/x.html`（本番の形）と末尾スラッシュのどちらでも引けるようにする。
  */
@@ -187,13 +238,17 @@ const server = Bun.serve({
       // 原寸を配信したまま寸法だけを出す。本番と同じく場所が確保され、見た目のずれが起きない
       setImageManifest(await imageManifest(images));
 
-      // ネットワークは叩かない。取得済みの URL だけがカードになり、残りは素のリンクで出る
+      // 描画に使うのはキャッシュだけ。未取得の分はこのリクエストでは素のリンクになる
       const links = await collectLinkCards(collectAllLinkCardUrls(markdownBodies(content)), {
         cacheFile: linkCacheFile,
         cacheDir: linkCacheDir,
         offline: true,
       });
       setLinkCardManifest(links.manifest);
+
+      // 未取得の分は裏で取りに行き、揃ったらライブリロードで出し直す。
+      // 下書きの記事もここを通るので、書きながらカードを確認できる
+      warmLinkCards(links.failed);
 
       const routes = buildRoutes(content);
       const route = routes.find((r) => r.path === normalize(pathname));
