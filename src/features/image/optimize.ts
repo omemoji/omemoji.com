@@ -34,15 +34,28 @@ export const AVIF_PARAMS: ImageParams = {
 };
 
 /**
- * ギャラリー（一覧・帯）用。表示は最大でも本文幅の 1/3（約 233px）なので、
- * 2 倍の画面密度に足りる 480px の正方形にする。
+ * ギャラリー（一覧・帯）での表示サイズ（CSS ピクセル）。
+ *
+ * 実際の表示幅は本文幅の 1/3（約 233px）で可変だが、`width` / `height` 属性は
+ * 1 つの値しか持てない。おおよそ合っていればよく、実ブラウザでは CSS が上書きする。
+ * **CSS を解釈しない・部分的にしか解釈しない UA（chawan などの端末ブラウザ）では、
+ * この値がそのまま表示サイズになる。**
+ */
+export const THUMB_DISPLAY_SIZE = 240;
+
+/**
+ * ギャラリー（一覧・帯）用。表示サイズの 2 倍を正方形に切り抜く（高密度画面向け）。
  *
  * **大きさだけを絞っても転送量は減らない。**本文用が既に高さ 540px 上限で、
  * 作品画像はほぼ正方形のため、480px にしても画素数は 2 割しか変わらない
  * （実測 29.0 KB → 27.1 KB / 枚）。効くのは quality の方で、
  * 表示が小さければ 50 でも粗は見えない（実測 15.6 KB / 枚・46% 減）。
  */
-export const THUMB_PARAMS: ImageParams = { quality: 50, fit: "cover", size: 480 };
+export const THUMB_PARAMS: ImageParams = {
+  quality: 50,
+  fit: "cover",
+  size: THUMB_DISPLAY_SIZE * 2,
+};
 
 /** 1 枚の画像の描画に必要な情報。原寸ではなく**出力された画像**の寸法を持つ */
 export type ImageEntry = { src: string; width: number; height: number };

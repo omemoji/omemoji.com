@@ -76,17 +76,34 @@ test("キャプションは alt から出す。作品画像は出さない", () 
   expect(render(<Image src="/images/artworks/y/a.png" alt="題" />)).not.toContain("<figcaption");
 });
 
-test("ギャラリーは Picture を直に使う。寸法は CSS が決めるので付けない", () => {
+test("Picture は分かっている寸法を必ず属性で出す", () => {
   setImageManifest({
     "/images/artworks/y/a.png": {
       content: { src: "/images/artworks/y/a.avif", width: 540, height: 540 },
     },
   });
 
+  // CSS を解釈しない UA では属性が唯一の寸法になる（chawan で原寸が出ていた）
   const html = render(<Picture src="/images/artworks/y/a.png" alt="題" />);
 
   expect(html).toContain('type="image/avif"');
-  expect(html).not.toContain("width=");
+  expect(html).toContain('width="540"');
+  expect(html).toContain('height="540"');
+});
+
+test("呼び出し側の寸法が優先される。実体の 2 倍を等倍で見せる場合に使う", () => {
+  setImageManifest({
+    "/images/artworks/y/a.png": {
+      thumb: { src: "/images/artworks/y/a.thumb.avif", width: 480, height: 480 },
+    },
+  });
+
+  const html = render(
+    <Picture src="/images/artworks/y/a.png" variant="thumb" alt="題" width={240} height={240} />
+  );
+
+  expect(html).toContain('width="240"');
+  expect(html).not.toContain('width="480"');
 });
 
 test("呼び出し側の指定が最適化の結果より優先される", () => {

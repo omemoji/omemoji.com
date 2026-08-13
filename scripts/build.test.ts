@@ -143,6 +143,24 @@ describe("ビルド出力", () => {
     expect(size(thumb)).toBeLessThan(size(thumb.replace(".thumb.avif", ".avif")));
   });
 
+  test("全ての img が属性で寸法を持つ", () => {
+    const htmlFiles = fs
+      .readdirSync(target, { recursive: true, encoding: "utf-8" })
+      .filter((file) => file.endsWith(".html"));
+
+    // 論理プロパティ（inline-size）を読まない UA では属性が唯一の寸法になり、
+    // 無いと実体の寸法で表示される。chawan のギャラリーに 3000px の原寸が出ていた
+    const missing = htmlFiles.flatMap((file) => {
+      const html = fs.readFileSync(path.join(target, file), "utf-8");
+      return [...html.matchAll(/<img[^>]*>/g)]
+        .map((matched) => matched[0])
+        .filter((img) => !/width="\d+"/.test(img) || !/height="\d+"/.test(img))
+        .map((img) => ({ file, img }));
+    });
+
+    expect(missing).toEqual([]);
+  });
+
   test("本文の画像は AVIF を source に出し、寸法を付ける", () => {
     const html = fs.readFileSync(path.join(target, "articles/void_linux.html"), "utf-8");
 

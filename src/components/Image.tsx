@@ -17,11 +17,23 @@ type ImgProps = Omit<ComponentProps<"img">, "src" | "alt"> & {
  * フォールバック先を増やしても変換もファイルも増えない。
  *
  * マニフェストに無い画像（svg・最適化を通していないもの）は `<picture>` にせず素の `<img>` を出す。
+ *
+ * **寸法は分かる限り必ず属性で出す。**CSS を解釈しない・論理プロパティを読まない UA
+ * （chawan などの端末ブラウザ）では属性が唯一の寸法になり、無いと原寸で表示される。
+ * 実ブラウザでも読み込み前に場所が確保され、レイアウトのずれ（CLS）が起きない。
  */
 export function Picture({ src, alt, variant, ...rest }: ImgProps) {
   const optimized = resolveImage(src, variant);
-  // フォールバック先が原寸であるため、img は最適化前の URL を指す
-  const image = <img src={src} alt={alt} {...rest} />;
+  // フォールバック先が原寸であるため、img は最適化前の URL を指す。
+  // 呼び出し側が渡した寸法は後から重ねて上書きする（実体の 2 倍を等倍で見せる場合など）
+  const image = (
+    <img
+      src={src}
+      alt={alt}
+      {...(optimized && { width: optimized.width, height: optimized.height })}
+      {...rest}
+    />
+  );
 
   // 変換していなければ包まない。dev のマニフェストは原寸を指すため、
   // ここを見ないと PNG を image/avif だと名乗る source が出る
@@ -58,12 +70,10 @@ export default function Image({ src, alt, caption = false, ...rest }: Props) {
       alt={alt}
       loading="lazy"
       decoding="async"
-      // 寸法を出すと読み込み前から場所が確保され、レイアウトのずれ（CLS）が起きない。
-      // 縦横比は原寸と変わらないので、フォールバックした場合もこの値でよい。
-      // width / height だけでは CSS の inline-size: 100% に負けるため aspect-ratio も添える
+      // 寸法は Picture が付ける。ここで足すのは縦横比だけ。
+      // width / height 属性は CSS の inline-size: 100% に負けるため、
+      // 本文では aspect-ratio も宣言しないと読み込み中に高さが潰れる
       {...(optimized && {
-        width: optimized.width,
-        height: optimized.height,
         style: { aspectRatio: `${optimized.width} / ${optimized.height}` },
       })}
       {...rest}

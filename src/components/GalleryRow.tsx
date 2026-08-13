@@ -1,7 +1,7 @@
 import { Picture } from "@/components/Image";
 import type { Artwork } from "@/content/artworks";
 import { imageUrl } from "@/features/image/assets";
-import { THUMB_VARIANT } from "@/features/image/optimize";
+import { THUMB_DISPLAY_SIZE, THUMB_VARIANT } from "@/features/image/optimize";
 
 type Props = {
   artworks: Artwork[];
@@ -22,7 +22,7 @@ export default function GalleryRow({ artworks, current }: Props) {
     <div className="gallery-row" data-current={index}>
       <div className="gallery-row-track">
         {artworks.map((artwork) => {
-          // 帯も正方形に切り抜くため、寸法は付けず小さいバリアントを指す（Gallery と同じ）
+          // 帯も小さいバリアントを指し、属性でも寸法を出す（Gallery と同じ理由）
           const src = imageUrl("artworks", artwork.id, artwork.src);
 
           return (
@@ -35,6 +35,8 @@ export default function GalleryRow({ artworks, current }: Props) {
                 src={src}
                 variant={THUMB_VARIANT}
                 alt={artwork.title}
+                width={THUMB_DISPLAY_SIZE}
+                height={THUMB_DISPLAY_SIZE}
                 loading="lazy"
                 decoding="async"
               />
