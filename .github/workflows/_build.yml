@@ -28,8 +28,16 @@ jobs:
           path: |
             .cache/link-meta.json
             .cache/link-card
-          key: link-cards-${{ hashFiles('content/articles/**/*.md') }}
+          key: link-cards-${{ hashFiles('content/articles/**/*.md', 'content/about/*.md') }}
           restore-keys: link-cards-
+
+      # 生成済みの OGP 画像を持ち越す。入力バイトからキーを起こしている
+      - name: Restore OGP image cache
+        uses: actions/cache@v4
+        with:
+          path: .cache/og
+          key: og-${{ hashFiles('content/artworks/**') }}
+          restore-keys: og-
 
       - run: bun run build
 
