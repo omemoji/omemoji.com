@@ -2,11 +2,15 @@ import type { ComponentProps } from "react";
 
 import { resolveImage } from "@/features/image/manifest";
 
-type ImgProps = Omit<ComponentProps<"img">, "src" | "alt"> & {
+type ImgProps = Omit<ComponentProps<"img">, "src" | "alt" | "width" | "height"> & {
   src: string;
   alt: string;
-  /** 作る大きさの種類。ギャラリーは小さい正方形（THUMB_VARIANT）を指す */
-  variant?: string;
+  /**
+   * 表示サイズ（CSS ピクセル）。**渡した値がそのまま最適化の指示になる。**
+   * 両方渡すとその箱に切り抜き、幅だけなら幅に収める。省くと本文用（幅 700px）
+   */
+  width?: number;
+  height?: number;
 };
 
 /**
@@ -22,18 +26,14 @@ type ImgProps = Omit<ComponentProps<"img">, "src" | "alt"> & {
  * （chawan などの端末ブラウザ）では属性が唯一の寸法になり、無いと原寸で表示される。
  * 実ブラウザでも読み込み前に場所が確保され、レイアウトのずれ（CLS）が起きない。
  */
-export function Picture({ src, alt, variant, ...rest }: ImgProps) {
-  const optimized = resolveImage(src, variant);
-  // フォールバック先が原寸であるため、img は最適化前の URL を指す。
-  // 呼び出し側が渡した寸法は後から重ねて上書きする（実体の 2 倍を等倍で見せる場合など）
-  const image = (
-    <img
-      src={src}
-      alt={alt}
-      {...(optimized && { width: optimized.width, height: optimized.height })}
-      {...rest}
-    />
-  );
+export function Picture({ src, alt, width, height, ...rest }: ImgProps) {
+  const optimized = resolveImage(src, { ...(width && { width }), ...(height && { height }) });
+  // 属性は求めた表示サイズを優先する。切り抜きは実体を 2 倍で作るため、
+  // 出力された寸法をそのまま出すと倍の大きさで表示されてしまう
+  const size = { width: width ?? optimized?.width, height: height ?? optimized?.height };
+
+  // フォールバック先が原寸であるため、img は最適化前の URL を指す
+  const image = <img src={src} alt={alt} {...size} {...rest} />;
 
   // 変換していなければ包まない。dev のマニフェストは原寸を指すため、
   // ここを見ないと PNG を image/avif だと名乗る source が出る
@@ -61,7 +61,7 @@ type Props = ImgProps & {
  * AVIF への差し替えと寸法の付与はここで行う。
  */
 export default function Image({ src, alt, caption = false, ...rest }: Props) {
-  const optimized = resolveImage(src);
+  const optimized = resolveImage(src, {});
 
   const image = (
     <Picture

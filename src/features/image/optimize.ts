@@ -12,76 +12,90 @@ import type { ImageAsset } from "@/features/image/assets";
  * キャッシュのキーに含めるため、上げた時点で全件が作り直される。
  * 入力バイトだけをキーにすると、パラメータを変えても古い出力が生き残る。
  */
-export const PIPELINE_VERSION = 1;
+export const PIPELINE_VERSION = 2;
 
 /**
- * 変換パラメータ。用途によって収め方が違うため、`fit` で分ける。
+ * 描画側が求める大きさ。**CSS ピクセル**（= `width` / `height` 属性と同じ値）。
  *
- * - `inside`: 枠に収める（本文）。縦横比は変えない
- * - `cover`: 正方形に切り抜く（ギャラリー）。CSS の `object-fit: cover` と同じ結果を
- *   ビルド時に作り、大きい画像を送って捨てる無駄をなくす
+ * - 両方あり: その箱に切り抜く（ギャラリーやアイコン）
+ * - 幅だけ: 幅に収める（縦横比はそのまま）
+ * - 無し: 本文用（幅 700px・高さ 540px 上限）
+ *
+ * **どの大きさを作るかは呼び出し側が決めない。**描画中に求められたものを記録し、
+ * 足りなければ後から作る（features/image/manifest.ts）
  */
+export type ImageRequest = { width?: number; height?: number };
+
+/** 求めた相手を含めた形。ステージへの入力になる */
+export type ImageWant = { src: string } & ImageRequest;
+
+/** 本文の画像。移植元（Astro の `<Picture>`）と同じ、幅 700px 基準・高さ 540px 上限 */
+export const CONTENT_WIDTH = 700;
+export const CONTENT_MAX_HEIGHT = 540;
+
+/**
+ * 切り抜く場合だけ表示サイズの 2 倍で作る（高密度画面向け）。
+ *
+ * 枠に収める方（本文）を 2 倍にすると、既に幅 700px あるものが 1400px になり
+ * 転送量が 3 倍近くなる割に、得られるものが小さい
+ */
+export const COVER_SCALE = 2;
+
+/**
+ * 画質。切り抜いた画像は表示が小さいので低くてよい。
+ *
+ * **大きさだけを絞っても転送量は減らない。**作品画像はほぼ正方形で、本文用が既に
+ * 高さ 540px 上限のため、480px にしても画素数は 2 割しか変わらない
+ * （実測 29.0 KB → 27.1 KB / 枚）。効くのは quality の方（実測 15.6 KB / 枚・46% 減）
+ */
+const QUALITY = { inside: 70, cover: 50 } as const;
+
+/** 変換パラメータ。`fit` で収め方を分ける */
 export type ImageParams =
-  | { quality: number; fit: "inside"; targetWidth: number; maxHeight: number }
-  | { quality: number; fit: "cover"; size: number };
+  | { quality: number; fit: "inside"; width: number; maxHeight?: number }
+  | { quality: number; fit: "cover"; width: number; height: number };
 
-/** 移植元（Astro の `<Picture>`）と同じ値。幅 700px 基準・高さ 540px 上限 */
-export const AVIF_PARAMS: ImageParams = {
-  quality: 70,
-  fit: "inside",
-  targetWidth: 700,
-  maxHeight: 540,
-};
+/** 求められた大きさを変換パラメータへ移す。**ここが唯一の対応表** */
+export function requestParams({ width, height }: ImageRequest): ImageParams {
+  if (width !== undefined && height !== undefined) {
+    return {
+      quality: QUALITY.cover,
+      fit: "cover",
+      width: width * COVER_SCALE,
+      height: height * COVER_SCALE,
+    };
+  }
+  if (width !== undefined) {
+    return { quality: QUALITY.inside, fit: "inside", width };
+  }
+  return {
+    quality: QUALITY.inside,
+    fit: "inside",
+    width: CONTENT_WIDTH,
+    maxHeight: CONTENT_MAX_HEIGHT,
+  };
+}
 
 /**
- * ギャラリー（一覧・帯）での表示サイズ（CSS ピクセル）。
- *
- * 実際の表示幅は本文幅の 1/3（約 233px）で可変だが、`width` / `height` 属性は
- * 1 つの値しか持てない。おおよそ合っていればよく、実ブラウザでは CSS が上書きする。
- * **CSS を解釈しない・部分的にしか解釈しない UA（chawan などの端末ブラウザ）では、
- * この値がそのまま表示サイズになる。**
+ * 求められた大きさの呼び名。マニフェストの鍵と出力ファイル名になる。
+ * 本文用（既定）だけは名前を持たず、`a.png` → `a.avif` になる
  */
-export const THUMB_DISPLAY_SIZE = 240;
-
-/**
- * ギャラリー（一覧・帯）用。表示サイズの 2 倍を正方形に切り抜く（高密度画面向け）。
- *
- * **大きさだけを絞っても転送量は減らない。**本文用が既に高さ 540px 上限で、
- * 作品画像はほぼ正方形のため、480px にしても画素数は 2 割しか変わらない
- * （実測 29.0 KB → 27.1 KB / 枚）。効くのは quality の方で、
- * 表示が小さければ 50 でも粗は見えない（実測 15.6 KB / 枚・46% 減）。
- */
-export const THUMB_PARAMS: ImageParams = {
-  quality: 50,
-  fit: "cover",
-  size: THUMB_DISPLAY_SIZE * 2,
-};
+export function requestKey({ width, height }: ImageRequest): string {
+  if (width !== undefined && height !== undefined) {
+    return `${width}x${height}`;
+  }
+  return width === undefined ? "default" : `${width}w`;
+}
 
 /** 1 枚の画像の描画に必要な情報。原寸ではなく**出力された画像**の寸法を持つ */
 export type ImageEntry = { src: string; width: number; height: number };
 
-/** 既定のバリアント名。本文・作品ページが使う */
-export const CONTENT_VARIANT = "content";
-/** ギャラリー用の小さい正方形 */
-export const THUMB_VARIANT = "thumb";
-
 /**
- * 元画像の配信 URL → バリアント名 → 出力された画像。
+ * 元画像の配信 URL → 求められた大きさ → 出力された画像。
  *
- * 1 枚の元画像から複数の大きさを作るため、2 段の表になっている。
- * ステージ間の受け渡しはこれだけ
+ * 1 枚の元画像から複数の大きさを作るため、2 段の表になっている
  */
 export type ImageManifest = Record<string, Record<string, ImageEntry>>;
-
-/** 変換の 1 種類。match を持つものは、当てはまる画像だけを変換する */
-export type Variant = {
-  name: string;
-  params: ImageParams;
-  /** 省略時は全ての画像が対象 */
-  match?: (asset: ImageAsset) => boolean;
-};
-
-const CONTENT: Variant = { name: CONTENT_VARIANT, params: AVIF_PARAMS };
 
 /** sharp が扱えないもの（ベクタ・アニメーション）は変換せず原寸のまま配信する */
 const RASTER = [".png", ".jpg", ".jpeg", ".webp", ".avif"];
@@ -89,13 +103,13 @@ const RASTER = [".png", ".jpg", ".jpeg", ".webp", ".avif"];
 const isRaster = (file: string): boolean => RASTER.includes(path.extname(file).toLowerCase());
 
 /**
- * 表示サイズ。
+ * 出力する画像の寸法。
  *
- * `inside` は高さを `min(元の高さ * 700 / 元の幅, 540)` に収め、幅はそこから逆算する。
+ * `inside` は高さを `min(元の高さ * 幅 / 元の幅, 上限)` に収め、幅はそこから逆算する。
  * 縦長の画像が本文を占領しないための上限であり、`content-image` の
  * `max-block-size: 540px` と同じ値を画像側でも満たしておく。
  *
- * `cover` は元の縦横比によらず正方形。切り抜きは sharp に任せる
+ * `cover` は元の縦横比によらず求められた箱そのもの。切り抜きは sharp に任せる
  */
 export function displaySize(
   width: number,
@@ -103,10 +117,13 @@ export function displaySize(
   params: ImageParams
 ): { width: number; height: number } {
   if (params.fit === "cover") {
-    return { width: params.size, height: params.size };
+    return { width: params.width, height: params.height };
   }
 
-  const scaled = Math.min((height * params.targetWidth) / width, params.maxHeight);
+  const scaled = Math.min(
+    (height * params.width) / width,
+    params.maxHeight ?? Number.MAX_SAFE_INTEGER
+  );
   return {
     width: Math.round((scaled * width) / height),
     height: Math.round(scaled),
@@ -165,10 +182,19 @@ function writeIndex(cacheDir: string, index: CacheIndex): void {
 
 /**
  * `.png` を `.avif` へ。URL と出力先の両方で使う。
- * 既定以外のバリアントは名前を挟む（`a.png` → `a.thumb.avif`）
+ * 本文用以外は求められた大きさを挟む（`a.png` → `a.240x240.avif`）
  */
-const toAvif = (file: string, variant: string): string =>
-  file.replace(/\.[^.]+$/, variant === CONTENT_VARIANT ? ".avif" : `.${variant}.avif`);
+const toAvif = (file: string, key: string): string =>
+  file.replace(/\.[^.]+$/, key === "default" ? ".avif" : `.${key}.avif`);
+
+/** 求められた大きさの一覧を、同じものが 2 度出てこない形に均す */
+export function uniqueWants(wants: ImageWant[]): ImageWant[] {
+  const byKey = new Map<string, ImageWant>();
+  for (const want of wants) {
+    byKey.set(`${want.src}|${requestKey(want)}`, want);
+  }
+  return [...byKey.values()];
+}
 
 export type OptimizeOptions = {
   /** 変換済み画像の書き出し先（`out/`）。省くと複製せず、キャッシュだけを埋める */
@@ -176,8 +202,6 @@ export type OptimizeOptions = {
   /** 永続キャッシュの置き場（`.cache/images`） */
   cacheDir: string;
   concurrency?: number;
-  /** 作る大きさの一覧。既定は本文用の 1 種類だけ */
-  variants?: Variant[];
 };
 
 export type OptimizeResult = {
@@ -190,31 +214,38 @@ export type OptimizeResult = {
   passthrough: number;
 };
 
+/** 求められた大きさを、実体のある画像へ結び付ける */
+const resolveWants = (
+  assets: ImageAsset[],
+  wants: ImageWant[]
+): { asset: ImageAsset; want: ImageWant }[] => {
+  const byUrl = new Map(assets.filter((asset) => isRaster(asset.from)).map((a) => [a.url, a]));
+
+  return uniqueWants(wants).flatMap((want) => {
+    const asset = byUrl.get(want.src);
+    // 変換できない画像（svg）と、実体を持たない参照は黙って飛ばす
+    return asset ? [{ asset, want }] : [];
+  });
+};
+
 /**
- * 画像最適化のステージ。入力ファイル一覧 → 変換済み画像 + 寸法マニフェスト。
+ * 画像最適化のステージ。**求められた大きさの一覧** → 変換済み画像 + 寸法マニフェスト。
  *
  * 呼び出し側との受け渡しはファイルとマニフェストだけに閉じてあるので、
  * 中身を別ツール（vips / avifenc）へ差し替えても外側は変わらない。
  */
 export async function optimizeImages(
   assets: ImageAsset[],
-  { outDir, cacheDir, concurrency = 8, variants = [CONTENT] }: OptimizeOptions
+  wants: ImageWant[],
+  { outDir, cacheDir, concurrency = 8 }: OptimizeOptions
 ): Promise<OptimizeResult> {
   const index = readIndex(cacheDir);
   const manifest: ImageManifest = {};
   let converted = 0;
   let cached = 0;
 
-  // 変換できないもの（svg）は原寸のまま配信する。バリアントの数だけ数えない
-  const raster = assets.filter((asset) => isRaster(asset.from));
-  const passthrough = assets.length - raster.length;
-
-  // 1 枚の画像に複数の大きさを作る。全ての組を並べてから同時実行数を絞る
-  const tasks = raster.flatMap((asset) =>
-    variants
-      .filter((variant) => variant.match?.(asset) ?? true)
-      .map((variant) => ({ asset, variant }))
-  );
+  const passthrough = assets.filter((asset) => !isRaster(asset.from)).length;
+  const tasks = resolveWants(assets, wants);
 
   const write = (to: string, body: Uint8Array | string): void => {
     if (!outDir) {
@@ -229,18 +260,19 @@ export async function optimizeImages(
     }
   };
 
-  const entries = await mapWithLimit(tasks, concurrency, async ({ asset, variant }) => {
-    const { name, params } = variant;
+  const entries = await mapWithLimit(tasks, concurrency, async ({ asset, want }) => {
+    const params = requestParams(want);
+    const key = requestKey(want);
     const bytes = fs.readFileSync(asset.from);
-    const key = cacheKey(bytes, params);
-    const to = toAvif(asset.to, name);
-    const url = toAvif(asset.url, name);
+    const hash = cacheKey(bytes, params);
+    const to = toAvif(asset.to, key);
+    const url = toAvif(asset.url, key);
 
-    const hit = index[key];
+    const hit = index[hash];
     if (hit && fs.existsSync(path.join(cacheDir, hit.file))) {
       cached++;
       write(to, path.join(cacheDir, hit.file));
-      return [asset.url, name, { src: url, width: hit.width, height: hit.height }] as const;
+      return [asset.url, key, { src: url, width: hit.width, height: hit.height }] as const;
     }
 
     const image = sharp(bytes);
@@ -255,15 +287,15 @@ export async function optimizeImages(
 
     converted++;
     fs.mkdirSync(cacheDir, { recursive: true });
-    fs.writeFileSync(path.join(cacheDir, `${key}.avif`), data);
-    index[key] = { file: `${key}.avif`, width: info.width, height: info.height };
+    fs.writeFileSync(path.join(cacheDir, `${hash}.avif`), data);
+    index[hash] = { file: `${hash}.avif`, width: info.width, height: info.height };
     write(to, data);
 
-    return [asset.url, name, { src: url, width: info.width, height: info.height }] as const;
+    return [asset.url, key, { src: url, width: info.width, height: info.height }] as const;
   });
 
-  for (const [url, name, entry] of entries) {
-    manifest[url] = { ...manifest[url], [name]: entry };
+  for (const [url, key, entry] of entries) {
+    manifest[url] = { ...manifest[url], [key]: entry };
   }
 
   writeIndex(cacheDir, index);
@@ -271,16 +303,13 @@ export async function optimizeImages(
   return { manifest, converted, cached, passthrough };
 }
 
-/** 変換の 1 単位。キャッシュの参照と変換で同じ組を扱う */
-export type ImageTask = { asset: ImageAsset; variant: Variant };
-
 export type CachedImages = {
   /** 変換済みのものだけを載せた寸法マニフェスト */
   manifest: ImageManifest;
   /** 配信 URL → キャッシュ上の実体。dev がこれを見て変換済みの画像を返す */
   files: Record<string, string>;
-  /** まだ変換されていない組。dev は裏で変換する */
-  missing: ImageTask[];
+  /** まだ変換されていない要求。dev は裏で変換する */
+  missing: ImageWant[];
 };
 
 /**
@@ -294,35 +323,61 @@ export type CachedImages = {
  */
 export function cachedImages(
   assets: ImageAsset[],
-  { cacheDir, variants = [CONTENT] }: { cacheDir: string; variants?: Variant[] }
+  wants: ImageWant[],
+  { cacheDir }: { cacheDir: string }
 ): CachedImages {
   const index = readIndex(cacheDir);
   const manifest: ImageManifest = {};
   const files: Record<string, string> = {};
-  const missing: ImageTask[] = [];
+  const missing: ImageWant[] = [];
+  const bytesOf = new Map<string, Buffer>();
 
-  for (const asset of assets.filter((a) => isRaster(a.from))) {
-    const bytes = fs.readFileSync(asset.from);
+  for (const { asset, want } of resolveWants(assets, wants)) {
+    const bytes = bytesOf.get(asset.from) ?? fs.readFileSync(asset.from);
+    bytesOf.set(asset.from, bytes);
 
-    for (const variant of variants.filter((v) => v.match?.(asset) ?? true)) {
-      const hit = index[cacheKey(bytes, variant.params)];
-      const file = hit && path.join(cacheDir, hit.file);
+    const key = requestKey(want);
+    const hit = index[cacheKey(bytes, requestParams(want))];
+    const file = hit && path.join(cacheDir, hit.file);
 
-      if (!hit || !file || !fs.existsSync(file)) {
-        missing.push({ asset, variant });
-        continue;
-      }
-
-      const url = toAvif(asset.url, variant.name);
-      manifest[asset.url] = {
-        ...manifest[asset.url],
-        [variant.name]: { src: url, width: hit.width, height: hit.height },
-      };
-      files[url] = file;
+    if (!hit || !file || !fs.existsSync(file)) {
+      missing.push(want);
+      continue;
     }
+
+    const url = toAvif(asset.url, key);
+    manifest[asset.url] = {
+      ...manifest[asset.url],
+      [key]: { src: url, width: hit.width, height: hit.height },
+    };
+    files[url] = file;
   }
 
   return { manifest, files, missing };
+}
+
+/**
+ * 求められた大きさを覚えておく。`.cache/images/requests.json`。
+ *
+ * これが無いと、キャッシュが温まっていても「どの大きさを引けばよいか」が
+ * 描画するまで分からず、毎回 2 回描くことになる
+ */
+const wantsFile = (cacheDir: string): string => path.join(cacheDir, "requests.json");
+
+export function readWants(cacheDir: string): ImageWant[] {
+  try {
+    return JSON.parse(fs.readFileSync(wantsFile(cacheDir), "utf-8")) as ImageWant[];
+  } catch {
+    return [];
+  }
+}
+
+export function writeWants(cacheDir: string, wants: ImageWant[]): void {
+  const sorted = uniqueWants(wants).sort((a, b) =>
+    `${a.src}|${requestKey(a)}`.localeCompare(`${b.src}|${requestKey(b)}`)
+  );
+  fs.mkdirSync(cacheDir, { recursive: true });
+  fs.writeFileSync(wantsFile(cacheDir), `${JSON.stringify(sorted, null, 2)}\n`, "utf-8");
 }
 
 /**
@@ -333,7 +388,7 @@ export function cachedImages(
  */
 export async function measureImages(
   assets: ImageAsset[],
-  { concurrency = 8, params = AVIF_PARAMS }: { concurrency?: number; params?: ImageParams } = {}
+  { concurrency = 8 }: { concurrency?: number } = {}
 ): Promise<ImageManifest> {
   const manifest: ImageManifest = {};
 
@@ -342,14 +397,14 @@ export async function measureImages(
 
     // metadata はヘッダだけを読む。デコードは走らない
     const meta = await sharp(asset.from).metadata();
-    const size = displaySize(meta.width, meta.height, params);
+    const size = displaySize(meta.width, meta.height, requestParams({}));
     return [asset.url, { src: asset.url, ...size }] as const;
   });
 
   for (const entry of entries) {
     if (entry) {
-      // dev が持つのは本文用の 1 種類だけ。ギャラリーは原寸のまま出る
-      manifest[entry[0]] = { [CONTENT_VARIANT]: entry[1] };
+      // dev が持つのは本文用の 1 種類だけ。切り抜きが要る場所は変換されるまで原寸で出る
+      manifest[entry[0]] = { default: entry[1] };
     }
   }
 

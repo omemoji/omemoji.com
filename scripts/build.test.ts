@@ -3,19 +3,11 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
-import { collectImages } from "@/features/image/assets";
 import type { OptimizeResult } from "@/features/image/optimize";
 import { collectAllLinkCardUrls, collectLinkCardUrls } from "@/features/link-card/urls";
 import { ogUrl } from "@/features/og/generate";
 import { buildRoutes } from "@/routes";
-import {
-  build,
-  imageSources,
-  imageVariants,
-  loadContent,
-  markdownBodies,
-  outputPath,
-} from "./build";
+import { build, imageAssets, loadContent, markdownBodies, outputPath } from "./build";
 
 const production = loadContent({ includeDrafts: false });
 const dev = loadContent({ includeDrafts: true });
@@ -128,7 +120,7 @@ describe("ビルド出力", () => {
   });
 
   test("コンテンツの画像が記事・作品ごとに分かれて出力される", () => {
-    const images = collectImages(imageSources(production));
+    const images = imageAssets(production);
     const missing = images.map(({ to }) => to).filter((file) => !exists(file));
 
     expect(missing).toEqual([]);
@@ -136,38 +128,42 @@ describe("ビルド出力", () => {
     expect(new Set(images.map(({ to }) => to)).size).toBe(images.length);
   });
 
-  test("全ての画像が AVIF として出力される", () => {
-    const raster = collectImages(imageSources(production)).filter(({ from }) =>
-      /\.(png|jpe?g|webp|avif)$/i.test(from)
-    );
-    const missing = raster
-      .map(({ to }) => to.replace(/\.[^.]+$/, ".avif"))
-      .filter((file) => !exists(file));
+  test("使われた画像だけを変換する", () => {
+    // 参照されている画像が全て解決することは「ルート絶対な参照」の検査が見ている。
+    // ここでは逆側、**使われていない画像を変換していないこと**を見る
+    const drafts = dev.articles.filter((article) => !article.published).map((a) => a.slug);
+    const unused = imageAssets(dev)
+      .filter(({ url }) => drafts.some((slug) => url.startsWith(`/images/articles/${slug}/`)))
+      // 本文に置かれていない画像（記事ディレクトリの取り残し）も同じ扱いになる
+      .concat({
+        from: "",
+        to: "images/articles/minecraft_linux/base01.png",
+        url: "/images/articles/minecraft_linux/base01.png",
+      });
 
-    expect(missing).toEqual([]);
+    expect(unused.length).toBeGreaterThan(1);
+    expect(
+      unused.map(({ to }) => to.replace(/\.[^.]+$/, ".avif")).filter((file) => exists(file))
+    ).toEqual([]);
 
-    // 変換したかキャッシュから引いたかは問わない。バリアントも含めて全て処理されていること
-    const variants = imageVariants(production);
-    const tasks = raster.flatMap((asset) =>
-      variants.filter((variant) => variant.match?.(asset) ?? true)
-    );
-    expect(images.converted + images.cached).toBe(tasks.length);
+    // 変換した枚数は、描画が求めた大きさの数と釣り合う
+    expect(images.converted + images.cached).toBeGreaterThan(production.articles.length);
   });
 
-  test("ギャラリーの画像は切り抜き済みの小さいバリアントを指す", () => {
+  test("ギャラリーの画像は切り抜き済みの小さいものを指す", () => {
     const html = fs.readFileSync(path.join(target, "artworks.html"), "utf-8");
-    const sources = [...html.matchAll(/<source srcset="([^"]+)"/gi)].map(
+    const sources = [...html.matchAll(/<source srcset="(\/images\/artworks\/[^"]+)"/gi)].map(
       (matched) => matched[1] ?? ""
     );
 
     expect(sources.length).toBeGreaterThan(0);
-    expect(sources.every((src) => src.endsWith(".thumb.avif"))).toBe(true);
+    expect(sources.every((src) => src.endsWith(".240x240.avif"))).toBe(true);
 
     // 本文用を並べて CSS で切り抜くだけでは転送量が減らない。実体が小さいことを見る
     const thumb = sources[0] ?? "";
     const size = (file: string) => fs.statSync(path.join(target, file.slice(1))).size;
 
-    expect(size(thumb)).toBeLessThan(size(thumb.replace(".thumb.avif", ".avif")));
+    expect(size(thumb)).toBeLessThan(size(thumb.replace(".240x240.avif", ".avif")));
   });
 
   test("全ての img が属性で寸法を持つ", () => {

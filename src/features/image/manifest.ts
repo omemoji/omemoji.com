@@ -1,4 +1,10 @@
-import { CONTENT_VARIANT, type ImageEntry, type ImageManifest } from "@/features/image/optimize";
+import {
+  type ImageEntry,
+  type ImageManifest,
+  type ImageRequest,
+  type ImageWant,
+  requestKey,
+} from "@/features/image/optimize";
 
 /**
  * 描画時に寸法マニフェストを引くための置き場。
@@ -13,25 +19,43 @@ import { CONTENT_VARIANT, type ImageEntry, type ImageManifest } from "@/features
  */
 let manifest: ImageManifest = {};
 
+/**
+ * まだ無かった要求。**どの大きさを作るかはここに溜まる。**
+ *
+ * 呼び出し側が事前に列挙するのではなく、描画が求めたものを記録して後から作る。
+ * これにより、必要な大きさを知っているコンポーネントだけが寸法を持てばよくなる
+ */
+const wanted = new Map<string, ImageWant>();
+
 /** 描画の前に呼ぶ。ステージ（optimize）の出力をそのまま渡す */
 export function setImageManifest(next: ImageManifest): void {
   manifest = next;
 }
 
 /**
- * マニフェストに無い URL は最適化の対象外。原寸を指したまま寸法を持たない。
+ * 求めた大きさの画像を引く。無ければ記録して `undefined` を返す。
  *
- * バリアントは大きさの違い（本文用・ギャラリー用）。
- * 作っていないバリアントを指した場合も undefined になり、原寸へ倒れる
+ * 呼び出し側は原寸へ倒し、記録された分はビルド（または dev）が後から作る
  */
-export function resolveImage(
-  src: string,
-  variant: string = CONTENT_VARIANT
-): ImageEntry | undefined {
-  return manifest[src]?.[variant];
+export function resolveImage(src: string, request: ImageRequest = {}): ImageEntry | undefined {
+  const key = requestKey(request);
+  const entry = manifest[src]?.[key];
+
+  if (!entry) {
+    wanted.set(`${src}|${key}`, { src, ...request });
+  }
+  return entry;
+}
+
+/** 描画中に求められて、まだ無かったものを回収する。取り出すと空になる */
+export function takeImageWants(): ImageWant[] {
+  const wants = [...wanted.values()];
+  wanted.clear();
+  return wants;
 }
 
 /** テスト用。描画のテストがマニフェストを共有しないようにする */
 export function clearImageManifest(): void {
   manifest = {};
+  wanted.clear();
 }

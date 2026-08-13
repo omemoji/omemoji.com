@@ -1,7 +1,7 @@
+import { GALLERY_SIZE } from "@/components/Gallery";
 import { Picture } from "@/components/Image";
 import type { Artwork } from "@/content/artworks";
 import { imageUrl } from "@/features/image/assets";
-import { THUMB_DISPLAY_SIZE, THUMB_VARIANT } from "@/features/image/optimize";
 
 type Props = {
   artworks: Artwork[];
@@ -33,10 +33,9 @@ export default function GalleryRow({ artworks, current }: Props) {
             >
               <Picture
                 src={src}
-                variant={THUMB_VARIANT}
                 alt={artwork.title}
-                width={THUMB_DISPLAY_SIZE}
-                height={THUMB_DISPLAY_SIZE}
+                width={GALLERY_SIZE}
+                height={GALLERY_SIZE}
                 loading="lazy"
                 decoding="async"
               />

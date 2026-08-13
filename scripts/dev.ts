@@ -2,24 +2,25 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { setAnalyticsEnabled } from "@/components/Analytics";
-import { collectImages, type ImageAsset } from "@/features/image/assets";
-import { setImageManifest } from "@/features/image/manifest";
+import type { ImageAsset } from "@/features/image/assets";
+import { setImageManifest, takeImageWants } from "@/features/image/manifest";
 import {
   cachedImages,
   type ImageManifest,
-  type ImageTask,
+  type ImageWant,
   measureImages,
   optimizeImages,
+  readWants,
+  writeWants,
 } from "@/features/image/optimize";
 import { collectLinkCards } from "@/features/link-card/collect";
 import { setLinkCardManifest } from "@/features/link-card/manifest";
 import { collectAllLinkCardUrls } from "@/features/link-card/urls";
-import { buildRoutes, type Content } from "@/routes";
+import { buildRoutes } from "@/routes";
 import {
   contentDir,
+  imageAssets,
   imageCacheDir,
-  imageSources,
-  imageVariants,
   katex,
   linkCacheDir,
   linkCacheFile,
@@ -172,28 +173,30 @@ type ImageState = {
   manifest: ImageManifest;
   /** 配信 URL → キャッシュ上の実体 */
   files: Record<string, string>;
-  missing: ImageTask[];
+  missing: ImageWant[];
 };
 
 let measured: { stamp: string; state: ImageState } | undefined;
 
-async function imageState(images: ImageAsset[], content: Content): Promise<ImageState> {
+/**
+ * 変換済みのものはキャッシュから、まだのものは原寸 + 寸法で埋める。
+ *
+ * 求められた大きさは前回の記録（`.cache/images/requests.json`）から引く。
+ * 記録に無いものは描画時に記録され、`convertImages` が後から作る
+ */
+async function imageState(images: ImageAsset[]): Promise<ImageState> {
   const stamp = images.map(({ from }) => `${from}:${fs.statSync(from).mtimeMs}`).join("\n");
   if (measured?.stamp === stamp) {
     return measured.state;
   }
 
-  // 変換済みのものはキャッシュから、未変換のものは原寸 + 寸法で埋める。
-  // 原寸を指す側も width / height は出すので、どちらでもレイアウトは同じになる
-  const cached = cachedImages(images, {
-    cacheDir: imageCacheDir,
-    variants: imageVariants(content),
-  });
+  const cached = cachedImages(images, readWants(imageCacheDir), { cacheDir: imageCacheDir });
   const sized = await measureImages(images);
 
+  // 変換済みのものが原寸より優先される。片方にしか無い画像も落とさない
   const manifest: ImageManifest = {};
-  for (const [url, variants] of Object.entries(sized)) {
-    manifest[url] = { ...variants, ...cached.manifest[url] };
+  for (const url of new Set([...Object.keys(sized), ...Object.keys(cached.manifest)])) {
+    manifest[url] = { ...sized[url], ...cached.manifest[url] };
   }
 
   measured = { stamp, state: { manifest, files: cached.files, missing: cached.missing } };
@@ -204,26 +207,26 @@ async function imageState(images: ImageAsset[], content: Content): Promise<Image
 let converting: Promise<void> | undefined;
 
 /**
- * まだ変換されていない画像を裏で変換する。
+ * まだ無い大きさを裏で作る。
  *
  * リンクカードと同じ考え方で、リクエストは待たせない。変換は 1 枚 100ms 近くかかるが、
  * 一度作ればビルドと共用のキャッシュに残り、次からは即座に配信できる
  */
-function convertImages(missing: ImageTask[]): void {
-  if (converting || missing.length === 0) {
+function convertImages(assets: ImageAsset[], wants: ImageWant[]): void {
+  if (converting || wants.length === 0) {
     return;
   }
-  console.log(`converting ${missing.length} image(s)...`);
+  console.log(`converting ${wants.length} image(s)...`);
 
-  const assets = [...new Set(missing.map(({ asset }) => asset))];
-  const variants = [...new Map(missing.map(({ variant }) => [variant.name, variant])).values()];
-
-  converting = optimizeImages(assets, { cacheDir: imageCacheDir, variants })
-    .then(({ converted }) => {
-      console.log(`images: ${converted} converted`);
+  const all = [...readWants(imageCacheDir), ...wants];
+  converting = optimizeImages(assets, all, { cacheDir: imageCacheDir })
+    .then(({ converted, cached }) => {
+      console.log(`images: ${converted} converted, ${cached} cached`);
+      writeWants(imageCacheDir, all);
       // 次のリクエストで作り直させる。マニフェストの鍵は mtime なので明示的に捨てる
       measured = undefined;
-      if (converted > 0) {
+      // キャッシュに当たっただけでも、そのページは今なら最適化された画像を出せる
+      if (converted + cached > 0) {
         reload.notify("reload");
       }
     })
@@ -233,13 +236,6 @@ function convertImages(missing: ImageTask[]): void {
     });
 }
 
-/**
- * dev だけが出す画面（404 / 未実装 / エラー）。
- *
- * サイトのレイアウトは通さない。**サイトの見た目に紛れないことが大事**で、
- * 例外で落ちているのかページがそう描かれているのかを取り違えないようにする。
- * ライブリロードは差し込む。直したら勝手に開き直る
- */
 /**
  * リンクカードにする URL を覚えておく。
  *
@@ -257,16 +253,6 @@ function linkCardUrls(bodies: string[]): string[] {
 }
 
 /**
- * 何にどれだけかかったかを出す。**遅さの切り分けはこれが無いと始まらない。**
- * 変更通知（繋ぎっぱなし）は数えても意味が無いので出さない
- */
-const logRequest = (pathname: string, started: number, status: number): void => {
-  console.log(
-    `${String(status).padEnd(3)} ${`${Math.round(performance.now() - started)}ms`.padStart(7)}  ${pathname}`
-  );
-};
-
-/**
  * 遷移が捨てられたか。
  *
  * ブラウザは次のページへ進むと前のリクエストを中断する。**気付かずに描き続けると、
@@ -275,6 +261,16 @@ const logRequest = (pathname: string, started: number, status: number): void => 
  */
 const abandoned = (request: Request): Response | undefined =>
   request.signal.aborted ? new Response(null, { status: 499 }) : undefined;
+
+/**
+ * 何にどれだけかかったかを出す。**遅さの切り分けはこれが無いと始まらない。**
+ * 変更通知（繋ぎっぱなし）は数えても意味が無いので出さない
+ */
+const logRequest = (pathname: string, started: number, status: number): void => {
+  console.log(
+    `${String(status).padEnd(3)} ${`${Math.round(performance.now() - started)}ms`.padStart(7)}  ${pathname}`
+  );
+};
 
 const page = (status: number, title: string, body: string) =>
   new Response(
@@ -342,8 +338,8 @@ const server = Bun.serve({
       // 毎回読み直す。記事を書き換えたらリロードだけで反映される。
       // 下書きも表示する（build.ts は本番として除外する）
       const content = loadContent({ includeDrafts: true });
-      const images = collectImages(imageSources(content));
-      const state = await imageState(images, content);
+      const images = imageAssets(content);
+      const state = await imageState(images);
 
       const asset = staticResponse(pathname, images, state.files);
       if (asset) {
@@ -353,7 +349,7 @@ const server = Bun.serve({
 
       // 変換済みならそれを、まだなら原寸を指す。どちらも寸法は出すので見た目のずれは起きない
       setImageManifest(state.manifest);
-      convertImages(state.missing);
+      convertImages(images, state.missing);
       const leftEarly = abandoned(request);
       if (leftEarly) {
         logRequest(pathname, started, leftEarly.status);
@@ -394,6 +390,9 @@ const server = Bun.serve({
         logRequest(pathname, started, 501);
         return page(501, `${route.page} は未実装です`, list(routes.map((r) => r.path)));
       }
+
+      // 描画が求めた大きさのうち、まだ無かったもの。作れたらライブリロードで出し直す
+      convertImages(images, takeImageWants());
 
       logRequest(pathname, started, 200);
 

@@ -6,16 +6,13 @@ import { HOST } from "@/config";
 import { loadAbout } from "@/content/about";
 import { loadArticles } from "@/content/articles";
 import { loadArtworks } from "@/content/artworks";
-import { collectImages, type ImageSource, imageUrl } from "@/features/image/assets";
-import { setImageManifest } from "@/features/image/manifest";
+import { collectImages, type ImageAsset, type ImageSource } from "@/features/image/assets";
+import { setImageManifest, takeImageWants } from "@/features/image/manifest";
 import {
-  AVIF_PARAMS,
-  CONTENT_VARIANT,
   type OptimizeResult,
   optimizeImages,
-  THUMB_PARAMS,
-  THUMB_VARIANT,
-  type Variant,
+  readWants,
+  writeWants,
 } from "@/features/image/optimize";
 import { type CollectResult, collectLinkCards } from "@/features/link-card/collect";
 import { setLinkCardManifest } from "@/features/link-card/manifest";
@@ -111,19 +108,18 @@ export function imageSources({ articles, artworks }: Content): ImageSource[] {
 }
 
 /**
- * 作る大きさの一覧。
+ * `public/` にあるがコンテンツと同じく最適化したい画像。
  *
- * ギャラリー（一覧・帯）に並ぶのは作品の代表画像だけで、表示は本文幅の 1/3 しかない。
- * 本文用の大きさを送って CSS で切り抜くと、転送量のほとんどを捨てることになるため、
- * 切り抜き済みの小さいバリアントを別に作る。他の画像には作らない。
+ * サイトのアイコンはほとんどのページに出るうえ、原寸は 720x720 の PNG（342 KB）。
+ * 原寸は OGP の共通画像とフォールバックに要るので、複製はそのまま残す
  */
-export function imageVariants({ artworks }: Content): Variant[] {
-  const gallery = new Set(artworks.map((artwork) => imageUrl("artworks", artwork.id, artwork.src)));
+export function siteImages(): ImageAsset[] {
+  return [{ from: path.join(publicDir, "omemoji.png"), to: "omemoji.png", url: "/omemoji.png" }];
+}
 
-  return [
-    { name: CONTENT_VARIANT, params: AVIF_PARAMS },
-    { name: THUMB_VARIANT, params: THUMB_PARAMS, match: (asset) => gallery.has(asset.url) },
-  ];
+/** 最適化の対象。コンテンツに同梱された画像 + サイト共通の画像 */
+export function imageAssets(content: Content): ImageAsset[] {
+  return [...collectImages(imageSources(content)), ...siteImages()];
 }
 
 /**
@@ -253,12 +249,9 @@ export async function build(
   fs.rmSync(target, { recursive: true, force: true });
   copyAssets(target, content);
 
-  // 描画より先に済ませる。Image が寸法を引けるのはマニフェストを差し込んだ後
-  const images = await optimizeImages(collectImages(imageSources(content)), {
-    outDir: target,
-    cacheDir,
-    variants: imageVariants(content),
-  });
+  // 前回の描画で求められた大きさから始める。これがあると 1 回の描画で済む
+  const assets = imageAssets(content);
+  let images = await optimizeImages(assets, readWants(cacheDir), { outDir: target, cacheDir });
   setImageManifest(images.manifest);
 
   // 同じく描画より前。取得できなかった URL は素のリンクとして描画される
@@ -281,19 +274,42 @@ export async function build(
     "utf-8"
   );
 
-  const written: string[] = [];
-  const skipped: Route["page"][] = [];
+  /** 全ページを描いて書き出す。求められた大きさが足りなければ、それを返す */
+  const renderAll = async (): Promise<{ written: string[]; skipped: Route["page"][] }> => {
+    const written: string[] = [];
+    const skipped: Route["page"][] = [];
 
-  for (const route of routes) {
-    const html = await renderRoute(route);
-    if (html === undefined) {
-      skipped.push(route.page);
-      continue;
+    for (const route of routes) {
+      const html = await renderRoute(route);
+      if (html === undefined) {
+        skipped.push(route.page);
+        continue;
+      }
+      const file = path.join(target, outputPath(route.path));
+      fs.mkdirSync(path.dirname(file), { recursive: true });
+      fs.writeFileSync(file, html, "utf-8");
+      written.push(outputPath(route.path));
     }
-    const file = path.join(target, outputPath(route.path));
-    fs.mkdirSync(path.dirname(file), { recursive: true });
-    fs.writeFileSync(file, html, "utf-8");
-    written.push(outputPath(route.path));
+
+    return { written, skipped };
+  };
+
+  let { written, skipped } = await renderAll();
+
+  // 描画が求めた大きさのうち、まだ無かったもの。**どの大きさを作るかはここで決まる**
+  const wants = takeImageWants();
+
+  if (wants.length > 0) {
+    // 作ってから描き直す。2 度目が要るのは新しい大きさが現れたときだけで、
+    // 求められた大きさを覚えているため次のビルドでは起きない
+    const all = [...readWants(cacheDir), ...wants];
+    images = await optimizeImages(assets, all, { outDir: target, cacheDir });
+    setImageManifest(images.manifest);
+    writeWants(cacheDir, all);
+
+    ({ written, skipped } = await renderAll());
+    // 2 度目の描画でも記録は溜まる（svg など変換できないもの）。持ち越さない
+    takeImageWants();
   }
 
   return { written, skipped, images, links, og };

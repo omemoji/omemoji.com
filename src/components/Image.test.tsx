@@ -2,7 +2,7 @@ import { afterEach, expect, test } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
 
 import Image, { Picture } from "@/components/Image";
-import { clearImageManifest, setImageManifest } from "@/features/image/manifest";
+import { clearImageManifest, setImageManifest, takeImageWants } from "@/features/image/manifest";
 
 const render = (element: React.ReactNode) => renderToStaticMarkup(element);
 
@@ -13,7 +13,7 @@ afterEach(() => {
 test("AVIF を source に出し、img は原寸へ倒す", () => {
   setImageManifest({
     "/images/articles/x/a.png": {
-      content: { src: "/images/articles/x/a.avif", width: 700, height: 350 },
+      default: { src: "/images/articles/x/a.avif", width: 700, height: 350 },
     },
   });
 
@@ -27,7 +27,7 @@ test("AVIF を source に出し、img は原寸へ倒す", () => {
 test("寸法は img に付ける。縦横比は原寸と変わらないので倒れても同じ値でよい", () => {
   setImageManifest({
     "/images/articles/x/a.png": {
-      content: { src: "/images/articles/x/a.avif", width: 700, height: 350 },
+      default: { src: "/images/articles/x/a.avif", width: 700, height: 350 },
     },
   });
 
@@ -43,7 +43,7 @@ test("dev のように変換していない場合は picture で包まない", (
   // 原寸を指すマニフェスト（measureImages の出力）。PNG を image/avif と名乗ってはいけない
   setImageManifest({
     "/images/articles/x/a.png": {
-      content: { src: "/images/articles/x/a.png", width: 700, height: 350 },
+      default: { src: "/images/articles/x/a.png", width: 700, height: 350 },
     },
   });
 
@@ -66,7 +66,7 @@ test("マニフェストに無い画像は picture で包まず、寸法も付�
 test("キャプションは alt から出す。作品画像は出さない", () => {
   setImageManifest({
     "/images/artworks/y/a.png": {
-      content: { src: "/images/artworks/y/a.avif", width: 540, height: 540 },
+      default: { src: "/images/artworks/y/a.avif", width: 540, height: 540 },
     },
   });
 
@@ -79,7 +79,7 @@ test("キャプションは alt から出す。作品画像は出さない", () 
 test("Picture は分かっている寸法を必ず属性で出す", () => {
   setImageManifest({
     "/images/artworks/y/a.png": {
-      content: { src: "/images/artworks/y/a.avif", width: 540, height: 540 },
+      default: { src: "/images/artworks/y/a.avif", width: 540, height: 540 },
     },
   });
 
@@ -91,25 +91,32 @@ test("Picture は分かっている寸法を必ず属性で出す", () => {
   expect(html).toContain('height="540"');
 });
 
-test("呼び出し側の寸法が優先される。実体の 2 倍を等倍で見せる場合に使う", () => {
+test("求めた大きさで引き、属性は表示サイズを出す", () => {
+  // 240x240 を求めると、実体は 2 倍で作られる。属性は求めた側の値のまま
   setImageManifest({
     "/images/artworks/y/a.png": {
-      thumb: { src: "/images/artworks/y/a.thumb.avif", width: 480, height: 480 },
+      "240x240": { src: "/images/artworks/y/a.240x240.avif", width: 480, height: 480 },
     },
   });
 
-  const html = render(
-    <Picture src="/images/artworks/y/a.png" variant="thumb" alt="題" width={240} height={240} />
-  );
+  const html = render(<Picture src="/images/artworks/y/a.png" alt="題" width={240} height={240} />);
 
+  expect(html).toContain('srcSet="/images/artworks/y/a.240x240.avif"');
   expect(html).toContain('width="240"');
   expect(html).not.toContain('width="480"');
+});
+
+test("求めた大きさが無ければ記録され、原寸へ倒れる", () => {
+  const html = render(<Picture src="/images/artworks/y/a.png" alt="題" width={240} height={240} />);
+
+  expect(html).not.toContain("<picture>");
+  expect(takeImageWants()).toEqual([{ src: "/images/artworks/y/a.png", width: 240, height: 240 }]);
 });
 
 test("呼び出し側の指定が最適化の結果より優先される", () => {
   setImageManifest({
     "/images/artworks/y/a.png": {
-      content: { src: "/images/artworks/y/a.avif", width: 540, height: 540 },
+      default: { src: "/images/artworks/y/a.avif", width: 540, height: 540 },
     },
   });
 

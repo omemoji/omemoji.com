@@ -1,7 +1,14 @@
 import { Picture } from "@/components/Image";
 import type { Artwork } from "@/content/artworks";
 import { imageUrl } from "@/features/image/assets";
-import { THUMB_DISPLAY_SIZE, THUMB_VARIANT } from "@/features/image/optimize";
+
+/**
+ * ギャラリー（一覧・帯）での表示サイズ。実際の表示幅は本文幅の 1/3（約 233px）で
+ * 可変だが、`width` / `height` 属性は 1 つの値しか持てない。
+ * **CSS を解釈しない UA（端末ブラウザ）ではこの値がそのまま表示サイズになる。**
+ * 最適化もこの値を見て、切り抜いた画像を作る
+ */
+export const GALLERY_SIZE = 240;
 
 /**
  * 作品一覧。正方形に切り抜いた 3 列のグリッド。
@@ -22,10 +29,9 @@ export default function Gallery({ artworks }: { artworks: Artwork[] }) {
           <a key={artwork.id} href={`/artworks/${artwork.id}`}>
             <Picture
               src={src}
-              variant={THUMB_VARIANT}
               alt={artwork.title}
-              width={THUMB_DISPLAY_SIZE}
-              height={THUMB_DISPLAY_SIZE}
+              width={GALLERY_SIZE}
+              height={GALLERY_SIZE}
               loading="lazy"
               decoding="async"
             />
