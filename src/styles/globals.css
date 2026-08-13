@@ -780,10 +780,14 @@
     }
   }
 
+  .article-card-meta {
+    width: 100%;
+    margin: auto 0;
+  }
+
   .article-card-emoji {
     margin-block: 2.5rem;
     font-size: 80px;
-    line-height: 1.2;
     text-align: center;
 
     @media (min-width: 600px) {
@@ -845,6 +849,12 @@
   /* 作品詳細の下に置く横スクロールの帯 */
   .gallery-row {
     overflow-x: auto;
+    /*
+      スクロールバーはこの要素の内側の下端に置かれる。余白を中の項目ではなく
+      ここに持たせることで、画像がバーの 0.5rem 上で収まる。
+      重ねて描かれる種類のバー（macOS など）でも、その分だけ画像を避けられる
+    */
+    padding-block-end: 0.5rem;
     border-block-start: 1px solid var(--border);
 
     img {
@@ -872,7 +882,8 @@
 
     > a {
       flex: 0 0 27%;
-      padding-block: 0.5rem;
+      /* 下側の余白は .gallery-row が持つ（スクロールバーとの間隔になる） */
+      padding-block: 0.5rem 0;
       padding-inline: 0.25rem;
     }
   }

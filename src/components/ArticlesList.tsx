@@ -12,7 +12,7 @@ export default function ArticlesList({ articles }: { articles: Article[] }) {
       {articles.map((article) => (
         <div className="article-card" key={article.slug}>
           <p className="article-card-emoji">{article.emoji}</p>
-          <div>
+          <div className="article-card-meta">
             <h2>
               <a href={`/articles/${article.slug}`}>{article.title}</a>
             </h2>
