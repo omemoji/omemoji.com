@@ -9,6 +9,9 @@ import { loadArtworks } from "@/content/artworks";
 import { collectImages, type ImageSource } from "@/features/image/assets";
 import { setImageManifest } from "@/features/image/manifest";
 import { type OptimizeResult, optimizeImages } from "@/features/image/optimize";
+import { type CollectResult, collectLinkCards } from "@/features/link-card/collect";
+import { setLinkCardManifest } from "@/features/link-card/manifest";
+import { collectAllLinkCardUrls } from "@/features/link-card/urls";
 import AboutPage from "@/pages/AboutPage";
 import ArticlePage from "@/pages/ArticlePage";
 import ArticlesList from "@/pages/ArticlesList";
@@ -22,6 +25,9 @@ export const contentDir = path.join(rootDir, "content");
 export const outDir = path.join(rootDir, "out");
 /** ビルドをまたいで残す変換結果。キーに入力バイトを含むので使い回しても古くならない */
 export const imageCacheDir = path.join(rootDir, ".cache/images");
+/** リンク先のメタデータ。取得済みの URL は再取得しない */
+export const linkCacheFile = path.join(rootDir, ".cache/link-meta.json");
+export const linkCacheDir = path.join(rootDir, ".cache/link-card");
 
 /**
  * 実装済みのページだけを載せる。ここに無いページはスキップされる。
@@ -128,8 +134,20 @@ export function copyAssets(target: string, content: Content): string[] {
 /** 出力先を差し替えられるようにしてある。テストが実際の out/ を壊さずに検証するため */
 export async function build(
   target: string = outDir,
-  { cacheDir = imageCacheDir }: { cacheDir?: string } = {}
-): Promise<{ written: string[]; skipped: Route["page"][]; images: OptimizeResult }> {
+  {
+    cacheDir = imageCacheDir,
+    offline = false,
+  }: {
+    cacheDir?: string;
+    /** ネットワークを使わない。テストはこちら。リンクカードはキャッシュにある分だけ出る */
+    offline?: boolean;
+  } = {}
+): Promise<{
+  written: string[];
+  skipped: Route["page"][];
+  images: OptimizeResult;
+  links: CollectResult;
+}> {
   const content = loadContent({ includeDrafts: false });
   const routes = buildRoutes(content);
 
@@ -143,6 +161,18 @@ export async function build(
     cacheDir,
   });
   setImageManifest(images.manifest);
+
+  // 同じく描画より前。取得できなかった URL は素のリンクとして描画される
+  const links = await collectLinkCards(
+    collectAllLinkCardUrls(content.articles.map((a) => a.body)),
+    {
+      cacheFile: linkCacheFile,
+      cacheDir: linkCacheDir,
+      outDir: target,
+      offline,
+    }
+  );
+  setLinkCardManifest(links.manifest);
 
   const written: string[] = [];
   const skipped: Route["page"][] = [];
@@ -159,15 +189,23 @@ export async function build(
     written.push(outputPath(route.path));
   }
 
-  return { written, skipped, images };
+  return { written, skipped, images, links };
 }
 
 if (import.meta.main) {
-  const { written, skipped, images } = await build();
+  const { written, skipped, images, links } = await build();
   console.log(`built ${written.length} pages -> ${path.relative(process.cwd(), outDir)}/`);
   console.log(
     `images: ${images.converted} converted, ${images.cached} cached, ${images.passthrough} as-is`
   );
+  console.log(`link cards: ${links.fetched} fetched, ${links.cached} cached`);
+
+  if (links.failed.length > 0) {
+    // カードにならないだけでページは出る。素のリンクとして描画されている
+    console.log(
+      `link cards not resolved (rendered as plain links):\n  ${links.failed.join("\n  ")}`
+    );
+  }
 
   if (skipped.length > 0) {
     const counts = new Map<string, number>();

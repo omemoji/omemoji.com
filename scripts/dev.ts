@@ -4,8 +4,20 @@ import path from "node:path";
 import { collectImages, type ImageAsset } from "@/features/image/assets";
 import { setImageManifest } from "@/features/image/manifest";
 import { type ImageManifest, measureImages } from "@/features/image/optimize";
+import { collectLinkCards } from "@/features/link-card/collect";
+import { setLinkCardManifest } from "@/features/link-card/manifest";
+import { collectAllLinkCardUrls } from "@/features/link-card/urls";
 import { buildRoutes } from "@/routes";
-import { contentDir, imageSources, loadContent, publicDir, renderRoute, stylesheet } from "./build";
+import {
+  contentDir,
+  imageSources,
+  linkCacheDir,
+  linkCacheFile,
+  loadContent,
+  publicDir,
+  renderRoute,
+  stylesheet,
+} from "./build";
 
 // 分割代入で受ける。process.env はインデックスシグネチャを持つため、
 // ドットアクセスは tsconfig の noPropertyAccessFromIndexSignature に触れ、
@@ -42,6 +54,11 @@ function staticResponse(pathname: string, images: ImageAsset[]): Response | unde
   const image = images.find(({ to }) => `/${to}` === pathname);
   if (image) {
     return fileResponse(image.from, contentDir);
+  }
+
+  // リンクカードのサムネイル。ビルドが out/ へ複製するのと同じ実体を返す
+  if (pathname.startsWith("/images/ogp_link/")) {
+    return fileResponse(path.join(linkCacheDir, path.basename(pathname)), linkCacheDir);
   }
 
   return fileResponse(path.join(publicDir, pathname), publicDir);
@@ -89,6 +106,13 @@ const server = Bun.serve({
 
     // 原寸を配信したまま寸法だけを出す。本番と同じく場所が確保され、見た目のずれが起きない
     setImageManifest(await imageManifest(images));
+
+    // ネットワークは叩かない。取得済みの URL だけがカードになり、残りは素のリンクで出る
+    const links = await collectLinkCards(
+      collectAllLinkCardUrls(content.articles.map((article) => article.body)),
+      { cacheFile: linkCacheFile, cacheDir: linkCacheDir, offline: true }
+    );
+    setLinkCardManifest(links.manifest);
 
     const routes = buildRoutes(content);
     const route = routes.find((r) => r.path === normalize(pathname));

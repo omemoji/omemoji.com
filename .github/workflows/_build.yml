@@ -21,6 +21,16 @@ jobs:
           key: images-${{ hashFiles('content/**/*.png', 'content/**/*.jpg', 'content/**/*.jpeg', 'content/**/*.webp') }}
           restore-keys: images-
 
+      # 取得済みのリンク先メタデータを持ち越す。当たった URL は取得しに行かない
+      - name: Restore link card cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .cache/link-meta.json
+            .cache/link-card
+          key: link-cards-${{ hashFiles('content/articles/**/*.md') }}
+          restore-keys: link-cards-
+
       - run: bun run build
 
       - name: Upload build artifact

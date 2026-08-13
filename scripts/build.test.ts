@@ -60,8 +60,9 @@ describe("ビルド出力", () => {
   beforeAll(
     async () => {
       target = fs.mkdtempSync(path.join(os.tmpdir(), "omemoji-build-"));
-      // キャッシュは手元・CI と共有する。変換をやり直さずに済む
-      ({ written, skipped, images } = await build(target));
+      // キャッシュは手元・CI と共有する。変換をやり直さずに済む。
+      // offline はテストをネットワークから切るため。リンクカードは取得済みの分だけ出る
+      ({ written, skipped, images } = await build(target, { offline: true }));
     },
     // 画像のキャッシュが冷えていると変換に 10 秒以上かかる。既定の 5 秒では足りない。
     // しかもフックが時間切れになっても変換は走り続け、後続のテストから CPU を奪う

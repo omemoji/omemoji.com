@@ -26,11 +26,12 @@
 - **Phase 4** — 画像の URL 規則（`/images/<種別>/<id>/<ファイル名>`）・複製・`Image` の境界
 - **Phase 5** — 残りの 5 ページとコンポーネント第 2 弾。**本番ビルドが 85 ページ**を出す
 - **Phase 6** — 画像の最適化（AVIF・寸法マニフェスト・永続キャッシュ）。ページ側は無変更で済んだ
+- **Phase 7-1** — リンクカード（取得ステージ・永続キャッシュ・カードの描画）
 - **Phase 9**（前倒し）— CI を `main.yml` + `_ci.yml` / `_build.yml` / `_deploy.yml` に再編し、`bun test` を追加
 
 ### 未着手
 
-`features/og/**`、`features/link-card/parse.ts` は未着手。`scripts/new-artwork.ts` も未着手。
+`features/og/**`（Phase 7-2）とサイトマップ（Phase 7-3）は未着手。`scripts/new-artwork.ts` も未着手。
 
 ### ディレクトリ構成
 
@@ -259,14 +260,25 @@ AVIF が出力され `aspect-ratio` が付く / **2 回目のビルドで画像�
 
 ## Phase 7: 周辺機能
 
-1. **リンクカード** — `fetch-meta.ts` から純粋部分を `parse.ts` へ分離。**`fetch` を引数で注入可能に**。`.cache/link-meta.json` へ永続化。dev はネットワークを叩かない
+1. **リンクカード（完了）** — 画像と同じくステージ境界を切った。**URL 一覧 → メタデータ JSON + サムネイル**
+   - `parse.ts`（純粋）/ `fetch-meta.ts`（**`fetch` を注入可能**・ネットワークを触るのはここだけ）/
+     `collect.ts`（ステージ・永続化）/ `manifest.ts`（描画への受け渡し）に分けた
+   - **URL は描画より先に集める**（`urls.ts`）。判定は `remark-link-card` と共有しており、
+     集めた URL と描画される URL がずれない
+   - `.cache/link-meta.json` へ永続化。当たった URL は取得しに行かない（実測 9.3s → 0.9s / 66 件）。
+     CI は `actions/cache` で持ち越す
+   - **dev はネットワークを叩かない**（`offline`）。キャッシュにある分だけカードになり、
+     残りは素のリンクとして出る。取得に失敗した URL も同じ扱いでビルドは落とさない
+   - サムネイルは高さ 120px の webp を自前で持ち、`/images/ogp_link/<ハッシュ>.webp` で配信する。
+     実体を失った場合は画像の参照ごと落とし、文字だけのカードにする
 2. **OGP 画像** — satori + budoux。**現行が既に React JSX なので JSX の書き換えは不要**。キャッシュは Phase 6 と同方式
    - `Layout` の `og:image` / `og:type` / `twitter:card` はここで足す（テキスト系のメタタグは Phase 3 で移植済み）
 3. **サイトマップ** — `routes().filter(r => r.indexable)` から生成。収録ルールを [`requirements.md`](./requirements.md) §9 に沿って書き直す
 
 ### テスト
 
-`fetch-meta` の分岐（2 段階 UA / リトライ / サブドメインフォールバック / 全失敗）— fetch 注入により実ネットワーク不要
+~~`fetch-meta` の分岐（2 段階 UA / リトライ / サブドメインフォールバック / 全失敗）~~ — **実装済み**。
+fetch 注入により実ネットワーク不要。カードにする URL の判定と、キャッシュ・offline の挙動も併せて検査している
 サイトマップにページネーション 2 ページ目以降とタグ別が含まれないこと / 全記事・全作品に OGP がある
 
 ---
@@ -317,6 +329,7 @@ AVIF が出力され `aspect-ratio` が付く / **2 回目のビルドで画像�
 
 - **サイトマップの収録ルール** — 現行の除外条件が詳細ページまで巻き込んでいる疑い（[`current-implementation.md`](./current-implementation.md) §10）
 - **RSS** — 未実装。移植と同時に実装するかは別途判断
-- **`.cache/` を Git 管理するか** — 画像は **Git 管理外**に決定（再生成でき、CI は `actions/cache` で持ち越せる）。
-  リンクカードのメタデータだけは、参照先サイトの消滅に備えてコミットする選択肢が残る
+- **`.cache/` を Git 管理するか** — 現状は全て **Git 管理外**（CI は `actions/cache` で持ち越す）。
+  リンクカードのメタデータ（`link-meta.json`）だけは、参照先サイトの消滅に備えてコミットする選択肢が残る。
+  その場合もサムネイルの実体は別問題で、`.cache/link-card/` が無ければ文字だけのカードになる
 - **`simple-icons` の扱い** — フッタの SNS アイコンのために追加した。ビルド時にしか使わないため `devDependencies` へ移せる可能性がある
