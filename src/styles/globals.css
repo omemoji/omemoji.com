@@ -407,6 +407,75 @@
     text-align: center;
   }
 
+  /* リンクカード -------------------------------------------------------- */
+
+  .link-card {
+    display: flex;
+    margin-block: 1.5rem;
+    block-size: 6.375rem;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    transition: background-color 0.15s;
+
+    @media (hover: hover) {
+      &:hover {
+        /* 移植元の hover:bg-gray-400/30 に相当 */
+        background-color: color-mix(in oklch, var(--gray-400) 30%, transparent);
+        text-decoration-line: none;
+      }
+    }
+  }
+
+  .link-card-body {
+    display: flex;
+    flex-direction: column;
+    /* 画像の分を残して詰める。min-inline-size が無いと長い題で画像が押し出される */
+    flex: 1;
+    min-inline-size: 0;
+    padding: 1rem;
+  }
+
+  /* 3 行とも 1 行に収め、溢れたら省略記号にする */
+  .link-card-title,
+  .link-card-description,
+  .link-card-url {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .link-card-title {
+    color: var(--fg);
+    font-weight: 700;
+
+    @media (min-width: 480px) {
+      font-size: 1.125rem;
+    }
+  }
+
+  .link-card-description {
+    color: var(--quote);
+    font-size: 0.875rem;
+  }
+
+  .link-card-url {
+    margin-block-start: auto;
+    color: var(--link);
+    font-size: 0.875rem;
+  }
+
+  .link-card-image {
+    block-size: 100%;
+    inline-size: auto;
+    max-inline-size: 7.5rem;
+    object-fit: cover;
+
+    @media (min-width: 480px) {
+      max-inline-size: 15rem;
+    }
+  }
+
   .tag {
     display: inline-block;
     margin-inline-end: 0.25rem;

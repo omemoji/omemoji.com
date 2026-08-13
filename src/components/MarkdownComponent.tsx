@@ -2,13 +2,16 @@ import type { Components } from "hast-util-to-jsx-runtime";
 import type { ComponentProps } from "react";
 
 import Image from "@/components/Image";
+import LinkCard from "@/components/LinkCard";
 
 /** remark-link-card が裸の外部リンクに付ける印。HTML の属性ではない */
 type AnchorProps = ComponentProps<"a"> & { linkcard?: boolean | string };
 
 function Anchor({ linkcard, ...props }: AnchorProps) {
-  // 印をそのまま渡すと linkcard="" として DOM に出てしまうため、ここで取り除く。
-  // カードの描画自体はリンクカードの実装時に足す
+  // 印は取り除く。そのまま渡すと linkcard="" として DOM に出る
+  if (linkcard !== undefined && typeof props.href === "string") {
+    return <LinkCard href={props.href} />;
+  }
   return <a {...props} />;
 }
 
