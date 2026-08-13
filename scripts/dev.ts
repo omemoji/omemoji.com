@@ -3,14 +3,22 @@ import path from "node:path";
 
 import { collectImages, type ImageAsset } from "@/features/image/assets";
 import { setImageManifest } from "@/features/image/manifest";
-import { type ImageManifest, measureImages } from "@/features/image/optimize";
+import {
+  cachedImages,
+  type ImageManifest,
+  type ImageTask,
+  measureImages,
+  optimizeImages,
+} from "@/features/image/optimize";
 import { collectLinkCards } from "@/features/link-card/collect";
 import { setLinkCardManifest } from "@/features/link-card/manifest";
 import { collectAllLinkCardUrls } from "@/features/link-card/urls";
-import { buildRoutes } from "@/routes";
+import { buildRoutes, type Content } from "@/routes";
 import {
   contentDir,
+  imageCacheDir,
   imageSources,
+  imageVariants,
   katex,
   linkCacheDir,
   linkCacheFile,
@@ -115,14 +123,24 @@ const fileResponse = (file: string, root: string): Response | undefined => {
 };
 
 /** ビルドが out/ へ複製するのと同じものを、原本のまま返す */
-function staticResponse(pathname: string, images: ImageAsset[]): Response | undefined {
+function staticResponse(
+  pathname: string,
+  images: ImageAsset[],
+  optimized: Record<string, string>
+): Response | undefined {
   if (pathname === `/${stylesheet.href}`) {
     // out/ へコピーしたものではなく原本を返すため、編集がそのまま反映される
     return new Response(Bun.file(stylesheet.file));
   }
 
-  // 画像は content/ に置いたまま配信する。URL の対応はビルドと同じ表から引くので、
-  // dev だけ別の場所を指すということが起きない
+  // 変換済みの画像はキャッシュから返す。dev のために作り直さない
+  const converted = optimized[pathname];
+  if (converted) {
+    return new Response(Bun.file(converted));
+  }
+
+  // 未変換の画像は content/ に置いたまま原寸で配信する。URL の対応はビルドと
+  // 同じ表から引くので、dev だけ別の場所を指すということが起きない
   const image = images.find(({ to }) => `/${to}` === pathname);
   if (image) {
     return fileResponse(image.from, contentDir);
@@ -147,14 +165,69 @@ function staticResponse(pathname: string, images: ImageAsset[]): Response | unde
  * 測るのはヘッダだけだが、それでも全リクエストで 100 枚読むのは無駄なので、
  * ファイルの構成と更新時刻が変わらない限り測り直さない。
  */
-let measured: { stamp: string; manifest: ImageManifest } | undefined;
+type ImageState = {
+  manifest: ImageManifest;
+  /** 配信 URL → キャッシュ上の実体 */
+  files: Record<string, string>;
+  missing: ImageTask[];
+};
 
-async function imageManifest(images: ImageAsset[]): Promise<ImageManifest> {
+let measured: { stamp: string; state: ImageState } | undefined;
+
+async function imageState(images: ImageAsset[], content: Content): Promise<ImageState> {
   const stamp = images.map(({ from }) => `${from}:${fs.statSync(from).mtimeMs}`).join("\n");
-  if (measured?.stamp !== stamp) {
-    measured = { stamp, manifest: await measureImages(images) };
+  if (measured?.stamp === stamp) {
+    return measured.state;
   }
-  return measured.manifest;
+
+  // 変換済みのものはキャッシュから、未変換のものは原寸 + 寸法で埋める。
+  // 原寸を指す側も width / height は出すので、どちらでもレイアウトは同じになる
+  const cached = cachedImages(images, {
+    cacheDir: imageCacheDir,
+    variants: imageVariants(content),
+  });
+  const sized = await measureImages(images);
+
+  const manifest: ImageManifest = {};
+  for (const [url, variants] of Object.entries(sized)) {
+    manifest[url] = { ...variants, ...cached.manifest[url] };
+  }
+
+  measured = { stamp, state: { manifest, files: cached.files, missing: cached.missing } };
+  return measured.state;
+}
+
+/** 変換中かどうか。同じ画像に何本も走らせない */
+let converting: Promise<void> | undefined;
+
+/**
+ * まだ変換されていない画像を裏で変換する。
+ *
+ * リンクカードと同じ考え方で、リクエストは待たせない。変換は 1 枚 100ms 近くかかるが、
+ * 一度作ればビルドと共用のキャッシュに残り、次からは即座に配信できる
+ */
+function convertImages(missing: ImageTask[]): void {
+  if (converting || missing.length === 0) {
+    return;
+  }
+  console.log(`converting ${missing.length} image(s)...`);
+
+  const assets = [...new Set(missing.map(({ asset }) => asset))];
+  const variants = [...new Map(missing.map(({ variant }) => [variant.name, variant])).values()];
+
+  converting = optimizeImages(assets, { cacheDir: imageCacheDir, variants })
+    .then(({ converted }) => {
+      console.log(`images: ${converted} converted`);
+      // 次のリクエストで作り直させる。マニフェストの鍵は mtime なので明示的に捨てる
+      measured = undefined;
+      if (converted > 0) {
+        reload.notify("reload");
+      }
+    })
+    .catch((error: unknown) => console.error(error))
+    .finally(() => {
+      converting = undefined;
+    });
 }
 
 /**
@@ -255,14 +328,16 @@ const server = Bun.serve({
       // 下書きも表示する（build.ts は本番として除外する）
       const content = loadContent({ includeDrafts: true });
       const images = collectImages(imageSources(content));
+      const state = await imageState(images, content);
 
-      const asset = staticResponse(pathname, images);
+      const asset = staticResponse(pathname, images, state.files);
       if (asset) {
         return asset;
       }
 
-      // 原寸を配信したまま寸法だけを出す。本番と同じく場所が確保され、見た目のずれが起きない
-      setImageManifest(await imageManifest(images));
+      // 変換済みならそれを、まだなら原寸を指す。どちらも寸法は出すので見た目のずれは起きない
+      setImageManifest(state.manifest);
+      convertImages(state.missing);
       const leftEarly = abandoned(request);
       if (leftEarly) {
         return leftEarly;

@@ -8,6 +8,7 @@ import type { ImageAsset } from "@/features/image/assets";
 import {
   AVIF_PARAMS,
   CONTENT_VARIANT,
+  cachedImages,
   cacheKey,
   displaySize,
   encoderVersion,
@@ -195,6 +196,40 @@ describe("変換", () => {
     // 対象外の画像に無駄な変換をかけない
     expect(manifest["/images/articles/x/tall.png"]?.[THUMB_VARIANT]).toBeUndefined();
     expect(manifest["/images/articles/x/tall.png"]?.[CONTENT_VARIANT]).toBeDefined();
+  });
+
+  describe("キャッシュだけを見る（dev）", () => {
+    test("未変換なら missing に並び、マニフェストは空", async () => {
+      const fresh = fs.mkdtempSync(path.join(os.tmpdir(), "omemoji-image-cold-"));
+      const cached = cachedImages(assets, { cacheDir: fresh });
+
+      expect(cached.manifest).toEqual({});
+      expect(cached.missing).toHaveLength(assets.length);
+      fs.rmSync(fresh, { recursive: true, force: true });
+    });
+
+    test("変換済みならキャッシュ上の実体を指す", async () => {
+      const dir2 = fs.mkdtempSync(path.join(os.tmpdir(), "omemoji-image-warm-"));
+      await optimizeImages(assets, { outDir: path.join(dir2, "out"), cacheDir: dir2 });
+
+      const cached = cachedImages(assets, { cacheDir: dir2 });
+      const url = "/images/articles/x/wide.avif";
+
+      expect(cached.missing).toEqual([]);
+      expect(cached.manifest["/images/articles/x/wide.png"]?.[CONTENT_VARIANT]?.src).toBe(url);
+      // dev はこの実体をそのまま配信する
+      expect(fs.existsSync(cached.files[url] ?? "")).toBe(true);
+      fs.rmSync(dir2, { recursive: true, force: true });
+    });
+
+    test("出力先を省くと out へ複製しない（キャッシュだけ埋める）", async () => {
+      const dir3 = fs.mkdtempSync(path.join(os.tmpdir(), "omemoji-image-nocopy-"));
+      const { converted } = await optimizeImages(assets, { cacheDir: dir3 });
+
+      expect(converted).toBe(assets.length);
+      expect(cachedImages(assets, { cacheDir: dir3 }).missing).toEqual([]);
+      fs.rmSync(dir3, { recursive: true, force: true });
+    });
   });
 
   test("dev は変換せず寸法だけを出す", async () => {

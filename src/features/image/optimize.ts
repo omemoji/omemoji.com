@@ -171,8 +171,8 @@ const toAvif = (file: string, variant: string): string =>
   file.replace(/\.[^.]+$/, variant === CONTENT_VARIANT ? ".avif" : `.${variant}.avif`);
 
 export type OptimizeOptions = {
-  /** 変換済み画像の書き出し先（`out/`） */
-  outDir: string;
+  /** 変換済み画像の書き出し先（`out/`）。省くと複製せず、キャッシュだけを埋める */
+  outDir?: string;
   /** 永続キャッシュの置き場（`.cache/images`） */
   cacheDir: string;
   concurrency?: number;
@@ -217,6 +217,9 @@ export async function optimizeImages(
   );
 
   const write = (to: string, body: Uint8Array | string): void => {
+    if (!outDir) {
+      return;
+    }
     const dest = path.join(outDir, to);
     fs.mkdirSync(path.dirname(dest), { recursive: true });
     if (typeof body === "string") {
@@ -266,6 +269,60 @@ export async function optimizeImages(
   writeIndex(cacheDir, index);
 
   return { manifest, converted, cached, passthrough };
+}
+
+/** 変換の 1 単位。キャッシュの参照と変換で同じ組を扱う */
+export type ImageTask = { asset: ImageAsset; variant: Variant };
+
+export type CachedImages = {
+  /** 変換済みのものだけを載せた寸法マニフェスト */
+  manifest: ImageManifest;
+  /** 配信 URL → キャッシュ上の実体。dev がこれを見て変換済みの画像を返す */
+  files: Record<string, string>;
+  /** まだ変換されていない組。dev は裏で変換する */
+  missing: ImageTask[];
+};
+
+/**
+ * **変換せずに**キャッシュだけを見る。dev 用。
+ *
+ * ビルド済みのキャッシュがあれば dev もそれを配信できる。原寸を配信すると
+ * 作品一覧 1 ページで 16 MB になり（本番は 358 KB）、連続して遷移したときに
+ * 転送とデコードが後続の表示を圧迫する。
+ *
+ * 入力バイトのハッシュが要るので 100 MB 前後を読む。呼び出し側で覚えること
+ */
+export function cachedImages(
+  assets: ImageAsset[],
+  { cacheDir, variants = [CONTENT] }: { cacheDir: string; variants?: Variant[] }
+): CachedImages {
+  const index = readIndex(cacheDir);
+  const manifest: ImageManifest = {};
+  const files: Record<string, string> = {};
+  const missing: ImageTask[] = [];
+
+  for (const asset of assets.filter((a) => isRaster(a.from))) {
+    const bytes = fs.readFileSync(asset.from);
+
+    for (const variant of variants.filter((v) => v.match?.(asset) ?? true)) {
+      const hit = index[cacheKey(bytes, variant.params)];
+      const file = hit && path.join(cacheDir, hit.file);
+
+      if (!hit || !file || !fs.existsSync(file)) {
+        missing.push({ asset, variant });
+        continue;
+      }
+
+      const url = toAvif(asset.url, variant.name);
+      manifest[asset.url] = {
+        ...manifest[asset.url],
+        [variant.name]: { src: url, width: hit.width, height: hit.height },
+      };
+      files[url] = file;
+    }
+  }
+
+  return { manifest, files, missing };
 }
 
 /**
