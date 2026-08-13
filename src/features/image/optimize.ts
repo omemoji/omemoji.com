@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import sharp from "sharp";
 
+import { mapWithLimit } from "@/features/concurrency";
 import type { ImageAsset } from "@/features/image/assets";
 
 /**
@@ -99,27 +100,6 @@ function writeIndex(cacheDir: string, index: CacheIndex): void {
 
 /** `.png` を `.avif` へ。URL と出力先の両方で使う */
 const toAvif = (file: string): string => file.replace(/\.[^.]+$/, ".avif");
-
-/** 同時に走らせる本数を絞る。全件を一斉に投げるとメモリと CPU の取り合いで遅くなる */
-async function mapWithLimit<T, R>(
-  items: T[],
-  limit: number,
-  task: (item: T) => Promise<R>
-): Promise<R[]> {
-  const results: R[] = new Array(items.length);
-  let next = 0;
-
-  const worker = async (): Promise<void> => {
-    while (next < items.length) {
-      const index = next++;
-      // 添字は index < items.length の範囲なので必ず存在する
-      results[index] = await task(items[index] as T);
-    }
-  };
-
-  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, worker));
-  return results;
-}
 
 export type OptimizeOptions = {
   /** 変換済み画像の書き出し先（`out/`） */
