@@ -36,24 +36,50 @@ describe("クライアントの差し込み", () => {
   });
 });
 
-describe("再起動の検出", () => {
-  const firstEvent = async (response: Response): Promise<string> => {
-    const reader = response.body?.getReader();
-    const { value } = (await reader?.read()) ?? {};
-    return new TextDecoder().decode(value);
-  };
+/** 実際に Bun.serve へ繋いで確かめる。WebSocket はサーバ抜きでは動かない */
+const withServer = async (
+  reload: ReturnType<typeof createLiveReload>,
+  body: (url: string) => Promise<void>
+): Promise<void> => {
+  const server = Bun.serve({
+    port: 0,
+    websocket: reload.handlers,
+    fetch: (request, server) => reload.upgrade(request, server) ?? new Response("no"),
+  });
 
-  test("接続すると起動 ID が届く", async () => {
+  try {
+    await body(`ws://localhost:${server.port}${RELOAD_PATH}`);
+  } finally {
+    server.stop(true);
+  }
+};
+
+/** 繋いで、最初に届いたメッセージを返す */
+const firstMessage = (url: string): Promise<string> =>
+  new Promise((resolve) => {
+    const socket = new WebSocket(url);
+    socket.addEventListener("message", (event) => {
+      resolve(String(event.data));
+      socket.close();
+    });
+  });
+
+describe("再起動の検出", () => {
+  test("繋ぐと起動 ID が届く", async () => {
     const reload = createLiveReload();
 
-    expect(await firstEvent(reload.connect())).toBe(`event: hello\ndata: ${reload.bootId}\n\n`);
+    await withServer(reload, async (url) => {
+      expect(await firstMessage(url)).toBe(`hello ${reload.bootId}`);
+    });
   });
 
   test("同じサーバなら繋ぎ直しても同じ ID", async () => {
     // ここが変わると、通信が一瞬切れただけでブラウザがリロードしてしまう
     const reload = createLiveReload();
 
-    expect(await firstEvent(reload.connect())).toBe(await firstEvent(reload.connect()));
+    await withServer(reload, async (url) => {
+      expect(await firstMessage(url)).toBe(await firstMessage(url));
+    });
   });
 
   test("立ち上げ直せば ID が変わる", () => {
@@ -62,47 +88,67 @@ describe("再起動の検出", () => {
 });
 
 describe("受け手の作り", () => {
-  test("切断そのものではリロードしない", () => {
+  test("HTTP の接続を握らない（WebSocket を使う）", () => {
     const script = injectClient("<body></body>");
 
-    // EventSource は自前で繋ぎ直す。切断を再起動と見なすと、
-    // 通信が途切れるたびにページが作り直される（iframe の再生が止まる）
-    expect(script).not.toContain('addEventListener("error"');
-    expect(script).toContain('addEventListener("hello"');
+    // SSE は HTTP の同時接続数（6）を 1 本削る。離れたページが握ったままだと
+    // 次の遷移が空きを待ち、一度詰まると手動リロードでも直らない
+    expect(script).toContain("new WebSocket(");
+    expect(script).not.toContain("EventSource");
+  });
+
+  test("ページを離れる時点で接続を手放す", () => {
+    expect(injectClient("<body></body>")).toContain('addEventListener("pagehide"');
   });
 });
 
 describe("購読", () => {
-  /** SSE のストリームから 1 つ分のイベントを読む */
-  const read = async (response: Response): Promise<string> => {
-    const reader = response.body?.getReader();
-    const decoder = new TextDecoder();
-
-    for (let i = 0; i < 5 && reader; i++) {
-      const { value } = await reader.read();
-      const chunk = decoder.decode(value);
-      // 接続時に届く hello と、繋ぎっぱなしにするための ping は読み飛ばす
-      if (chunk.startsWith("event:") && !chunk.startsWith("event: hello")) {
-        return chunk;
-      }
-    }
-    return "";
-  };
-
-  test("接続した相手に通知が届く", async () => {
+  test("繋いでいるページへ通知が届く", async () => {
     const reload = createLiveReload();
-    const response = reload.connect();
 
-    expect(response.headers.get("content-type")).toBe("text/event-stream");
+    await withServer(reload, async (url) => {
+      const socket = new WebSocket(url);
+      const received = new Promise<string>((resolve) => {
+        socket.addEventListener("message", (event) => {
+          // hello は接続時に届く。その次を待つ
+          if (String(event.data) !== `hello ${reload.bootId}`) {
+            resolve(String(event.data));
+          }
+        });
+      });
 
-    const received = read(response);
-    reload.notify("css");
+      await new Promise((resolve) => socket.addEventListener("open", resolve));
+      // 接続が数えられてから通知する
+      while (reload.size() === 0) {
+        await Bun.sleep(5);
+      }
+      reload.notify("css");
 
-    expect(await received).toContain("event: css");
+      expect(await received).toBe("css");
+      socket.close();
+    });
   });
 
-  test("接続していなくても通知で落ちない", () => {
+  test("繋いでいなくても通知で落ちない", () => {
     expect(() => createLiveReload().notify("reload")).not.toThrow();
+  });
+
+  test("離れた接続は数から外れる", async () => {
+    const reload = createLiveReload();
+
+    await withServer(reload, async (url) => {
+      const socket = new WebSocket(url);
+      await new Promise((resolve) => socket.addEventListener("open", resolve));
+      while (reload.size() === 0) {
+        await Bun.sleep(5);
+      }
+
+      socket.close();
+      while (reload.size() > 0) {
+        await Bun.sleep(5);
+      }
+      expect(reload.size()).toBe(0);
+    });
   });
 });
 
@@ -119,42 +165,49 @@ describe("監視", () => {
     fs.rmSync(dir, { recursive: true, force: true });
   });
 
-  /** 通知を待つ。監視は OS 依存で遅れることがあるため余裕を持たせる */
-  const nextEvent = (reload: ReturnType<typeof createLiveReload>): Promise<string> => {
-    const response = reload.connect();
-    const reader = response.body?.getReader();
-    const decoder = new TextDecoder();
-
-    return (async () => {
-      for (let i = 0; i < 10 && reader; i++) {
-        const { value } = await reader.read();
-        const chunk = decoder.decode(value);
-        if (chunk.startsWith("event:") && !chunk.startsWith("event: hello")) {
-          return chunk;
-        }
+  /** 監視は OS 依存で遅れることがあるため、届くまで待つ */
+  const nextEvent = async (reload: ReturnType<typeof createLiveReload>): Promise<string> => {
+    let received = "";
+    await withServer(reload, async (url) => {
+      const socket = new WebSocket(url);
+      const message = new Promise<string>((resolve) => {
+        socket.addEventListener("message", (event) => {
+          if (!String(event.data).startsWith("hello")) {
+            resolve(String(event.data));
+          }
+        });
+      });
+      await new Promise((resolve) => socket.addEventListener("open", resolve));
+      while (reload.size() === 0) {
+        await Bun.sleep(5);
       }
-      return "";
-    })();
+
+      fs.writeFileSync(path.join(dir, pending), body);
+      received = await message;
+      socket.close();
+    });
+    return received;
   };
+
+  let pending = "";
+  let body = "";
 
   test("CSS の変更は css として伝える", async () => {
     const reload = createLiveReload();
     stop = reload.watch([dir]);
-    const received = nextEvent(reload);
+    pending = "globals.css";
+    body = "body { color: red }";
 
-    fs.writeFileSync(path.join(dir, "globals.css"), "body { color: red }");
-
-    expect(await received).toContain("event: css");
+    expect(await nextEvent(reload)).toBe("css");
   });
 
   test("CSS 以外の変更は reload として伝える", async () => {
     const reload = createLiveReload();
     stop = reload.watch([dir]);
-    const received = nextEvent(reload);
+    pending = "index.md";
+    body = "# 見出し";
 
-    fs.writeFileSync(path.join(dir, "index.md"), "# 見出し");
-
-    expect(await received).toContain("event: reload");
+    expect(await nextEvent(reload)).toBe("reload");
   });
 
   test("存在しないディレクトリは黙って飛ばす", () => {

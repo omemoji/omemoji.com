@@ -1,8 +1,13 @@
 import fs from "node:fs";
+import type { Server, ServerWebSocket } from "bun";
 
 /**
  * 変更通知の受け口。`__dev` を頭に付けてサイトのルートと衝突させない。
- * サイト側に同じパスのページができたら、そちらが隠れるのではなくここが優先される
+ *
+ * **SSE ではなく WebSocket を使う。**SSE は HTTP の接続を 1 本占め続けるため、
+ * ブラウザの同時接続数（HTTP/1.1 では 6）を削る。離れたページの接続が残ると
+ * 次の遷移がその空きを待つことになり、一度詰まると手動でリロードしても直らない。
+ * WebSocket はこの制限の対象外
  */
 export const RELOAD_PATH = "/__dev/reload";
 
@@ -25,34 +30,59 @@ export const reloadEvent = (file: string): ReloadEvent =>
  * 新しい `<link>` を先に読み込ませてから古い方を外す。順序を逆にすると、
  * 読み込みの間だけスタイルの無い状態が見える。
  *
- * **接続が切れてもリロードしない。**EventSource は自前で繋ぎ直すので、
- * 切断を再起動と見なすと、通信が一瞬途切れただけでページが作り直される
- * （iframe の再生が止まる）。サーバの再起動は起動 ID の変化で見分ける
+ * **切断そのものではリロードしない。**繋ぎ直すだけにする。切断を再起動と見なすと、
+ * 通信が一瞬途切れただけでページが作り直される（iframe の再生が止まる）。
+ * サーバの再起動は起動 ID の変化で見分ける
  */
 const CLIENT_SCRIPT = `
-const source = new EventSource(${JSON.stringify(RELOAD_PATH)});
+let socket;
 let boot;
+let timer;
 
-// 接続のたびに届く。値が変わっていれば dev サーバが立ち上げ直されている
-source.addEventListener("hello", (event) => {
-  if (boot !== undefined && boot !== event.data) {
-    location.reload();
-  }
-  boot = event.data;
+const connect = () => {
+  socket = new WebSocket(location.origin.replace(/^http/, "ws") + ${JSON.stringify(RELOAD_PATH)});
+
+  socket.addEventListener("message", (event) => {
+    const [kind, value] = event.data.split(" ");
+
+    if (kind === "hello") {
+      // 値が変わっていれば dev サーバが立ち上げ直されている
+      if (boot !== undefined && boot !== value) location.reload();
+      boot = value;
+      return;
+    }
+
+    if (kind === "reload") location.reload();
+
+    if (kind === "css") {
+      for (const link of document.querySelectorAll('link[rel="stylesheet"]')) {
+        const url = new URL(link.href);
+        url.searchParams.set("v", String(Date.now()));
+
+        const fresh = link.cloneNode();
+        fresh.href = url.href;
+        fresh.addEventListener("load", () => link.remove(), { once: true });
+        link.after(fresh);
+      }
+    }
+  });
+
+  // 落ちている間は繋ぎ直し続ける。立ち上げ直したことは hello の値で気付く
+  socket.addEventListener("close", () => {
+    clearTimeout(timer);
+    timer = setTimeout(connect, 1000);
+  });
+};
+
+connect();
+
+// ページを離れる時点で手放す。戻る操作で復元された場合（bfcache）は繋ぎ直す
+addEventListener("pagehide", () => {
+  clearTimeout(timer);
+  socket?.close();
 });
-
-source.addEventListener("reload", () => location.reload());
-
-source.addEventListener("css", () => {
-  for (const link of document.querySelectorAll('link[rel="stylesheet"]')) {
-    const url = new URL(link.href);
-    url.searchParams.set("v", String(Date.now()));
-
-    const fresh = link.cloneNode();
-    fresh.href = url.href;
-    fresh.addEventListener("load", () => link.remove(), { once: true });
-    link.after(fresh);
-  }
+addEventListener("pageshow", (event) => {
+  if (event.persisted) connect();
 });
 `;
 
@@ -62,15 +92,27 @@ export function injectClient(html: string): string {
   return html.includes("</body>") ? html.replace("</body>", `${script}</body>`) : html + script;
 }
 
+/** ブラウザ 1 枚ぶんの接続 */
+export type ReloadSocket = ServerWebSocket<unknown>;
+
 export type LiveReload = {
-  /** SSE の接続を返す */
-  connect(): Response;
-  /** この dev サーバの起動 ID。接続のたびに送り、再起動の検出に使う */
+  /** この dev サーバの起動 ID。繋がるたびに送り、再起動の検出に使う */
   readonly bootId: string;
+  /** WebSocket への切り替え。ページのハンドラより先に呼ぶ */
+  upgrade(request: Request, server: Server<unknown>): Response | undefined;
+  /** `Bun.serve` の `websocket` へそのまま渡す */
+  readonly handlers: {
+    open(ws: ReloadSocket): void;
+    close(ws: ReloadSocket): void;
+    /** ブラウザからは何も送らない。型を満たすために置く */
+    message(): void;
+  };
+  /** 購読している全てのページへ通知する */
+  notify(event: ReloadEvent): void;
   /** 監視を始める。戻り値を呼ぶと止まる */
   watch(dirs: string[]): () => void;
-  /** 手で通知する。テスト用 */
-  notify(event: ReloadEvent): void;
+  /** 繋がっているページの数。テストと切り分け用 */
+  readonly size: () => number;
 };
 
 /**
@@ -80,69 +122,37 @@ export type LiveReload = {
  * 通知は「もう一度取りに来い」の合図で足りる（§7.9 の「依存グラフを持たない」と同じ理由）
  */
 export function createLiveReload(): LiveReload {
-  const clients = new Set<ReadableStreamDefaultController<Uint8Array>>();
-  const encoder = new TextEncoder();
+  const clients = new Set<ReloadSocket>();
   // プロセスに 1 つ。`bun --hot` の差し替えでは作り直されない（dev.ts が globalThis に置く）
   const bootId = crypto.randomUUID();
-  let heartbeat: ReturnType<typeof setInterval> | undefined;
 
   const notify = (event: ReloadEvent): void => {
-    const chunk = encoder.encode(`event: ${event}\ndata: 1\n\n`);
     for (const client of clients) {
-      try {
-        client.enqueue(chunk);
-      } catch {
-        // 既に閉じている接続。cancel が呼ばれる前に落ちることがある
-        clients.delete(client);
-      }
+      client.send(event);
     }
   };
 
-  /**
-   * 何も起きていない間も一定間隔で送る。
-   *
-   * 送るものが無いと接続が切れ、繋ぎ直すまでの変更を取りこぼす。
-   * 接続している相手がいる間だけ動かす
-   */
-  const keepAlive = (): void => {
-    heartbeat ??= setInterval(() => {
-      if (clients.size === 0) {
-        clearInterval(heartbeat);
-        heartbeat = undefined;
-        return;
-      }
-      for (const client of clients) {
-        try {
-          client.enqueue(encoder.encode(": ping\n\n"));
-        } catch {
-          clients.delete(client);
-        }
-      }
-    }, 5000);
+  const upgrade = (request: Request, server: Server<unknown>): Response | undefined => {
+    if (new URL(request.url).pathname !== RELOAD_PATH) {
+      return undefined;
+    }
+    // 切り替えに成功した場合は応答を返してはいけない。失敗したときだけ組み立てる
+    return server.upgrade(request, { data: undefined })
+      ? undefined
+      : new Response("upgrade failed", { status: 400 });
   };
 
-  const connect = (): Response => {
-    let self: ReadableStreamDefaultController<Uint8Array>;
-    const stream = new ReadableStream<Uint8Array>({
-      start(controller) {
-        self = controller;
-        clients.add(controller);
-        // 起動 ID を送って接続を確定させる。ブラウザは値の変化で再起動を見分ける
-        controller.enqueue(encoder.encode(`event: hello\ndata: ${bootId}\n\n`));
-        keepAlive();
-      },
-      cancel() {
-        clients.delete(self);
-      },
-    });
-
-    return new Response(stream, {
-      headers: {
-        "content-type": "text/event-stream",
-        "cache-control": "no-cache",
-        connection: "keep-alive",
-      },
-    });
+  const handlers = {
+    open(ws: ReloadSocket): void {
+      clients.add(ws);
+      ws.send(`hello ${bootId}`);
+    },
+    close(ws: ReloadSocket): void {
+      clients.delete(ws);
+    },
+    message(): void {
+      // 受け取るものは無い。通知は一方通行
+    },
   };
 
   const watch = (dirs: string[]): (() => void) => {
@@ -174,5 +184,5 @@ export function createLiveReload(): LiveReload {
     };
   };
 
-  return { connect, bootId, notify, watch };
+  return { bootId, upgrade, handlers, notify, watch, size: () => clients.size };
 }

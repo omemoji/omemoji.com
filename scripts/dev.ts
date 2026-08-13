@@ -254,6 +254,16 @@ function linkCardUrls(bodies: string[]): string[] {
 }
 
 /**
+ * 何にどれだけかかったかを出す。**遅さの切り分けはこれが無いと始まらない。**
+ * 変更通知（繋ぎっぱなし）は数えても意味が無いので出さない
+ */
+const logRequest = (pathname: string, started: number, status: number): void => {
+  console.log(
+    `${String(status).padEnd(3)} ${`${Math.round(performance.now() - started)}ms`.padStart(7)}  ${pathname}`
+  );
+};
+
+/**
  * 遷移が捨てられたか。
  *
  * ブラウザは次のページへ進むと前のリクエストを中断する。**気付かずに描き続けると、
@@ -312,12 +322,14 @@ const server = Bun.serve({
   // 既定の 10 秒では変更通知の接続が繋ぎっぱなしにできない。
   // 切れるたびに繋ぎ直すと、その間の変更を取りこぼす（0 で無効）
   idleTimeout: 0,
-  async fetch(request) {
+  websocket: reload.handlers,
+  async fetch(request, server) {
+    const started = performance.now();
     const pathname = decodeURIComponent(new URL(request.url).pathname);
 
-    // 変更通知の購読。ページより先に見る
+    // 変更通知の購読。ページより先に見る。切り替わった場合は応答を返さない
     if (pathname === RELOAD_PATH) {
-      return reload.connect();
+      return reload.upgrade(request, server);
     }
 
     // コンテンツの読み込みから描画までを 1 つの try で包む。
@@ -332,6 +344,7 @@ const server = Bun.serve({
 
       const asset = staticResponse(pathname, images, state.files);
       if (asset) {
+        logRequest(pathname, started, asset.status);
         return asset;
       }
 
@@ -340,6 +353,7 @@ const server = Bun.serve({
       convertImages(state.missing);
       const leftEarly = abandoned(request);
       if (leftEarly) {
+        logRequest(pathname, started, leftEarly.status);
         return leftEarly;
       }
 
@@ -359,12 +373,14 @@ const server = Bun.serve({
       const route = routes.find((r) => r.path === normalize(pathname));
 
       if (!route) {
+        logRequest(pathname, started, 404);
         return page(404, "404 ページがありません", list(routes.map((r) => r.path)));
       }
 
       // 変換は 1 ページで 100ms を超えることがある。始める前に見捨てられていないか確かめる
       const leftBeforeRender = abandoned(request);
       if (leftBeforeRender) {
+        logRequest(pathname, started, leftBeforeRender.status);
         return leftBeforeRender;
       }
 
@@ -372,14 +388,18 @@ const server = Bun.serve({
       const html = await renderRoute(route);
       if (html === undefined) {
         // ルート自体は存在するので 404 とは区別する
+        logRequest(pathname, started, 501);
         return page(501, `${route.page} は未実装です`, list(routes.map((r) => r.path)));
       }
+
+      logRequest(pathname, started, 200);
 
       // 差し込むのは dev だけ。ビルドは同じ renderRoute を使うが素の HTML のまま
       return new Response(injectClient(html), {
         headers: { "content-type": "text/html; charset=utf-8" },
       });
     } catch (error) {
+      logRequest(pathname, started, 500);
       return errorPage(error);
     }
   },
