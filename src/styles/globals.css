@@ -569,6 +569,7 @@
     }
 
     a {
+      position: relative;
       display: block;
       padding-block: 0.75rem;
       padding-inline: 1rem;
@@ -585,7 +586,9 @@
 
       &::after {
         content: "";
-        display: block;
+        position: absolute;
+        inset-inline: 0;
+        inset-block-end: 0;
         block-size: 0.25rem;
         border-radius: 9999px;
         background-color: var(--link);
