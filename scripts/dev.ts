@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
+import { setAnalyticsEnabled } from "@/components/Analytics";
 import { collectImages, type ImageAsset } from "@/features/image/assets";
 import { setImageManifest } from "@/features/image/manifest";
 import {
@@ -53,6 +54,8 @@ globalThis.__liveReload ??= (() => {
 })();
 
 const { reload } = globalThis.__liveReload;
+
+setAnalyticsEnabled(false);
 
 /**
  * 取得を試した URL。`bun --hot` の差し替えを跨いで残す。

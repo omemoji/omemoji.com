@@ -13,6 +13,12 @@ setTimeout(function () {
 }, 2500);
 `;
 
+let enabled = true;
+
+export function setAnalyticsEnabled(value: boolean): void {
+  enabled = value;
+}
+
 export default function Analytics() {
-  return <script>{script}</script>;
+  return enabled ? <script>{script}</script> : null;
 }
