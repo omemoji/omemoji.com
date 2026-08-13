@@ -164,6 +164,32 @@ async function imageManifest(images: ImageAsset[]): Promise<ImageManifest> {
  * 例外で落ちているのかページがそう描かれているのかを取り違えないようにする。
  * ライブリロードは差し込む。直したら勝手に開き直る
  */
+/**
+ * リンクカードにする URL を覚えておく。
+ *
+ * 収集は Markdown の再パースで、実測 79ms とリクエストの固定費として重い。
+ * 本文が変わらない限り結果も変わらないため、本文そのものを鍵にして覚える
+ */
+let collected: { stamp: string; urls: string[] } | undefined;
+
+function linkCardUrls(bodies: string[]): string[] {
+  const stamp = bodies.join("\u0000");
+  if (collected?.stamp !== stamp) {
+    collected = { stamp, urls: collectAllLinkCardUrls(bodies) };
+  }
+  return collected.urls;
+}
+
+/**
+ * 遷移が捨てられたか。
+ *
+ * ブラウザは次のページへ進むと前のリクエストを中断する。**気付かずに描き続けると、
+ * 見捨てられたページの変換で、いま待っているページが後ろに並ぶ。**
+ * 中断は異常ではないので、記録もエラー画面も出さずに畳む
+ */
+const abandoned = (request: Request): Response | undefined =>
+  request.signal.aborted ? new Response(null, { status: 499 }) : undefined;
+
 const page = (status: number, title: string, body: string) =>
   new Response(
     injectClient(`<!doctype html>
@@ -237,9 +263,13 @@ const server = Bun.serve({
 
       // 原寸を配信したまま寸法だけを出す。本番と同じく場所が確保され、見た目のずれが起きない
       setImageManifest(await imageManifest(images));
+      const leftEarly = abandoned(request);
+      if (leftEarly) {
+        return leftEarly;
+      }
 
       // 描画に使うのはキャッシュだけ。未取得の分はこのリクエストでは素のリンクになる
-      const links = await collectLinkCards(collectAllLinkCardUrls(markdownBodies(content)), {
+      const links = await collectLinkCards(linkCardUrls(markdownBodies(content)), {
         cacheFile: linkCacheFile,
         cacheDir: linkCacheDir,
         offline: true,
@@ -255,6 +285,12 @@ const server = Bun.serve({
 
       if (!route) {
         return page(404, "404 ページがありません", list(routes.map((r) => r.path)));
+      }
+
+      // 変換は 1 ページで 100ms を超えることがある。始める前に見捨てられていないか確かめる
+      const leftBeforeRender = abandoned(request);
+      if (leftBeforeRender) {
+        return leftBeforeRender;
       }
 
       // ビルドと同じ関数を通す。dev だけ結果が違うということが起きない
