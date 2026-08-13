@@ -1,7 +1,7 @@
 # 技術選定 — フレームワークなしの SSG
 
 [`requirements.md`](../requirements.md) の機能要件を、**フレームワーク・バンドラを使わずに**実現するための技術選定。
-現行 Astro 実装の詳細は [`current-implementation.md`](../current-implementation.md)、検討して不採用にした Hono SSG 案は [`01-hono-ssg.md`](./01-hono-ssg.md) を参照。
+現行 Astro 実装の詳細は [`current-implementation.md`](../current-implementation.md)を参照。
 
 ## 0. 選定の前提
 
@@ -27,12 +27,12 @@
 
 `src/lib/` に残した処理を見ると、このサイトの技術的な難所は既にフレームワーク非依存になっている。
 
-| 難所                   | 実体                                      | フレームワーク依存 |
-| ---------------------- | ----------------------------------------- | ------------------ |
-| Markdown 変換          | unified / remark / rehype                 | なし               |
-| リンクカード           | `fetchMeta.ts`（fetch + cheerio + sharp） | なし               |
-| 画像最適化             | sharp                                     | なし               |
-| OGP 画像生成           | satori + sharp + budoux                   | なし               |
+| 難所          | 実体                                      | フレームワーク依存 |
+| ------------- | ----------------------------------------- | ------------------ |
+| Markdown 変換 | unified / remark / rehype                 | なし               |
+| リンクカード  | `fetchMeta.ts`（fetch + cheerio + sharp） | なし               |
+| 画像最適化    | sharp                                     | なし               |
+| OGP 画像生成  | satori + sharp + budoux                   | なし               |
 
 > **移植後の実態**: OGP 画像は**作品のみ**とし、satori と budoux は使っていない（実装計画 Phase 7-2）。
 > 作品用は画像を額装するだけで文字が無く、sharp だけで足りる。
@@ -143,10 +143,10 @@ Markdown のコンポーネント差し替え（`img` → `ImageHandler`、`a` �
 
 当初は Preact を選定していたが、実測の結果、この構成では選ぶ理由がないと判断した。
 
-| | 85 ページのレンダリング | インストールサイズ |
-| --- | --- | --- |
-| React 19 | 18.4ms | 約 8.2MB |
-| Preact | 8.4ms | 約 4.6MB |
+|          | 85 ページのレンダリング | インストールサイズ |
+| -------- | ----------------------- | ------------------ |
+| React 19 | 18.4ms                  | 約 8.2MB           |
+| Preact   | 8.4ms                   | 約 4.6MB           |
 
 Preact は 2 倍速いが、**差は 10 ミリ秒**。画像変換に 10〜43 秒かかるビルド（§7.1）において誤差にすぎない。インストールサイズもビルド時限定かつ CI でキャッシュされるため効かない。
 
@@ -506,19 +506,19 @@ sharp は libuv のスレッドプールを使うため、`Promise.all` + 同時
 
 ## 8. 依存関係の全体像
 
-| 項目         | 依存ライブラリ                                        |
-| ------------ | ----------------------------------------------------- |
-| ランタイム   | Bun（コードは Node API で記述）                       |
-| テンプレート | react, react-dom（`react-dom/server`）                |
-| Markdown     | unified, remark-*, rehype-*, hast-util-to-jsx-runtime |
-| ハイライト   | rehype-expressive-code                                |
-| 画像         | sharp                                                 |
+| 項目         | 依存ライブラリ                                                    |
+| ------------ | ----------------------------------------------------------------- |
+| ランタイム   | Bun（コードは Node API で記述）                                   |
+| テンプレート | react, react-dom（`react-dom/server`）                            |
+| Markdown     | unified, remark-*, rehype-*, hast-util-to-jsx-runtime             |
+| ハイライト   | rehype-expressive-code                                            |
+| 画像         | sharp                                                             |
 | OGP          | sharp（satori と budoux は削除。実装計画 Phase 7-2 のメモを参照） |
-| リンクカード | cheerio                                               |
-| front matter | remark-frontmatter, yaml                              |
-| データ検証   | zod, zod-to-json-schema（`_schema.json` の生成用）    |
-| 品質         | @biomejs/biome, typescript                            |
-| テスト       | bun test（追加依存なし）                              |
+| リンクカード | cheerio                                                           |
+| front matter | remark-frontmatter, yaml                                          |
+| データ検証   | zod, zod-to-json-schema（`_schema.json` の生成用）                |
+| 品質         | @biomejs/biome, typescript                                        |
+| テスト       | bun test（追加依存なし）                                          |
 
 
 **ビルドツール・フレームワーク・バンドラが 0 個。** いずれも単機能ライブラリであり、個別に差し替えられる。
