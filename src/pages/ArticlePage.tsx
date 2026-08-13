@@ -3,6 +3,7 @@ import { markdownComponents } from "@/components/MarkdownComponent";
 import TopArticle from "@/components/TopArticle";
 import { imageBase } from "@/features/image/assets";
 import { collectHeadings } from "@/features/markdown/headings";
+import { hasMath } from "@/features/markdown/math";
 import { mdToHast } from "@/features/markdown/pipeline";
 import { toReact } from "@/features/markdown/render";
 import Layout from "@/layouts/Layout";
@@ -22,6 +23,7 @@ export default async function ArticlePage({ article, older, newer }: PageProps["
       description={article.description}
       category="Articles"
       path={`/articles/${article.slug}`}
+      math={hasMath(tree)}
     >
       <TopArticle
         emoji={article.emoji}

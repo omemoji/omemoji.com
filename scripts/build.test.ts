@@ -188,6 +188,39 @@ describe("ビルド出力", () => {
     expect(missing).toEqual([]);
   });
 
+  describe("KaTeX", () => {
+    // CSS が無いと MathML と HTML の両方が見え、式が二重になる
+    const mathArticle = () =>
+      production.articles.find((article) => article.body.includes("$$"))?.slug ?? "";
+
+    test("数式のある記事だけがスタイルを読む", () => {
+      const withMath = fs.readFileSync(
+        path.join(target, `articles/${mathArticle()}.html`),
+        "utf-8"
+      );
+      const withoutMath = fs.readFileSync(path.join(target, "articles/void_linux.html"), "utf-8");
+
+      expect(mathArticle()).not.toBe("");
+      expect(withMath).toContain('href="/katex/katex.min.css"');
+      expect(withoutMath).not.toContain("katex");
+    });
+
+    test("CSS が参照するフォントが全て存在する", () => {
+      const css = fs.readFileSync(path.join(target, "katex/katex.min.css"), "utf-8");
+      const fonts = [...css.matchAll(/url\(([^)]+\.woff2)\)/g)].map((matched) => matched[1] ?? "");
+
+      expect(fonts.length).toBeGreaterThan(0);
+      expect(fonts.filter((font) => !exists(path.join("katex", font)))).toEqual([]);
+    });
+
+    test("woff と ttf は複製しない", () => {
+      // 対応していないブラウザは実質無い。1.2 MB が 296 KB になる
+      const files = fs.readdirSync(path.join(target, "katex/fonts"));
+
+      expect(files.every((file) => file.endsWith(".woff2"))).toBe(true);
+    });
+  });
+
   describe("サイトマップ", () => {
     const locs = (): string[] => {
       const xml = fs.readFileSync(path.join(target, "sitemap.xml"), "utf-8");

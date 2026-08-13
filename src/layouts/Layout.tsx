@@ -11,6 +11,8 @@ type Props = {
   category?: Category;
   /** 先頭が `/` のルートパス。og:url の組み立てに使う */
   path: string;
+  /** 数式を含むページだけ KaTeX のスタイルを読む。無いと式が二重に見える */
+  math?: boolean;
   children: ReactNode;
 };
 
@@ -28,7 +30,14 @@ const DEFAULT_OG = { src: "/omemoji.png", width: 720, height: 720 };
  * expressive-code の CSS と JS は hast の中に既に入っているため、
  * ここで読み込むと二重になる（features/markdown/pipeline.ts の注記）。
  */
-export default function Layout({ title, description, category, path, children }: Props) {
+export default function Layout({
+  title,
+  description,
+  category,
+  path,
+  math = false,
+  children,
+}: Props) {
   const site = `https://${HOST}`;
   const url = `${site}${path}`;
 
@@ -49,6 +58,7 @@ export default function Layout({ title, description, category, path, children }:
         <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="48x48" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
+        {math && <link rel="stylesheet" href="/katex/katex.min.css" />}
         <meta name="author" content="omemoji" />
         <meta name="creator" content="omemoji" />
         <meta name="publisher" content="omemoji" />

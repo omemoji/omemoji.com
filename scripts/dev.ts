@@ -11,6 +11,7 @@ import { buildRoutes } from "@/routes";
 import {
   contentDir,
   imageSources,
+  katex,
   linkCacheDir,
   linkCacheFile,
   loadContent,
@@ -55,6 +56,11 @@ function staticResponse(pathname: string, images: ImageAsset[]): Response | unde
   const image = images.find(({ to }) => `/${to}` === pathname);
   if (image) {
     return fileResponse(image.from, contentDir);
+  }
+
+  // KaTeX のスタイルとフォント。ビルドが out/ へ複製するのと同じ実体を返す
+  if (pathname.startsWith("/katex/")) {
+    return fileResponse(path.join(katex.dir, pathname.slice("/katex/".length)), katex.dir);
   }
 
   // リンクカードのサムネイル。ビルドが out/ へ複製するのと同じ実体を返す

@@ -67,10 +67,28 @@ export const stylesheet = {
   href: "globals.css",
 };
 
+/**
+ * KaTeX のスタイル。数式のあるページだけが読み込む。
+ *
+ * CSS はフォントを相対パス（`fonts/...`）で参照するため、CSS とフォントの
+ * 位置関係を保ったまま複製する。**woff2 だけを複製する**（woff と ttf も
+ * 宣言されているが、対応していないブラウザは実質無く、1.2 MB が 296 KB になる）
+ */
+export const katex = {
+  dir: path.join(rootDir, "node_modules/katex/dist"),
+  href: "katex/katex.min.css",
+};
+
 /** `out/` へ複製する対象。to は out/ 直下からの相対パス */
-const assets: { from: string; to: string }[] = [
+const assets: { from: string; to: string; filter?: (from: string) => boolean }[] = [
   { from: publicDir, to: "." },
   { from: stylesheet.file, to: stylesheet.href },
+  { from: path.join(katex.dir, "katex.min.css"), to: katex.href },
+  {
+    from: path.join(katex.dir, "fonts"),
+    to: "katex/fonts",
+    filter: (from) => fs.statSync(from).isDirectory() || from.endsWith(".woff2"),
+  },
 ];
 
 /**
@@ -197,13 +215,15 @@ export async function renderRoute(route: Route): Promise<string | undefined> {
 export function copyAssets(target: string, content: Content): string[] {
   const targets = [...assets, ...collectImages(imageSources(content))];
 
-  return targets.flatMap(({ from, to }) => {
+  return targets.flatMap((asset) => {
+    const { from, to } = asset;
     if (!fs.existsSync(from)) {
       return [];
     }
     const dest = path.join(target, to);
+    const filter = "filter" in asset ? asset.filter : undefined;
     fs.mkdirSync(path.dirname(dest), { recursive: true });
-    fs.cpSync(from, dest, { recursive: true });
+    fs.cpSync(from, dest, { recursive: true, ...(filter ? { filter } : {}) });
     return [to];
   });
 }
