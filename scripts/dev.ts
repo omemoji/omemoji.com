@@ -14,6 +14,7 @@ import {
   linkCacheDir,
   linkCacheFile,
   loadContent,
+  markdownBodies,
   publicDir,
   renderRoute,
   stylesheet,
@@ -108,10 +109,11 @@ const server = Bun.serve({
     setImageManifest(await imageManifest(images));
 
     // ネットワークは叩かない。取得済みの URL だけがカードになり、残りは素のリンクで出る
-    const links = await collectLinkCards(
-      collectAllLinkCardUrls(content.articles.map((article) => article.body)),
-      { cacheFile: linkCacheFile, cacheDir: linkCacheDir, offline: true }
-    );
+    const links = await collectLinkCards(collectAllLinkCardUrls(markdownBodies(content)), {
+      cacheFile: linkCacheFile,
+      cacheDir: linkCacheDir,
+      offline: true,
+    });
     setLinkCardManifest(links.manifest);
 
     const routes = buildRoutes(content);

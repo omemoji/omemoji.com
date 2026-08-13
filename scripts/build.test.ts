@@ -5,8 +5,16 @@ import path from "node:path";
 
 import { collectImages } from "@/features/image/assets";
 import type { OptimizeResult } from "@/features/image/optimize";
+import { collectAllLinkCardUrls, collectLinkCardUrls } from "@/features/link-card/urls";
 import { buildRoutes } from "@/routes";
-import { build, imageSources, imageVariants, loadContent, outputPath } from "./build";
+import {
+  build,
+  imageSources,
+  imageVariants,
+  loadContent,
+  markdownBodies,
+  outputPath,
+} from "./build";
 
 const production = loadContent({ includeDrafts: false });
 const dev = loadContent({ includeDrafts: true });
@@ -42,6 +50,24 @@ describe("出力先の対応", () => {
     const files = buildRoutes(production).map((route) => outputPath(route.path));
 
     expect(new Set(files).size).toBe(files.length);
+  });
+});
+
+describe("リンクカードの収集元", () => {
+  // Markdown を描画するページは記事と About の 2 つ。片方を忘れると、
+  // そのページのリンクだけが素のリンクのままになる（実際に About が漏れていた）
+  test("記事と About の両方から集める", () => {
+    const bodies = markdownBodies(production);
+
+    expect(bodies).toContain(production.about);
+    expect(bodies.length).toBe(production.articles.length + 1);
+  });
+
+  test("About のリンクも収集される", () => {
+    const urls = collectAllLinkCardUrls(markdownBodies(production));
+
+    expect(collectLinkCardUrls(production.about).length).toBeGreaterThan(0);
+    expect(urls).toEqual(expect.arrayContaining(collectLinkCardUrls(production.about)));
   });
 });
 

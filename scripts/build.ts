@@ -104,6 +104,17 @@ export function imageVariants({ artworks }: Content): Variant[] {
 }
 
 /**
+ * Markdown として描画される本文を全て並べる。リンクカードの URL 収集の入力。
+ *
+ * **描画するページを足したらここにも足すこと。**漏れるとカードにならず素のリンクになる
+ * （About の本文が漏れていて、Spotify のリンクがカードにならなかった）。
+ * 作品は meta.json だけで本文を持たない。
+ */
+export function markdownBodies({ articles, about }: Content): string[] {
+  return [...articles.map((article) => article.body), about];
+}
+
+/**
  * コンテンツを読み込む。下書きの扱いはここで決める。
  *
  * 本番は published: false を落とし、dev は書きかけを確認できるよう残す。
@@ -188,15 +199,12 @@ export async function build(
   setImageManifest(images.manifest);
 
   // 同じく描画より前。取得できなかった URL は素のリンクとして描画される
-  const links = await collectLinkCards(
-    collectAllLinkCardUrls(content.articles.map((a) => a.body)),
-    {
-      cacheFile: linkCacheFile,
-      cacheDir: linkCacheDir,
-      outDir: target,
-      offline,
-    }
-  );
+  const links = await collectLinkCards(collectAllLinkCardUrls(markdownBodies(content)), {
+    cacheFile: linkCacheFile,
+    cacheDir: linkCacheDir,
+    outDir: target,
+    offline,
+  });
   setLinkCardManifest(links.manifest);
 
   const written: string[] = [];
