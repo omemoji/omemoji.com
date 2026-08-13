@@ -28,11 +28,12 @@
 - **Phase 6** — 画像の最適化（AVIF・寸法マニフェスト・永続キャッシュ）。ページ側は無変更で済んだ
 - **Phase 7-1** — リンクカード（取得ステージ・永続キャッシュ・カードの描画）
 - **Phase 7-2** — OGP 画像（作品のみ）と `og:image` / `og:type` / `twitter:card`
+- **Phase 7-3** — サイトマップ（`out/sitemap.xml`）。**Phase 7 は完了**
 - **Phase 9**（前倒し）— CI を `main.yml` + `_ci.yml` / `_build.yml` / `_deploy.yml` に再編し、`bun test` を追加
 
 ### 未着手
 
-サイトマップ（Phase 7-3）は未着手。`scripts/new-artwork.ts` も未着手。
+`scripts/new-artwork.ts` は未着手。Phase 8（開発サーバの仕上げ）と Phase 10（検証と切り替え）が残っている。
 
 ### ディレクトリ構成
 
@@ -301,13 +302,23 @@ AVIF が出力され `aspect-ratio` が付く / **2 回目のビルドで画像�
 > - 記事を `summary_large_image` にする判断も同時に戻すこと（`Layout` は
 >   マニフェストに載っているページを大きいカードにしている）
 
-3. **サイトマップ** — `routes().filter(r => r.indexable)` から生成。収録ルールを [`requirements.md`](./requirements.md) §9 に沿って書き直す
+3. **サイトマップ（完了）** — `routes.filter((r) => r.indexable)` から `out/sitemap.xml` を書く
+   - **収録の判断はルート側の 1 つのフラグだけ。**現行（`@astrojs/sitemap` の `filter`）は
+     生成対象パスと除外条件が別ファイルに分かれた二重管理で、記事 slug が数字で始まるために
+     詳細ページまで巻き込んで除外していた疑いがあった（[`current-implementation.md`](./current-implementation.md) §10）。
+     ずれようが無い形にしたので、この疑いごと解消している
+   - `loc` は `Layout` の `canonical` と同じ組み立て。食い違うと正規 URL と別物に見える
+   - 更新日は詳細ページのみ。一覧の更新日は「どの記事が載っているか」で変わり、
+     ページ自体の更新を表さない
+   - **URL が `/sitemap-index.xml` から `/sitemap.xml` に変わる。**`robots.txt` は追随済みだが、
+     Search Console に登録済みのサイトマップは切り替え後に登録し直すこと
 
 ### テスト
 
 ~~`fetch-meta` の分岐（2 段階 UA / リトライ / サブドメインフォールバック / 全失敗）~~ — **実装済み**。
 fetch 注入により実ネットワーク不要。カードにする URL の判定と、キャッシュ・offline の挙動も併せて検査している
-サイトマップにページネーション 2 ページ目以降とタグ別が含まれないこと /
+~~サイトマップにページネーション 2 ページ目以降とタグ別が含まれないこと~~ — **実装済み**。
+404 を含まないこと・全 URL が出力されたページに対応することも併せて検査している /
 ~~全記事・全作品に OGP がある~~ — **全作品の OGP 画像が実ファイルに解決すること**と、
 記事・一覧が共通の画像へ倒れることを検査している
 
@@ -357,7 +368,7 @@ fetch 注入により実ネットワーク不要。カードにする URL の判
 
 ## 未決事項
 
-- **サイトマップの収録ルール** — 現行の除外条件が詳細ページまで巻き込んでいる疑い（[`current-implementation.md`](./current-implementation.md) §10）
+- ~~**サイトマップの収録ルール**~~ — **解消**。`indexable` の 1 か所に寄せ、[`requirements.md`](./requirements.md) §9 のとおりに収録している
 - **RSS** — 未実装。移植と同時に実装するかは別途判断
 - **`.cache/` を Git 管理するか** — 現状は全て **Git 管理外**（CI は `actions/cache` で持ち越す）。
   リンクカードのメタデータ（`link-meta.json`）だけは、参照先サイトの消滅に備えてコミットする選択肢が残る。
