@@ -1,403 +1,144 @@
-import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
-import type { CheerioAPI } from "cheerio";
-import { load } from "cheerio";
-import sharp from "sharp";
+import { absoluteUrl, parentDomainUrl, parseMeta } from "@/features/link-card/parse";
 
-const OGP_LINK_DIR = join(process.cwd(), ".cache", "images", "ogp_link");
-
-const getThumbFilename = (url: string): string => {
-  const hash = createHash("sha256").update(url).digest("hex").slice(0, 16);
-  return `${hash}.webp`;
-};
-
-interface Metadata {
+/** 取得できたメタデータ。画像は取得先の絶対 URL。サムネイル化はこの後段の責務 */
+export type LinkMeta = {
   url: string;
   title: string;
   description: string;
-  image: { url: string; width: number; height: number };
-}
-
-const DEFAULT_OGP_WIDTH = 1200;
-const DEFAULT_OGP_HEIGHT = 630;
-
-const isCountryTLD = (parts: readonly string[]): boolean => {
-  const [sld, tld] = parts.slice(-2);
-  return (
-    typeof sld === "string" &&
-    typeof tld === "string" &&
-    parts.length === 3 &&
-    ["co", "com", "net", "org", "ac", "go", "ne"].includes(sld) &&
-    tld.length === 2 // 国別コードトップレベルドメイン（ccTLD）の長さは通常2文字
-  );
+  image: string;
 };
 
-// サブドメインかどうかを判定
-const isSubdomain = (url: string): boolean => {
-  try {
-    const hostname = new URL(url).hostname;
-    const parts: string[] = hostname.split(".");
-    // 例: blog.example.com -> ["blog", "example", "com"]
-    // www.example.com は通常のドメインとして扱う
-    if (parts.length > 2) {
-      // co.jp, com.au などの国別ドメインを考慮
-      if (isCountryTLD(parts)) {
-        return false;
-      }
-      // www は除外
-      if (parts[0] === "www") {
-        return false;
-      }
-      return true;
-    }
-    return false;
-  } catch {
-    return false;
-  }
+/** `globalThis.fetch` と同じ形。テストはここに差し替えを渡し、実ネットワークを使わない */
+export type Fetcher = (url: string, init?: RequestInit) => Promise<Response>;
+
+export type FetchMetaOptions = {
+  fetch?: Fetcher;
+  /** 5xx とネットワークエラーの再試行回数 */
+  retries?: number;
+  /** 線形バックオフの単位。テストは 0 を渡す */
+  retryDelayMs?: number;
+  timeoutMs?: number;
 };
 
-// 親ドメインのURLを取得
-const getParentDomainUrl = (url: string): string | null => {
-  try {
-    const urlObj = new URL(url);
-    const hostname = urlObj.hostname;
-    const parts = hostname.split(".");
+// 環境をまたいで同じ結果を得るためブラウザ相当のヘッダを送る
+const BROWSER_UA =
+  "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
+// SPA は bot にだけ OGP を返すことがある。ブラウザ UA で読めなかったときの 2 段目
+const BOT_UA = "Discordbot/2.0";
 
-    if (parts.length > 2) {
-      // co.jp などを考慮
-      if (isCountryTLD(parts)) {
-        return null;
-      }
-      // サブドメインを削除して親ドメインを取得
-      const parentHostname = parts.slice(1).join(".");
-      return `${urlObj.protocol}//${parentHostname}`;
-    }
-    return null;
-  } catch {
-    return null;
-  }
-};
+const ACCEPT_HTML = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
 
-// 環境間で一貫した結果を得るためブラウザ相当のヘッダーを使用
-const BROWSER_HEADERS: HeadersInit = {
-  "User-Agent":
-    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+const headers = (ua: string) => ({
+  "User-Agent": ua,
   "Accept-Language": "ja,en-US;q=0.9,en;q=0.8",
-};
+  Accept: ACCEPT_HTML,
+});
 
-// SPA等でOGPが取得できない場合のフォールバック用bot UA
-const BOT_HEADERS: HeadersInit = {
-  "User-Agent": "Discordbot/2.0",
-  "Accept-Language": "ja,en-US;q=0.9,en;q=0.8",
-};
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const fetchWithTimeout = async (
+/**
+ * 5xx とネットワークエラー・タイムアウトを再試行する。
+ *
+ * 動的に生成される OGP 画像は初回だけ失敗することがある。
+ * 4xx は再試行しても変わらないのでそのまま返す。
+ */
+async function fetchWithRetry(
   url: string,
-  options: RequestInit = {},
-  timeout: number = 15000
-): Promise<Response> => {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-  try {
-    const response = await fetch(url, {
-      ...options,
-      headers: { ...BROWSER_HEADERS, ...options.headers },
-      signal: controller.signal,
-    });
-    return response;
-  } finally {
-    clearTimeout(timeoutId);
-  }
-};
-
-// リトライ付きfetch（動的生成される画像は初回で失敗することがある）
-const fetchWithRetry = async (
-  url: string,
-  options: RequestInit = {},
-  maxRetries: number = 2,
-  timeout: number = 15000
-): Promise<Response> => {
-  let lastError: Error | null = null;
-
-  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+  init: RequestInit,
+  { fetch: fetcher = fetch, retries = 2, retryDelayMs = 1000, timeoutMs = 15000 }: FetchMetaOptions
+): Promise<Response | undefined> {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    if (attempt > 0 && retryDelayMs > 0) {
+      await sleep(retryDelayMs * attempt);
+    }
     try {
-      const response = await fetchWithTimeout(url, options, timeout);
-      if (response.ok) {
+      const response = await fetcher(url, { ...init, signal: AbortSignal.timeout(timeoutMs) });
+      if (response.ok || response.status < 500) {
         return response;
       }
-      // 5xx エラーはリトライ対象
-      if (response.status >= 500 && attempt < maxRetries) {
-        await new Promise((resolve) => setTimeout(resolve, 1000 * (attempt + 1)));
-        continue;
-      }
-      return response;
-    } catch (error) {
-      lastError = error as Error;
-      // AbortError（タイムアウト）やネットワークエラーはリトライ
-      if (attempt < maxRetries) {
-        await new Promise((resolve) => setTimeout(resolve, 1000 * (attempt + 1)));
-      }
-    }
-  }
-
-  throw lastError || new Error("Fetch failed after retries");
-};
-
-const getImageMeta = async (src: string) => {
-  if (src === "" || src === undefined) {
-    return { img: { url: "", width: 0, height: 0 } };
-  }
-
-  try {
-    const response = await fetchWithRetry(
-      src,
-      {
-        headers: {
-          Accept: "image/*,*/*;q=0.8",
-        },
-      },
-      2,
-      15000
-    );
-
-    if (!response.ok) {
-      // 画像取得に失敗しても、URLが存在すればデフォルトサイズで返す
-      return {
-        img: { url: src, width: DEFAULT_OGP_WIDTH, height: DEFAULT_OGP_HEIGHT },
-      };
-    }
-
-    const buffer: Buffer = Buffer.from(await response.arrayBuffer());
-    const bufferExists = buffer.length > 0;
-
-    let width = 0;
-    let height = 0;
-    let imgUrl = src;
-
-    if (bufferExists) {
-      try {
-        const metadata = await sharp(buffer).metadata();
-        width = metadata.width ?? 0;
-        height = metadata.height ?? 0;
-
-        // サムネイル生成（120px高、quality 30のwebp）
-        const filename = getThumbFilename(src);
-        const filepath = join(OGP_LINK_DIR, filename);
-
-        // 既にファイルが存在する場合はスキップ
-        if (!existsSync(filepath)) {
-          const finalW = width > 0 ? width : DEFAULT_OGP_WIDTH;
-          const finalH = height > 0 ? height : DEFAULT_OGP_HEIGHT;
-          const thumbHeight = 120;
-          const thumbWidth = Math.round((finalW * thumbHeight) / finalH);
-          const thumbBuffer = await sharp(buffer)
-            .resize(thumbWidth, thumbHeight)
-            .webp({ quality: 30 })
-            .toBuffer();
-
-          if (!existsSync(OGP_LINK_DIR)) {
-            mkdirSync(OGP_LINK_DIR, { recursive: true });
-          }
-          writeFileSync(filepath, thumbBuffer);
-        }
-        imgUrl = `/images/ogp_link/${filename}`;
-      } catch {
-        // sharp処理失敗時は元のURLをそのまま使用
-      }
-    }
-
-    // width/heightが取得できなかった場合はデフォルト値を使用
-    const finalWidth = width > 0 ? width : DEFAULT_OGP_WIDTH;
-    const finalHeight = height > 0 ? height : DEFAULT_OGP_HEIGHT;
-
-    return {
-      img: { url: imgUrl, width: finalWidth, height: finalHeight },
-    };
-  } catch {
-    // fetchが完全に失敗しても、URLが存在すればデフォルトサイズで返す
-    return {
-      img: { url: src, width: DEFAULT_OGP_WIDTH, height: DEFAULT_OGP_HEIGHT },
-    };
-  }
-};
-
-const metadataCache = new Map<string, Metadata>();
-
-const detectTitle = ($: CheerioAPI, url: string) => {
-  const t =
-    $('meta[property="og:title"]').attr("content") ??
-    $("title").text() ??
-    $('meta[name="title"]').attr("content") ??
-    url;
-  return t;
-};
-
-// 親ドメインからOGP画像を取得する（フォールバック用）
-const fetchImageFromParentDomain = async (
-  url: string
-): Promise<{ url: string; width: number; height: number }> => {
-  const parentUrl = getParentDomainUrl(url);
-  if (!parentUrl) {
-    return { url: "", width: 0, height: 0 };
-  }
-
-  try {
-    const response = await fetchWithRetry(
-      parentUrl,
-      {
-        headers: {
-          Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-        },
-      },
-      1,
-      10000
-    );
-
-    if (!response.ok) {
-      return { url: "", width: 0, height: 0 };
-    }
-
-    const text = await response.text();
-    const $ = load(text);
-
-    // 親ドメインからOGP画像を取得
-    const imgUrl =
-      $('meta[property="og:image"]').attr("content") ??
-      $('meta[property="og:image:url"]').attr("content") ??
-      $('meta[itemprop="image"]').attr("content") ??
-      $('meta[name="twitter:image"]').attr("content") ??
-      $('link[rel="apple-touch-icon"]').attr("href") ??
-      "";
-
-    if (imgUrl === "") {
-      return { url: "", width: 0, height: 0 };
-    }
-
-    // 相対パスを絶対パスに変換
-    let absoluteImgUrl = imgUrl;
-    if (!imgUrl.startsWith("http")) {
-      absoluteImgUrl = `${parentUrl}${imgUrl.startsWith("/") ? "" : "/"}${imgUrl}`;
-    }
-
-    return (await getImageMeta(absoluteImgUrl)).img;
-  } catch {
-    return { url: "", width: 0, height: 0 };
-  }
-};
-
-const detectImage = async ($: CheerioAPI, url: string) => {
-  const tmp =
-    $('meta[property="og:image"]').attr("content") ??
-    $('meta[property="og:image:url"]').attr("content") ??
-    $('meta[itemprop="image"]').attr("content") ??
-    $('meta[name="twitter:image"]').attr("content") ??
-    $('link[rel="apple-touch-icon"]').attr("href") ??
-    "";
-  let imgUrl = tmp;
-
-  if (imgUrl !== "" && !imgUrl.startsWith("http")) {
-    let imgurl_minus_https = url.substring(url.indexOf("/") + 2);
-    if (imgurl_minus_https.match("/")) {
-      imgurl_minus_https = imgurl_minus_https.substring(0, imgurl_minus_https.indexOf("/"));
-    }
-    imgUrl = `${url.substring(0, url.indexOf("/"))}//${imgurl_minus_https}${imgUrl}`;
-  }
-
-  // 画像が取得できなかった場合、サブドメインなら親ドメインからフォールバック
-  if (imgUrl === "" && isSubdomain(url)) {
-    return await fetchImageFromParentDomain(url);
-  }
-
-  return (await getImageMeta(imgUrl)).img;
-};
-
-const detectDescription = ($: CheerioAPI) => {
-  const t =
-    $('meta[property="og:description"]').attr("content") ??
-    $('meta[name="description"]').attr("content") ??
-    "";
-  return t;
-};
-
-// OGPが存在するか判定
-const hasOgpMeta = ($: CheerioAPI): boolean => {
-  return (
-    $('meta[property="og:title"]').length > 0 ||
-    $('meta[property="og:image"]').length > 0 ||
-    $('meta[property="og:description"]').length > 0
-  );
-};
-
-export default async function fetchMeta(url: string) {
-  const cachedMetadata: Metadata | undefined = metadataCache.get(url);
-  if (cachedMetadata) {
-    return cachedMetadata;
-  }
-
-  const metaDataEmpty: Metadata = {
-    url: url,
-    title: "",
-    description: "",
-    image: { url: "", width: 0, height: 0 },
-  };
-
-  let fallbackMeta: Metadata | null = null;
-
-  // ブラウザUAとbot UAの順で試行（SPAサイトはbot UAでのみOGPを返す場合がある）
-  for (const headers of [BROWSER_HEADERS, BOT_HEADERS]) {
-    try {
-      const response = await fetchWithRetry(
-        url,
-        {
-          headers: {
-            ...headers,
-            Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-          },
-        },
-        2,
-        15000
-      );
-
-      if (!response.ok) {
-        continue;
-      }
-
-      const text = await response.text();
-      const $ = load(text);
-
-      // OGPが見つかればそのまま使用
-      if (hasOgpMeta($)) {
-        const meta = {
-          url: url,
-          title: detectTitle($, url),
-          description: detectDescription($),
-          image: await detectImage($, url),
-        };
-        metadataCache.set(url, meta);
-        return meta;
-      }
-
-      // OGPが無くても<title>があればフォールバック候補として保持
-      if (!fallbackMeta && $("title").text().trim() !== "") {
-        fallbackMeta = {
-          url: url,
-          title: detectTitle($, url),
-          description: detectDescription($),
-          image: await detectImage($, url),
-        };
-      }
     } catch {
-      // エラーが発生しても次のUAでリトライ
+      // ネットワークエラーとタイムアウト。次の周回で再試行する
     }
   }
+  return undefined;
+}
 
-  // OGPが取れなかった場合、<title>ベースのフォールバックがあればそれを使用
-  if (fallbackMeta) {
-    metadataCache.set(url, fallbackMeta);
-    return fallbackMeta;
+async function fetchHtml(
+  url: string,
+  ua: string,
+  options: FetchMetaOptions
+): Promise<string | undefined> {
+  const response = await fetchWithRetry(url, { headers: headers(ua) }, options);
+  if (!response?.ok) {
+    return undefined;
+  }
+  try {
+    return await response.text();
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * サブドメインで画像が取れなかったときに、親ドメインの OGP 画像で代用する。
+ *
+ * `blog.example.com` の記事ページに画像が無くても `example.com` にはあることが多く、
+ * カードが空になるより見た目が保てる。
+ */
+async function imageFromParentDomain(
+  url: string,
+  options: FetchMetaOptions
+): Promise<string | undefined> {
+  const parent = parentDomainUrl(url);
+  if (!parent) {
+    return undefined;
+  }
+  // 本命ではないので待ち時間を短くする
+  const html = await fetchHtml(parent, BROWSER_UA, { ...options, retries: 1, timeoutMs: 10000 });
+  const meta = html === undefined ? undefined : parseMeta(html, parent);
+  return meta?.image === "" ? undefined : meta?.image;
+}
+
+/**
+ * リンク先のメタデータを取得する。**この関数だけがネットワークを触る。**
+ *
+ * `fetch` を差し替えられるようにしてあるため、分岐のテストは実ネットワーク無しで書ける。
+ * 全て失敗した場合は `undefined` を返す。呼び出し側は素のリンクへ倒す
+ */
+export async function fetchMeta(
+  url: string,
+  options: FetchMetaOptions = {}
+): Promise<LinkMeta | undefined> {
+  let fallback: LinkMeta | undefined;
+
+  for (const ua of [BROWSER_UA, BOT_UA]) {
+    const html = await fetchHtml(url, ua, options);
+    if (html === undefined) {
+      continue;
+    }
+
+    const parsed = parseMeta(html, url);
+    if (!parsed) {
+      continue;
+    }
+
+    const image =
+      parsed.image === "" ? ((await imageFromParentDomain(url, options)) ?? "") : parsed.image;
+    const meta: LinkMeta = {
+      url,
+      title: parsed.title,
+      description: parsed.description,
+      image: absoluteUrl(image, url),
+    };
+
+    if (parsed.hasOgp) {
+      return meta;
+    }
+    // OGP が無いページ。<title> だけの結果を控えに置き、bot の UA でもう一度読む
+    fallback ??= meta;
   }
 
-  return metaDataEmpty;
+  return fallback;
 }
+
+export default fetchMeta;
