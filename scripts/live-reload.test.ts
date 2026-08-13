@@ -36,6 +36,42 @@ describe("クライアントの差し込み", () => {
   });
 });
 
+describe("再起動の検出", () => {
+  const firstEvent = async (response: Response): Promise<string> => {
+    const reader = response.body?.getReader();
+    const { value } = (await reader?.read()) ?? {};
+    return new TextDecoder().decode(value);
+  };
+
+  test("接続すると起動 ID が届く", async () => {
+    const reload = createLiveReload();
+
+    expect(await firstEvent(reload.connect())).toBe(`event: hello\ndata: ${reload.bootId}\n\n`);
+  });
+
+  test("同じサーバなら繋ぎ直しても同じ ID", async () => {
+    // ここが変わると、通信が一瞬切れただけでブラウザがリロードしてしまう
+    const reload = createLiveReload();
+
+    expect(await firstEvent(reload.connect())).toBe(await firstEvent(reload.connect()));
+  });
+
+  test("立ち上げ直せば ID が変わる", () => {
+    expect(createLiveReload().bootId).not.toBe(createLiveReload().bootId);
+  });
+});
+
+describe("受け手の作り", () => {
+  test("切断そのものではリロードしない", () => {
+    const script = injectClient("<body></body>");
+
+    // EventSource は自前で繋ぎ直す。切断を再起動と見なすと、
+    // 通信が途切れるたびにページが作り直される（iframe の再生が止まる）
+    expect(script).not.toContain('addEventListener("error"');
+    expect(script).toContain('addEventListener("hello"');
+  });
+});
+
 describe("購読", () => {
   /** SSE のストリームから 1 つ分のイベントを読む */
   const read = async (response: Response): Promise<string> => {
@@ -45,8 +81,8 @@ describe("購読", () => {
     for (let i = 0; i < 5 && reader; i++) {
       const { value } = await reader.read();
       const chunk = decoder.decode(value);
-      // 接続確定のコメント行は読み飛ばす
-      if (chunk.startsWith("event:")) {
+      // 接続時に届く hello と、繋ぎっぱなしにするための ping は読み飛ばす
+      if (chunk.startsWith("event:") && !chunk.startsWith("event: hello")) {
         return chunk;
       }
     }
@@ -93,7 +129,7 @@ describe("監視", () => {
       for (let i = 0; i < 10 && reader; i++) {
         const { value } = await reader.read();
         const chunk = decoder.decode(value);
-        if (chunk.startsWith("event:")) {
+        if (chunk.startsWith("event:") && !chunk.startsWith("event: hello")) {
           return chunk;
         }
       }

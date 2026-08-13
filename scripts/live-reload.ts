@@ -23,10 +23,23 @@ export const reloadEvent = (file: string): ReloadEvent =>
  *
  * 状態を持たないサイトなので、CSS 以外は全体リロードで足りる（§7.6）。
  * 新しい `<link>` を先に読み込ませてから古い方を外す。順序を逆にすると、
- * 読み込みの間だけスタイルの無い状態が見える
+ * 読み込みの間だけスタイルの無い状態が見える。
+ *
+ * **接続が切れてもリロードしない。**EventSource は自前で繋ぎ直すので、
+ * 切断を再起動と見なすと、通信が一瞬途切れただけでページが作り直される
+ * （iframe の再生が止まる）。サーバの再起動は起動 ID の変化で見分ける
  */
 const CLIENT_SCRIPT = `
 const source = new EventSource(${JSON.stringify(RELOAD_PATH)});
+let boot;
+
+// 接続のたびに届く。値が変わっていれば dev サーバが立ち上げ直されている
+source.addEventListener("hello", (event) => {
+  if (boot !== undefined && boot !== event.data) {
+    location.reload();
+  }
+  boot = event.data;
+});
 
 source.addEventListener("reload", () => location.reload());
 
@@ -41,11 +54,6 @@ source.addEventListener("css", () => {
     link.after(fresh);
   }
 });
-
-// dev サーバを落とすと接続が切れる。再起動を待って自動で戻る
-source.addEventListener("error", () => {
-  setTimeout(() => fetch(location.href, { method: "HEAD" }).then(() => location.reload()).catch(() => {}), 1000);
-});
 `;
 
 /** `</body>` の直前に差し込む。無い場合は末尾に付ける */
@@ -57,6 +65,8 @@ export function injectClient(html: string): string {
 export type LiveReload = {
   /** SSE の接続を返す */
   connect(): Response;
+  /** この dev サーバの起動 ID。接続のたびに送り、再起動の検出に使う */
+  readonly bootId: string;
   /** 監視を始める。戻り値を呼ぶと止まる */
   watch(dirs: string[]): () => void;
   /** 手で通知する。テスト用 */
@@ -72,6 +82,9 @@ export type LiveReload = {
 export function createLiveReload(): LiveReload {
   const clients = new Set<ReadableStreamDefaultController<Uint8Array>>();
   const encoder = new TextEncoder();
+  // プロセスに 1 つ。`bun --hot` の差し替えでは作り直されない（dev.ts が globalThis に置く）
+  const bootId = crypto.randomUUID();
+  let heartbeat: ReturnType<typeof setInterval> | undefined;
 
   const notify = (event: ReloadEvent): void => {
     const chunk = encoder.encode(`event: ${event}\ndata: 1\n\n`);
@@ -85,14 +98,38 @@ export function createLiveReload(): LiveReload {
     }
   };
 
+  /**
+   * 何も起きていない間も一定間隔で送る。
+   *
+   * 送るものが無いと接続が切れ、繋ぎ直すまでの変更を取りこぼす。
+   * 接続している相手がいる間だけ動かす
+   */
+  const keepAlive = (): void => {
+    heartbeat ??= setInterval(() => {
+      if (clients.size === 0) {
+        clearInterval(heartbeat);
+        heartbeat = undefined;
+        return;
+      }
+      for (const client of clients) {
+        try {
+          client.enqueue(encoder.encode(": ping\n\n"));
+        } catch {
+          clients.delete(client);
+        }
+      }
+    }, 5000);
+  };
+
   const connect = (): Response => {
     let self: ReadableStreamDefaultController<Uint8Array>;
     const stream = new ReadableStream<Uint8Array>({
       start(controller) {
         self = controller;
         clients.add(controller);
-        // 最初の 1 バイトを送って接続を確定させる（コメント行は無視される）
-        controller.enqueue(encoder.encode(": connected\n\n"));
+        // 起動 ID を送って接続を確定させる。ブラウザは値の変化で再起動を見分ける
+        controller.enqueue(encoder.encode(`event: hello\ndata: ${bootId}\n\n`));
+        keepAlive();
       },
       cancel() {
         clients.delete(self);
@@ -137,5 +174,5 @@ export function createLiveReload(): LiveReload {
     };
   };
 
-  return { connect, watch, notify };
+  return { connect, bootId, notify, watch };
 }

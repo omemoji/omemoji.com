@@ -159,6 +159,9 @@ const list = (paths: string[]) =>
 
 const server = Bun.serve({
   port,
+  // 既定の 10 秒では変更通知の接続が繋ぎっぱなしにできない。
+  // 切れるたびに繋ぎ直すと、その間の変更を取りこぼす（0 で無効）
+  idleTimeout: 0,
   async fetch(request) {
     const pathname = decodeURIComponent(new URL(request.url).pathname);
 
