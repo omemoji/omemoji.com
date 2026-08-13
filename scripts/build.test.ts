@@ -188,6 +188,17 @@ describe("ビルド出力", () => {
     expect(missing).toEqual([]);
   });
 
+  test.each(["index.html", "articles/void_linux.html", "artworks.html"])(
+    "%s に Google Analytics が入る",
+    (file) => {
+      const html = fs.readFileSync(path.join(target, file), "utf-8");
+
+      expect(html).toContain("G-XXCZ8KW3CC");
+      expect(html).toContain("googletagmanager.com/gtag/js");
+      expect(html).toContain("2500");
+    }
+  );
+
   test("記事の末尾は一覧へ戻る導線にする", () => {
     const html = fs.readFileSync(path.join(target, "articles/void_linux.html"), "utf-8");
 

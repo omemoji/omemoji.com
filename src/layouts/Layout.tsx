@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import Analytics from "@/components/Analytics";
 import Footer from "@/components/Footer";
 import Header, { type Category } from "@/components/Header";
 import { HOST } from "@/config";
@@ -81,6 +82,7 @@ export default function Layout({
         <Header category={category} />
         <main>{children}</main>
         <Footer />
+        <Analytics />
       </body>
     </html>
   );
