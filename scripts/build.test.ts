@@ -6,7 +6,7 @@ import path from "node:path";
 import { collectImages } from "@/features/image/assets";
 import type { OptimizeResult } from "@/features/image/optimize";
 import { buildRoutes } from "@/routes";
-import { build, imageSources, loadContent, outputPath } from "./build";
+import { build, imageSources, imageVariants, loadContent, outputPath } from "./build";
 
 const production = loadContent({ includeDrafts: false });
 const dev = loadContent({ includeDrafts: true });
@@ -118,8 +118,29 @@ describe("ビルド出力", () => {
       .filter((file) => !exists(file));
 
     expect(missing).toEqual([]);
-    // 変換したかキャッシュから引いたかは問わない。全枚数が処理されていること
-    expect(images.converted + images.cached).toBe(raster.length);
+
+    // 変換したかキャッシュから引いたかは問わない。バリアントも含めて全て処理されていること
+    const variants = imageVariants(production);
+    const tasks = raster.flatMap((asset) =>
+      variants.filter((variant) => variant.match?.(asset) ?? true)
+    );
+    expect(images.converted + images.cached).toBe(tasks.length);
+  });
+
+  test("ギャラリーの画像は切り抜き済みの小さいバリアントを指す", () => {
+    const html = fs.readFileSync(path.join(target, "artworks.html"), "utf-8");
+    const sources = [...html.matchAll(/<source srcset="([^"]+)"/gi)].map(
+      (matched) => matched[1] ?? ""
+    );
+
+    expect(sources.length).toBeGreaterThan(0);
+    expect(sources.every((src) => src.endsWith(".thumb.avif"))).toBe(true);
+
+    // 本文用を並べて CSS で切り抜くだけでは転送量が減らない。実体が小さいことを見る
+    const thumb = sources[0] ?? "";
+    const size = (file: string) => fs.statSync(path.join(target, file.slice(1))).size;
+
+    expect(size(thumb)).toBeLessThan(size(thumb.replace(".thumb.avif", ".avif")));
   });
 
   test("本文の画像は AVIF を source に出し、寸法を付ける", () => {

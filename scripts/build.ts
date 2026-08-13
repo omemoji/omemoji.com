@@ -6,9 +6,17 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { loadAbout } from "@/content/about";
 import { loadArticles } from "@/content/articles";
 import { loadArtworks } from "@/content/artworks";
-import { collectImages, type ImageSource } from "@/features/image/assets";
+import { collectImages, type ImageSource, imageUrl } from "@/features/image/assets";
 import { setImageManifest } from "@/features/image/manifest";
-import { type OptimizeResult, optimizeImages } from "@/features/image/optimize";
+import {
+  AVIF_PARAMS,
+  CONTENT_VARIANT,
+  type OptimizeResult,
+  optimizeImages,
+  THUMB_PARAMS,
+  THUMB_VARIANT,
+  type Variant,
+} from "@/features/image/optimize";
 import { type CollectResult, collectLinkCards } from "@/features/link-card/collect";
 import { setLinkCardManifest } from "@/features/link-card/manifest";
 import { collectAllLinkCardUrls } from "@/features/link-card/urls";
@@ -76,6 +84,22 @@ export function imageSources({ articles, artworks }: Content): ImageSource[] {
       id: artwork.id,
       dir: path.join(contentDir, "artworks", artwork.id),
     })),
+  ];
+}
+
+/**
+ * 作る大きさの一覧。
+ *
+ * ギャラリー（一覧・帯）に並ぶのは作品の代表画像だけで、表示は本文幅の 1/3 しかない。
+ * 本文用の大きさを送って CSS で切り抜くと、転送量のほとんどを捨てることになるため、
+ * 切り抜き済みの小さいバリアントを別に作る。他の画像には作らない。
+ */
+export function imageVariants({ artworks }: Content): Variant[] {
+  const gallery = new Set(artworks.map((artwork) => imageUrl("artworks", artwork.id, artwork.src)));
+
+  return [
+    { name: CONTENT_VARIANT, params: AVIF_PARAMS },
+    { name: THUMB_VARIANT, params: THUMB_PARAMS, match: (asset) => gallery.has(asset.url) },
   ];
 }
 
@@ -159,6 +183,7 @@ export async function build(
   const images = await optimizeImages(collectImages(imageSources(content)), {
     outDir: target,
     cacheDir,
+    variants: imageVariants(content),
   });
   setImageManifest(images.manifest);
 
