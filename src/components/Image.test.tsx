@@ -12,7 +12,9 @@ afterEach(() => {
 
 test("AVIF を source に出し、img は原寸へ倒す", () => {
   setImageManifest({
-    "/images/articles/x/a.png": { src: "/images/articles/x/a.avif", width: 700, height: 350 },
+    "/images/articles/x/a.png": {
+      content: { src: "/images/articles/x/a.avif", width: 700, height: 350 },
+    },
   });
 
   const html = render(<Image src="/images/articles/x/a.png" alt="図" />);
@@ -24,7 +26,9 @@ test("AVIF を source に出し、img は原寸へ倒す", () => {
 
 test("寸法は img に付ける。縦横比は原寸と変わらないので倒れても同じ値でよい", () => {
   setImageManifest({
-    "/images/articles/x/a.png": { src: "/images/articles/x/a.avif", width: 700, height: 350 },
+    "/images/articles/x/a.png": {
+      content: { src: "/images/articles/x/a.avif", width: 700, height: 350 },
+    },
   });
 
   const html = render(<Image src="/images/articles/x/a.png" alt="図" />);
@@ -38,7 +42,9 @@ test("寸法は img に付ける。縦横比は原寸と変わらないので倒
 test("dev のように変換していない場合は picture で包まない", () => {
   // 原寸を指すマニフェスト（measureImages の出力）。PNG を image/avif と名乗ってはいけない
   setImageManifest({
-    "/images/articles/x/a.png": { src: "/images/articles/x/a.png", width: 700, height: 350 },
+    "/images/articles/x/a.png": {
+      content: { src: "/images/articles/x/a.png", width: 700, height: 350 },
+    },
   });
 
   const html = render(<Image src="/images/articles/x/a.png" alt="図" />);
@@ -59,7 +65,9 @@ test("マニフェストに無い画像は picture で包まず、寸法も付�
 
 test("キャプションは alt から出す。作品画像は出さない", () => {
   setImageManifest({
-    "/images/artworks/y/a.png": { src: "/images/artworks/y/a.avif", width: 540, height: 540 },
+    "/images/artworks/y/a.png": {
+      content: { src: "/images/artworks/y/a.avif", width: 540, height: 540 },
+    },
   });
 
   expect(render(<Image src="/images/artworks/y/a.png" alt="題" caption />)).toContain(
@@ -70,7 +78,9 @@ test("キャプションは alt から出す。作品画像は出さない", () 
 
 test("ギャラリーは Picture を直に使う。寸法は CSS が決めるので付けない", () => {
   setImageManifest({
-    "/images/artworks/y/a.png": { src: "/images/artworks/y/a.avif", width: 540, height: 540 },
+    "/images/artworks/y/a.png": {
+      content: { src: "/images/artworks/y/a.avif", width: 540, height: 540 },
+    },
   });
 
   const html = render(<Picture src="/images/artworks/y/a.png" alt="題" />);
@@ -81,7 +91,9 @@ test("ギャラリーは Picture を直に使う。寸法は CSS が決めるの
 
 test("呼び出し側の指定が最適化の結果より優先される", () => {
   setImageManifest({
-    "/images/artworks/y/a.png": { src: "/images/artworks/y/a.avif", width: 540, height: 540 },
+    "/images/artworks/y/a.png": {
+      content: { src: "/images/artworks/y/a.avif", width: 540, height: 540 },
+    },
   });
 
   // 作品ページの主役画像は遅延させない（旧実装の priority に相当）

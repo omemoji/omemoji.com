@@ -1,4 +1,4 @@
-import type { ImageEntry, ImageManifest } from "@/features/image/optimize";
+import { CONTENT_VARIANT, type ImageEntry, type ImageManifest } from "@/features/image/optimize";
 
 /**
  * 描画時に寸法マニフェストを引くための置き場。
@@ -18,9 +18,17 @@ export function setImageManifest(next: ImageManifest): void {
   manifest = next;
 }
 
-/** マニフェストに無い URL は最適化の対象外。原寸を指したまま寸法を持たない */
-export function resolveImage(src: string): ImageEntry | undefined {
-  return manifest[src];
+/**
+ * マニフェストに無い URL は最適化の対象外。原寸を指したまま寸法を持たない。
+ *
+ * バリアントは大きさの違い（本文用・ギャラリー用）。
+ * 作っていないバリアントを指した場合も undefined になり、原寸へ倒れる
+ */
+export function resolveImage(
+  src: string,
+  variant: string = CONTENT_VARIANT
+): ImageEntry | undefined {
+  return manifest[src]?.[variant];
 }
 
 /** テスト用。描画のテストがマニフェストを共有しないようにする */

@@ -7,11 +7,14 @@ import sharp from "sharp";
 import type { ImageAsset } from "@/features/image/assets";
 import {
   AVIF_PARAMS,
+  CONTENT_VARIANT,
   cacheKey,
   displaySize,
   encoderVersion,
   measureImages,
   optimizeImages,
+  THUMB_PARAMS,
+  THUMB_VARIANT,
 } from "@/features/image/optimize";
 
 describe("表示サイズ", () => {
@@ -28,7 +31,8 @@ describe("表示サイズ", () => {
   test("高さは上限を超えない", () => {
     const { height } = displaySize(100, 5000, AVIF_PARAMS);
 
-    expect(height).toBe(AVIF_PARAMS.maxHeight);
+    // 540px。ImageParams は判別可能な合併なので、fit で絞ってから読む
+    expect(height).toBe(AVIF_PARAMS.fit === "inside" ? AVIF_PARAMS.maxHeight : 0);
   });
 });
 
@@ -98,7 +102,7 @@ describe("変換", () => {
     });
 
     expect(converted).toBe(2);
-    expect(manifest["/images/articles/x/wide.png"]).toEqual({
+    expect(manifest["/images/articles/x/wide.png"]?.[CONTENT_VARIANT]).toEqual({
       src: "/images/articles/x/wide.avif",
       width: 700,
       height: 350,
@@ -122,14 +126,14 @@ describe("変換", () => {
     expect(converted).toBe(0);
     expect(cached).toBe(2);
     expect(fs.existsSync(path.join(outDir(), "images/articles/x/wide.avif"))).toBe(true);
-    expect(manifest["/images/articles/x/wide.png"]?.width).toBe(700);
+    expect(manifest["/images/articles/x/wide.png"]?.[CONTENT_VARIANT]?.width).toBe(700);
   });
 
   test("パラメータを変えるとキャッシュに当たらない", async () => {
     const { converted } = await optimizeImages(assets, {
       outDir: outDir(),
       cacheDir: cacheDir(),
-      params: { ...AVIF_PARAMS, quality: 40 },
+      variants: [{ name: CONTENT_VARIANT, params: { ...AVIF_PARAMS, quality: 40 } }],
     });
 
     expect(converted).toBe(2);
@@ -142,11 +146,55 @@ describe("変換", () => {
       cacheDir: cacheDir(),
     });
 
-    expect(manifest[small.url]).toEqual({
+    expect(manifest[small.url]?.[CONTENT_VARIANT]).toEqual({
       src: "/images/articles/x/small.avif",
       width: 200,
       height: 100,
     });
+  });
+
+  test("バリアントごとに別のファイルを出す", async () => {
+    const { manifest } = await optimizeImages(assets, {
+      outDir: outDir(),
+      cacheDir: cacheDir(),
+      variants: [
+        { name: CONTENT_VARIANT, params: AVIF_PARAMS },
+        { name: THUMB_VARIANT, params: THUMB_PARAMS },
+      ],
+    });
+    const entry = manifest["/images/articles/x/wide.png"];
+
+    // 既定のバリアントは名前を挟まない。上書きし合わないこと
+    expect(entry?.[CONTENT_VARIANT]?.src).toBe("/images/articles/x/wide.avif");
+    expect(entry?.[THUMB_VARIANT]).toEqual({
+      src: "/images/articles/x/wide.thumb.avif",
+      width: 480,
+      height: 480,
+    });
+
+    // 正方形に切り抜いた実体が出ている（CSS ではなくビルド時に切る）
+    const meta = await sharp(path.join(outDir(), "images/articles/x/wide.thumb.avif")).metadata();
+    expect([meta.width, meta.height]).toEqual([480, 480]);
+  });
+
+  test("バリアントを絞れる", async () => {
+    const { manifest } = await optimizeImages(assets, {
+      outDir: outDir(),
+      cacheDir: cacheDir(),
+      variants: [
+        { name: CONTENT_VARIANT, params: AVIF_PARAMS },
+        {
+          name: THUMB_VARIANT,
+          params: THUMB_PARAMS,
+          match: (asset) => asset.url.endsWith("wide.png"),
+        },
+      ],
+    });
+
+    expect(manifest["/images/articles/x/wide.png"]?.[THUMB_VARIANT]).toBeDefined();
+    // 対象外の画像に無駄な変換をかけない
+    expect(manifest["/images/articles/x/tall.png"]?.[THUMB_VARIANT]).toBeUndefined();
+    expect(manifest["/images/articles/x/tall.png"]?.[CONTENT_VARIANT]).toBeDefined();
   });
 
   test("dev は変換せず寸法だけを出す", async () => {
@@ -154,7 +202,7 @@ describe("変換", () => {
     const manifest = await measureImages(assets);
 
     // 原寸を指したまま、寸法だけが付く
-    expect(manifest["/images/articles/x/wide.png"]).toEqual({
+    expect(manifest["/images/articles/x/wide.png"]?.[CONTENT_VARIANT]).toEqual({
       src: "/images/articles/x/wide.png",
       width: 700,
       height: 350,

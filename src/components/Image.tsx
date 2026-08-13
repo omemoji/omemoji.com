@@ -2,7 +2,12 @@ import type { ComponentProps } from "react";
 
 import { resolveImage } from "@/features/image/manifest";
 
-type ImgProps = Omit<ComponentProps<"img">, "src" | "alt"> & { src: string; alt: string };
+type ImgProps = Omit<ComponentProps<"img">, "src" | "alt"> & {
+  src: string;
+  alt: string;
+  /** 作る大きさの種類。ギャラリーは小さい正方形（THUMB_VARIANT）を指す */
+  variant?: string;
+};
 
 /**
  * 最適化された画像を出し、AVIF を解釈できない環境では原寸へ倒す。
@@ -13,8 +18,8 @@ type ImgProps = Omit<ComponentProps<"img">, "src" | "alt"> & { src: string; alt:
  *
  * マニフェストに無い画像（svg・最適化を通していないもの）は `<picture>` にせず素の `<img>` を出す。
  */
-export function Picture({ src, alt, ...rest }: ImgProps) {
-  const optimized = resolveImage(src);
+export function Picture({ src, alt, variant, ...rest }: ImgProps) {
+  const optimized = resolveImage(src, variant);
   // フォールバック先が原寸であるため、img は最適化前の URL を指す
   const image = <img src={src} alt={alt} {...rest} />;
 
