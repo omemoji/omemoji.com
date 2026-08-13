@@ -188,6 +188,50 @@ describe("ビルド出力", () => {
     expect(missing).toEqual([]);
   });
 
+  describe("サイトマップ", () => {
+    const locs = (): string[] => {
+      const xml = fs.readFileSync(path.join(target, "sitemap.xml"), "utf-8");
+      return [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((matched) => matched[1] ?? "");
+    };
+
+    test("indexable なルートだけを載せる", () => {
+      const expected = buildRoutes(production)
+        .filter((route) => route.indexable)
+        .map((route) => `https://omemoji.com${encodeURI(route.path)}`);
+
+      expect(locs()).toEqual(expected);
+    });
+
+    test.each([
+      ["ページネーションの 2 ページ目以降", "/articles/2"],
+      ["タグ別の一覧", "/artworks/tag/"],
+      ["404", "/404"],
+    ])("%s を含まない", (_, fragment) => {
+      expect(locs().filter((loc) => loc.includes(fragment))).toEqual([]);
+    });
+
+    test.each([["/"], ["/articles"], ["/artworks"]])("%s を含む", (routePath) => {
+      expect(locs()).toContain(`https://omemoji.com${routePath}`);
+    });
+
+    test("全ての URL が出力されたページに対応する", () => {
+      const missing = locs()
+        .map((loc) => outputPath(decodeURI(loc).replace("https://omemoji.com", "")))
+        .filter((file) => !exists(file));
+
+      expect(missing).toEqual([]);
+    });
+
+    test("詳細ページは更新日を持つ", () => {
+      const xml = fs.readFileSync(path.join(target, "sitemap.xml"), "utf-8");
+      const lastmods = [...xml.matchAll(/<lastmod>([^<]+)<\/lastmod>/g)].map((m) => m[1] ?? "");
+
+      // 記事と作品の数だけ付く。一覧には付けない
+      expect(lastmods.length).toBe(production.articles.length + production.artworks.length);
+      expect(lastmods.every((date) => /^\d{4}-\d{2}-\d{2}$/.test(date))).toBe(true);
+    });
+  });
+
   describe("OGP", () => {
     const meta = (file: string, name: string): string | undefined => {
       const html = fs.readFileSync(path.join(target, file), "utf-8");

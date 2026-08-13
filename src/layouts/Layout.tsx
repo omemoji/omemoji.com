@@ -48,6 +48,7 @@ export default function Layout({ title, description, category, path, children }:
         <link rel="stylesheet" href="/globals.css" />
         <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="48x48" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
         <meta name="author" content="omemoji" />
         <meta name="creator" content="omemoji" />
         <meta name="publisher" content="omemoji" />

@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import type { ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-
+import { HOST } from "@/config";
 import { loadAbout } from "@/content/about";
 import { loadArticles } from "@/content/articles";
 import { loadArtworks } from "@/content/artworks";
@@ -22,6 +22,7 @@ import { setLinkCardManifest } from "@/features/link-card/manifest";
 import { collectAllLinkCardUrls } from "@/features/link-card/urls";
 import { type GenerateResult, generateOgImages, type OgSource } from "@/features/og/generate";
 import { setOgManifest } from "@/features/og/manifest";
+import { buildSitemap, type SitemapEntry } from "@/features/sitemap/generate";
 import AboutPage from "@/pages/AboutPage";
 import ArticlePage from "@/pages/ArticlePage";
 import ArticlesList from "@/pages/ArticlesList";
@@ -149,6 +150,29 @@ export function loadContent({ includeDrafts }: { includeDrafts: boolean }): Cont
 }
 
 /**
+ * サイトマップに載せるページ。**収録の判断はルート側の `indexable` だけを見る。**
+ *
+ * タグ別・ページネーション 2 ページ目以降・404 はここで落ちる（同じ記事が
+ * 複数の URL から辿れる状態を検索エンジンに見せないため）。
+ * 更新日は詳細ページだけが持つ。一覧の更新日は「どの記事が載っているか」で
+ * 変わってしまい、ページ自体の更新を表さないので付けない。
+ */
+export function sitemapEntries(routes: Route[]): SitemapEntry[] {
+  return routes
+    .filter((route) => route.indexable)
+    .map((route) => {
+      const lastmod =
+        route.page === "ArticlePage"
+          ? route.props.article.date
+          : route.page === "ArtworkPage"
+            ? route.props.artwork.date
+            : undefined;
+
+      return { path: route.path, ...(lastmod ? { lastmod } : {}) };
+    });
+}
+
+/**
  * ルートのパスを出力先の相対パスに移す。build.format: "file" 相当。
  * `/` → `index.html`、`/articles/2` → `articles/2.html`
  */
@@ -229,6 +253,13 @@ export async function build(
   // これも描画より前。持たないページは Layout が共通の画像へ倒す
   const og = await generateOgImages(ogSources(content), { outDir: target, cacheDir: ogCacheDir });
   setOgManifest(og.manifest);
+
+  // ルートから機械的に起こす。ページの出力とずれることが無い
+  fs.writeFileSync(
+    path.join(target, "sitemap.xml"),
+    buildSitemap(sitemapEntries(routes), HOST),
+    "utf-8"
+  );
 
   const written: string[] = [];
   const skipped: Route["page"][] = [];
