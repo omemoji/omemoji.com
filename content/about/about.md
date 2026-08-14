@@ -1,9 +1,9 @@
 ## Profile
 
-| key      | val                    |
-| -------- | ---------------------- |
-| Name     | **omemoji**            |
-| Region   | 🗼Tokyo, 🇯🇵Japan       |
+| key      | val                 |
+| -------- | ------------------- |
+| Name     | **omemoji**         |
+| Region   | 🗼Tokyo, 🇯🇵Japan      |
 | Interest | 🌐Web, 🎨Art , 🐧Linux |
 
 ### Qualification
@@ -30,7 +30,7 @@
 https://github.com/omemoji/omemoji.com
 
 - このサイト
-- `Astro` + `Tailwind CSS` で制作
+- `TypeScript` で制作
   - `Cloudflare Pages`でデプロイしている
 - イラストや記事などを投稿する
 
