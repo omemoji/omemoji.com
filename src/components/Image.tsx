@@ -24,7 +24,11 @@ type ImgProps = Omit<ComponentProps<"img">, "src" | "alt" | "width" | "height"> 
  *
  * **寸法は分かる限り必ず属性で出す。**CSS を解釈しない・論理プロパティを読まない UA
  * （chawan などの端末ブラウザ）では属性が唯一の寸法になり、無いと原寸で表示される。
- * 実ブラウザでも読み込み前に場所が確保され、レイアウトのずれ（CLS）が起きない。
+ *
+ * 実ブラウザでも、両方の属性が揃っていれば UA スタイルシートが
+ * `aspect-ratio: auto <width> / <height>` を導くため、読み込み前に場所が確保される
+ * （レイアウトのずれ = CLS が起きない）。**縦横比を別途宣言する必要はない。**
+ * 効かせる条件は高さを `auto` に保つことだけで、リセットと `.content-image` が満たしている
  */
 export function Picture({ src, alt, width, height, ...rest }: ImgProps) {
   const optimized = resolveImage(src, { ...(width && { width }), ...(height && { height }) });
@@ -59,10 +63,11 @@ type Props = ImgProps & {
  *
  * 最適化との境界。呼び出し側（ページ・Markdown の差し替え表）は原寸の URL を渡し、
  * AVIF への差し替えと寸法の付与はここで行う。
+ *
+ * `width` / `height` の扱いは `Picture` と同じ（渡さなければ本文用の既定）。
+ * ここで別に引き当てると、切り抜きを求めても既定の縦横比が出てしまう
  */
 export default function Image({ src, alt, caption = false, ...rest }: Props) {
-  const optimized = resolveImage(src, {});
-
   const image = (
     <Picture
       className="content-image"
@@ -70,12 +75,6 @@ export default function Image({ src, alt, caption = false, ...rest }: Props) {
       alt={alt}
       loading="lazy"
       decoding="async"
-      // 寸法は Picture が付ける。ここで足すのは縦横比だけ。
-      // width / height 属性は CSS の inline-size: 100% に負けるため、
-      // 本文では aspect-ratio も宣言しないと読み込み中に高さが潰れる
-      {...(optimized && {
-        style: { aspectRatio: `${optimized.width} / ${optimized.height}` },
-      })}
       {...rest}
     />
   );

@@ -35,8 +35,32 @@ test("寸法は img に付ける。縦横比は原寸と変わらないので倒
 
   expect(html).toContain('width="700"');
   expect(html).toContain('height="350"');
-  // width / height だけでは CSS の inline-size: 100% に負けるため aspect-ratio も要る
-  expect(html).toContain("aspect-ratio:700 / 350");
+  // 縦横比は属性から UA が導く。style で重ねると、切り抜きを求めたときに
+  // 実際の形と食い違うものが宣言されてしまう
+  expect(html).not.toContain("aspect-ratio");
+  expect(html).not.toContain("style=");
+});
+
+test("切り抜きを求めると、その箱の寸法がそのまま属性になる", () => {
+  setImageManifest({
+    "/images/artworks/y/a.png": {
+      // 既定バリアントもある状態。こちらの縦横比（3:2）に引きずられてはいけない
+      default: { src: "/images/artworks/y/a.avif", width: 600, height: 400 },
+      "240x240": { src: "/images/artworks/y/a.240x240.avif", width: 480, height: 480 },
+    },
+  });
+
+  const html = render(<Image src="/images/artworks/y/a.png" alt="題" width={240} height={240} />);
+
+  expect(html).toContain('srcSet="/images/artworks/y/a.240x240.avif"');
+  expect(html).toContain('width="240"');
+  expect(html).toContain('height="240"');
+});
+
+test("求めた大きさだけを記録する。使わない既定バリアントは作らない", () => {
+  render(<Image src="/images/artworks/y/a.png" alt="題" width={240} height={240} />);
+
+  expect(takeImageWants()).toEqual([{ src: "/images/artworks/y/a.png", width: 240, height: 240 }]);
 });
 
 test("dev のように変換していない場合は picture で包まない", () => {

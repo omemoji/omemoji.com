@@ -36,12 +36,15 @@ jobs:
           fetch-depth: 1
       - uses: ./.github/actions/setup
 
-      # 統合テストが実際にビルドする。Build ジョブと同じキャッシュを共有して変換を避ける
+      # 統合テストが実際にビルドする。Build ジョブと同じキャッシュを共有して変換を避ける。
+      # キーの作りは _build.yml と揃える（末尾を実行ごとに変えて必ず保存させる）
       - name: Restore image cache
         uses: actions/cache@v4
         with:
           path: .cache/images
-          key: images-${{ hashFiles('content/**/*.png', 'content/**/*.jpg', 'content/**/*.jpeg', 'content/**/*.webp') }}
-          restore-keys: images-
+          key: images-${{ hashFiles('content/**/*.png', 'content/**/*.jpg', 'content/**/*.jpeg', 'content/**/*.webp', 'public/*.png') }}-${{ github.run_id }}-${{ github.job }}
+          restore-keys: |
+            images-${{ hashFiles('content/**/*.png', 'content/**/*.jpg', 'content/**/*.jpeg', 'content/**/*.webp', 'public/*.png') }}-
+            images-
 
       - run: bun run test:coverage

@@ -323,9 +323,10 @@ describe("ビルド出力", () => {
     const html = fs.readFileSync(path.join(target, "articles/void_linux.html"), "utf-8");
 
     expect(html).toMatch(/<source srcset="[^"]+\.avif" type="image\/avif"\/?>/i);
-    // レイアウトのずれ（CLS）を防ぐのが目的。マニフェストが描画まで届いていることの確認でもある
+    // レイアウトのずれ（CLS）を防ぐのが目的。マニフェストが描画まで届いていることの確認でもある。
+    // 縦横比は属性から UA が導くので、style で重ねる必要は無い
     expect(html).toMatch(/<img[^>]+width="\d+"[^>]+height="\d+"/);
-    expect(html).toContain("aspect-ratio:");
+    expect(html).not.toContain("aspect-ratio:");
   });
 
   test("AVIF が出る画像には必ず原寸のフォールバックが付く", () => {

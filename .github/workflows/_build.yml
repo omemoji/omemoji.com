@@ -13,13 +13,20 @@ jobs:
           fetch-depth: 1
       - uses: ./.github/actions/setup
 
-      # 画像の変換結果を持ち越す。キーは入力バイトから起こしているので古い結果は当たらない
+      # 画像の変換結果を持ち越す。
+      #
+      # キーの末尾を実行ごとに変えて**必ず保存させる**。入力画像だけをキーにすると、
+      # 変換パラメータを変えた回（リポジトリ内のキーは全滅・GitHub のキーは不変）で
+      # exact hit となり "not saving cache" のまま新しい結果が残らず、画像に触るまで
+      # 毎回全件を変換し続ける。どの結果が使えるかはリポジトリ内のキーが判定する
       - name: Restore image cache
         uses: actions/cache@v4
         with:
           path: .cache/images
-          key: images-${{ hashFiles('content/**/*.png', 'content/**/*.jpg', 'content/**/*.jpeg', 'content/**/*.webp') }}
-          restore-keys: images-
+          key: images-${{ hashFiles('content/**/*.png', 'content/**/*.jpg', 'content/**/*.jpeg', 'content/**/*.webp', 'public/*.png') }}-${{ github.run_id }}-${{ github.job }}
+          restore-keys: |
+            images-${{ hashFiles('content/**/*.png', 'content/**/*.jpg', 'content/**/*.jpeg', 'content/**/*.webp', 'public/*.png') }}-
+            images-
 
       # 取得済みのリンク先メタデータを持ち越す。当たった URL は取得しに行かない
       - name: Restore link card cache
@@ -31,13 +38,16 @@ jobs:
           key: link-cards-${{ hashFiles('content/articles/**/*.md', 'content/about/*.md') }}
           restore-keys: link-cards-
 
-      # 生成済みの OGP 画像を持ち越す。入力バイトからキーを起こしている
+      # 生成済みの OGP 画像を持ち越す。画像キャッシュと同じ理由で末尾を実行ごとに変える
+      # （生成側のコードやフォントを変えた回に、新しい結果が保存されなくなるため）
       - name: Restore OGP image cache
         uses: actions/cache@v4
         with:
           path: .cache/og
-          key: og-${{ hashFiles('content/artworks/**') }}
-          restore-keys: og-
+          key: og-${{ hashFiles('content/artworks/**') }}-${{ github.run_id }}-${{ github.job }}
+          restore-keys: |
+            og-${{ hashFiles('content/artworks/**') }}-
+            og-
 
       - run: bun run build
 
