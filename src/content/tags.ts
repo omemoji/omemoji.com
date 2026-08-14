@@ -12,6 +12,7 @@ export const TAGS = [
   "AsahiLinux",
   "Asoblock",
   "Bird",
+  "Bun",
   "Dragon",
   "Game",
   "Illustration",

@@ -4,7 +4,6 @@ import { renderToStaticMarkup } from "react-dom/server";
 
 import { mdToHast } from "@/features/markdown/pipeline";
 import { toReact } from "@/features/markdown/render";
-import { articles } from "@/tests/content";
 
 const render = async (markdown: string, components?: Parameters<typeof toReact>[1]) =>
   renderToStaticMarkup(toReact(await mdToHast(markdown), components));
@@ -50,18 +49,4 @@ describe("toReact", () => {
   });
 });
 
-describe("実データ（content/articles）", () => {
-  test(`全ての記事が例外なく描画できる（${articles.length} 件）`, async () => {
-    const failed: { slug: string; message: string }[] = [];
-
-    for (const article of articles) {
-      try {
-        renderToStaticMarkup(toReact(await mdToHast(article.body)));
-      } catch (error) {
-        failed.push({ slug: article.slug, message: (error as Error).message });
-      }
-    }
-
-    expect(failed).toEqual([]);
-  });
-});
+// 実データ（content/articles）の検査は render.integration.test.tsx にある

@@ -17,7 +17,7 @@ jobs:
 
   # 検査が通ってからビルドする（壊れたコードを成果物にしないため）
   #
-  # ビルドが通ること自体は scripts/build.test.ts が実データで検証しているため、
+  # ビルドが通ること自体は scripts/build.integration.test.ts が実データで検証しているため、
   # ここは成果物を作るためだけに動かす。デプロイしないなら回す意味が無い。
   # 条件は deploy と共通で、この 1 箇所で両方を制御する（deploy は needs: build）
   build:

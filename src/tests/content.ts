@@ -10,6 +10,10 @@ import { loadArtworks } from "@/content/artworks";
  * bun はテストファイル間でモジュールを 1 度しか評価しないため、
  * ここを経由すれば実行全体で 1 回の走査に収まる。
  * 各テストファイルが直接 loadArticles を呼ぶと、その数だけ走査が走る。
+ *
+ * **これを読むのは統合テスト（`*.integration.test.ts`）だけ。**
+ * リポジトリのコンテンツに依存するかどうかがそのままファイル名に出る境界であり、
+ * 単体テストはフィクスチャか合成データだけで完結させる
  */
 export const articlesDir = path.join(import.meta.dirname, "../../content/articles");
 export const artworksDir = path.join(import.meta.dirname, "../../content/artworks");
