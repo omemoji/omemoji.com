@@ -4,9 +4,10 @@ on:
   pull_request:
     branches: [main]
 
+# メタデータの取得にしか GITHUB_TOKEN を使わない。マージは GitHub App で行う（下記）
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
+  pull-requests: read
 
 jobs:
   auto-merge:
@@ -16,6 +17,13 @@ jobs:
       - name: Fetch Dependabot metadata
         id: metadata
         uses: dependabot/fetch-metadata@v2
+
+      - name: Create GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.AUTO_MERGE_APP_ID }}
+          private-key: ${{ secrets.AUTO_MERGE_APP_PRIVATE_KEY }}
 
       # patch と minor まで。CI は実データで 85 ページを書き出し、HTML 内の参照が
       # 全て解決することまで見ているため、この範囲の回帰はここで落ちる。
@@ -28,4 +36,4 @@ jobs:
         run: gh pr merge "$PR_URL" --auto --merge
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
