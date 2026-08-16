@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 
 import { ARTWORKS_PER_PAGE } from "@/config";
 import type { Artwork } from "@/content/artworks";
+import { TAGS } from "@/content/tags";
 import { buildRoutes } from "@/routes";
 
 // 実データを流したときの検査は routes.integration.test.ts にある
@@ -16,7 +17,8 @@ describe("合成データ", () => {
     title: id,
     date: new Date(date),
     src: `${id}.png`,
-    tags: ["Illustration"],
+    // 特定のタグ名を書くと、TAGS からの削除でこの単体テストが巻き添えで落ちる
+    tags: [TAGS[0]],
   });
 
   test("ページ番号と衝突する id を重複検査が捕まえる", () => {

@@ -4,8 +4,16 @@ import os from "node:os";
 import path from "node:path";
 
 import { articleSchema, loadArticles } from "@/content/articles";
+import { TAGS } from "@/content/tags";
 
 // 実データ（content/articles）の検査は articles.integration.test.ts にある
+
+/**
+ * フィクスチャに使う、確実に登録済みのタグ。
+ * 特定のタグ名を書くと、そのタグを TAGS から消しただけでフィクスチャが不正になり、
+ * 正常系は落ち、異常系は誤った理由で通ってしまう
+ */
+const registeredTag = TAGS[0];
 
 // 以下は落ちたらコードを直す
 describe("articleSchema", () => {
@@ -17,7 +25,7 @@ describe("articleSchema", () => {
       date: "2026-01-01",
       published: false,
     };
-    expect(articleSchema.safeParse({ ...valid, tags: ["Tech"] }).success).toBe(true);
+    expect(articleSchema.safeParse({ ...valid, tags: [registeredTag] }).success).toBe(true);
     expect(articleSchema.safeParse({ ...valid, tags: ["NotARegisteredTag"] }).success).toBe(false);
   });
 });
@@ -45,7 +53,7 @@ const validFrontmatter = {
   title: '"サンプル"',
   description: '"異常系テスト用"',
   date: "2026-01-15",
-  tags: '["Tech"]',
+  tags: `["${registeredTag}"]`,
   published: "true",
 };
 
