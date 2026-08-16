@@ -24,9 +24,23 @@ export function loadArtworks(baseDir: string): Artwork[] {
     .readdirSync(baseDir, { withFileTypes: true })
     .filter((entry) => entry.isDirectory())
     .map((entry) => {
-      const raw = fs.readFileSync(path.join(baseDir, entry.name, "meta.json"), "utf-8");
-      const meta = artworkSchema.parse(JSON.parse(raw));
-      return { id: entry.name, ...meta, date: new Date(meta.date) };
+      const file = path.join(entry.name, "meta.json");
+      const raw = fs.readFileSync(path.join(baseDir, file), "utf-8");
+
+      let json: unknown;
+      try {
+        json = JSON.parse(raw);
+      } catch (cause) {
+        // 素の SyntaxError はどの作品か示さないため、ファイルを添えて投げ直す
+        throw new Error(`Invalid JSON in ${file}`, { cause });
+      }
+
+      const meta = artworkSchema.safeParse(json);
+      if (!meta.success) {
+        throw new Error(`Invalid meta in ${file}: ${z.prettifyError(meta.error)}`);
+      }
+
+      return { id: entry.name, ...meta.data, date: new Date(meta.data.date) };
     })
     // 日付が同じ作品の並びを確定させるため、まず id 順に整える
     .sort((a, b) => a.id.localeCompare(b.id));
