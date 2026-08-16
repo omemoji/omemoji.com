@@ -76,8 +76,11 @@ export const katex = {
   href: "katex/katex.min.css",
 };
 
-/** `out/` へ複製する対象。to は out/ 直下からの相対パス */
-const assets: { from: string; to: string; filter?: (from: string) => boolean }[] = [
+/** 複製する 1 件。to は out/ 直下からの相対パス */
+export type CopyTarget = { from: string; to: string; filter?: (from: string) => boolean };
+
+/** `out/` へ複製する対象 */
+const assets: CopyTarget[] = [
   { from: publicDir, to: "." },
   { from: stylesheet.file, to: stylesheet.href },
   { from: path.join(katex.dir, "katex.min.css"), to: katex.href },
@@ -207,22 +210,58 @@ export async function renderRoute(route: Route): Promise<string | undefined> {
   return `<!doctype html>${renderToStaticMarkup(element)}`;
 }
 
-/** globals.css・public/・コンテンツの画像を出力先へ複製する */
-export function copyAssets(target: string, content: Content): string[] {
-  const targets = [...assets, ...collectImages(imageSources(content))];
-
-  return targets.flatMap((asset) => {
-    const { from, to } = asset;
+/**
+ * 複製元が実在するものだけを写す。複製した to を返す。
+ *
+ * 無いものは黙って飛ばす。node_modules を入れ替えている最中の katex のように、
+ * 1 件欠けただけでビルド全体が落ちる方が困る
+ */
+export function copyFiles(target: string, targets: CopyTarget[]): string[] {
+  return targets.flatMap(({ from, to, filter }) => {
     if (!fs.existsSync(from)) {
       return [];
     }
     const dest = path.join(target, to);
-    const filter = "filter" in asset ? asset.filter : undefined;
     fs.mkdirSync(path.dirname(dest), { recursive: true });
     fs.cpSync(from, dest, { recursive: true, ...(filter ? { filter } : {}) });
     return [to];
   });
 }
+
+/** globals.css・public/・コンテンツの画像を出力先へ複製する */
+export function copyAssets(target: string, content: Content): string[] {
+  return copyFiles(target, [...assets, ...collectImages(imageSources(content))]);
+}
+
+/** 描画の結果。skipped は実装されていないページ（renderRoute が undefined を返したもの） */
+export type RenderResult = { written: string[]; skipped: Route["page"][] };
+
+/** 全ページを描いて書き出す。求められた大きさが足りなければ、呼び出し側が作って呼び直す */
+export async function renderRoutes(target: string, routes: Route[]): Promise<RenderResult> {
+  const written: string[] = [];
+  const skipped: Route["page"][] = [];
+
+  for (const route of routes) {
+    const html = await renderRoute(route);
+    if (html === undefined) {
+      skipped.push(route.page);
+      continue;
+    }
+    const file = path.join(target, outputPath(route.path));
+    fs.mkdirSync(path.dirname(file), { recursive: true });
+    fs.writeFileSync(file, html, "utf-8");
+    written.push(outputPath(route.path));
+  }
+
+  return { written, skipped };
+}
+
+/** ビルド 1 回の結果。CLI の表示（reportBuild）もこれだけを見る */
+export type BuildResult = RenderResult & {
+  images: OptimizeResult;
+  links: CollectResult;
+  og: GenerateResult;
+};
 
 /** 出力先を差し替えられるようにしてある。テストが実際の out/ を壊さずに検証するため */
 export async function build(
@@ -235,13 +274,7 @@ export async function build(
     /** ネットワークを使わない。テストはこちら。リンクカードはキャッシュにある分だけ出る */
     offline?: boolean;
   } = {}
-): Promise<{
-  written: string[];
-  skipped: Route["page"][];
-  images: OptimizeResult;
-  links: CollectResult;
-  og: GenerateResult;
-}> {
+): Promise<BuildResult> {
   const content = loadContent({ includeDrafts: false });
   const routes = buildRoutes(content);
 
@@ -274,27 +307,7 @@ export async function build(
     "utf-8"
   );
 
-  /** 全ページを描いて書き出す。求められた大きさが足りなければ、それを返す */
-  const renderAll = async (): Promise<{ written: string[]; skipped: Route["page"][] }> => {
-    const written: string[] = [];
-    const skipped: Route["page"][] = [];
-
-    for (const route of routes) {
-      const html = await renderRoute(route);
-      if (html === undefined) {
-        skipped.push(route.page);
-        continue;
-      }
-      const file = path.join(target, outputPath(route.path));
-      fs.mkdirSync(path.dirname(file), { recursive: true });
-      fs.writeFileSync(file, html, "utf-8");
-      written.push(outputPath(route.path));
-    }
-
-    return { written, skipped };
-  };
-
-  let { written, skipped } = await renderAll();
+  let { written, skipped } = await renderRoutes(target, routes);
 
   // 描画が求めた大きさのうち、まだ無かったもの。**どの大きさを作るかはここで決まる**
   const wants = takeImageWants();
@@ -307,7 +320,7 @@ export async function build(
     setImageManifest(images.manifest);
     writeWants(cacheDir, all);
 
-    ({ written, skipped } = await renderAll());
+    ({ written, skipped } = await renderRoutes(target, routes));
     // 2 度目の描画でも記録は溜まる（svg など変換できないもの）。持ち越さない
     takeImageWants();
   }
@@ -315,8 +328,8 @@ export async function build(
   return { written, skipped, images, links, og };
 }
 
-if (import.meta.main) {
-  const { written, skipped, images, links, og } = await build();
+/** CLI の表示。ビルドの結果だけを見て組み立てる（副作用は console だけ） */
+export function reportBuild({ written, skipped, images, links, og }: BuildResult): void {
   console.log(`built ${written.length} pages -> ${path.relative(process.cwd(), outDir)}/`);
   console.log(
     `images: ${images.converted} converted, ${images.cached} cached, ${images.passthrough} as-is`
@@ -340,3 +353,5 @@ if (import.meta.main) {
     console.log(`skipped ${skipped.length} routes for unimplemented pages: ${summary}`);
   }
 }
+
+if (import.meta.main) reportBuild(await build());

@@ -46,16 +46,16 @@ describe("取得のステージ", () => {
 
   const page = (head: string) => new Response(`<html><head>${head}</head></html>`);
 
+  /** OGP 画像を持つページ。サムネイルの取得まで進む */
+  const head =
+    '<meta property="og:title" content="題" /><meta property="og:description" content="説明" /><meta property="og:image" content="/a.png" />';
+
   /** OGP と画像を返す取得器 */
   const fetcher = (): Fetcher & { calls: string[] } => {
     const calls: string[] = [];
     const fake = async (url: string) => {
       calls.push(url);
-      return url.endsWith(".png")
-        ? new Response(thumbnail as unknown as BodyInit)
-        : page(
-            '<meta property="og:title" content="題" /><meta property="og:description" content="説明" /><meta property="og:image" content="/a.png" />'
-          );
+      return url.endsWith(".png") ? new Response(thumbnail as unknown as BodyInit) : page(head);
     };
     return Object.assign(fake, { calls });
   };
@@ -151,6 +151,25 @@ describe("取得のステージ", () => {
       title: "題",
       description: "",
     });
+  });
+
+  test.each([
+    ["OGP 画像が取れない", new Response("", { status: 404 })],
+    // 画像でないもの（HTML のエラーページなど）が返ることがある
+    ["OGP 画像が画像でない", new Response("<html>error</html>")],
+  ])("%s場合も文字だけのカードになる", async (_, image) => {
+    const failing = Object.assign(
+      async (url: string) => (url.endsWith(".png") ? image : page(head)),
+      {
+        calls: [],
+      }
+    );
+
+    const { manifest, fetched } = await collect(failing);
+
+    expect(fetched).toBe(1);
+    expect(manifest["https://example.com/entry"]?.title).toBe("題");
+    expect(manifest["https://example.com/entry"]?.image).toBeUndefined();
   });
 
   test("サムネイルの実体が無ければ画像の参照ごと落とす", async () => {

@@ -1,5 +1,5 @@
-import type { Link, Paragraph, Text } from "mdast";
-import type { Literal, Node, Parent } from "unist";
+import type { Link, Text } from "mdast";
+import type { Literal, Node } from "unist";
 
 function isObject(target: unknown): target is { [key: string]: unknown } {
   return typeof target === "object" && target !== null;
@@ -10,20 +10,9 @@ export function isNode(node: unknown): node is Node {
   return isObject(node) && "type" in node;
 }
 
-// https://github.com/syntax-tree/unist#parent
-export function isParent(node: unknown): node is Parent {
-  // biome-ignore lint: Property 'children' comes from an index signature, so it must be accessed with ['children'].
-  return isObject(node) && Array.isArray(node["children"]);
-}
-
 // https://github.com/syntax-tree/unist#literal
 export function isLiteral(node: unknown): node is Literal {
   return isObject(node) && "value" in node;
-}
-
-// https://github.com/syntax-tree/mdast#paragraph
-export function isParagraph(node: unknown): node is Paragraph {
-  return isNode(node) && node.type === "paragraph";
 }
 
 // https://github.com/syntax-tree/mdast#text

@@ -78,8 +78,14 @@ describe("absoluteUrl", () => {
     ["//cdn.example.com/a.png", "https://cdn.example.com/a.png"],
     ["https://cdn.example.com/a.png", "https://cdn.example.com/a.png"],
     ["", ""],
+    // 解決できないものは捨てる。壊れた src の <img> を出すより空の方がよい
+    ["http://%", ""],
   ])("%s → %s", (src, expected) => {
     expect(absoluteUrl(src, "https://example.com/blog/entry")).toBe(expected);
+  });
+
+  test("基点が URL として読めなければ捨てる", () => {
+    expect(absoluteUrl("/a.png", "壊れた基点")).toBe("");
   });
 });
 
@@ -91,6 +97,8 @@ describe("サブドメインの判定", () => {
     ["https://www.example.com/a", false],
     ["https://example.co.jp/a", false],
     ["https://blog.example.co.jp/a", true],
+    // URL として読めないものはホストを持たない。親を見に行かせない
+    ["壊れた URL", false],
   ])("%s → %s", (url, expected) => {
     expect(isSubdomain(url)).toBe(expected);
   });
@@ -104,6 +112,12 @@ describe("サブドメインの判定", () => {
   });
 });
 
-test("表示用の URL はホスト名だけにする", () => {
-  expect(shortenUrl("https://example.com/blog/entry?q=1")).toBe("example.com");
+describe("表示用の URL", () => {
+  test("ホスト名だけにする", () => {
+    expect(shortenUrl("https://example.com/blog/entry?q=1")).toBe("example.com");
+  });
+
+  test("読めなければ渡されたものをそのまま出す", () => {
+    expect(shortenUrl("壊れた URL")).toBe("壊れた URL");
+  });
 });

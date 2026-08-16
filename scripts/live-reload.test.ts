@@ -102,6 +102,35 @@ describe("受け手の作り", () => {
   });
 });
 
+describe("受け口", () => {
+  test("リロード用のパス以外は受け取らない", async () => {
+    const reload = createLiveReload();
+
+    // ページのハンドラより先に呼ばれる。undefined を返して後段へ譲る
+    await withServer(reload, async (url) => {
+      const origin = url.replace(/^ws/, "http").replace(RELOAD_PATH, "");
+      const response = await fetch(`${origin}/articles`);
+
+      expect(await response.text()).toBe("no");
+    });
+  });
+
+  test("ブラウザから送られても落とさない", async () => {
+    const reload = createLiveReload();
+
+    await withServer(reload, async (url) => {
+      const socket = new WebSocket(url);
+      await new Promise((resolve) => socket.addEventListener("open", resolve));
+      socket.send("何か");
+
+      // 通知は一方通行。受け取っても何も起きず、接続も切れない
+      await new Promise((resolve) => setTimeout(resolve, 20));
+      expect(reload.size()).toBe(1);
+      socket.close();
+    });
+  });
+});
+
 describe("購読", () => {
   test("繋いでいるページへ通知が届く", async () => {
     const reload = createLiveReload();

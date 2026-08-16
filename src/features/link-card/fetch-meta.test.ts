@@ -88,6 +88,24 @@ describe("再試行", () => {
     expect(fetcher.calls).toHaveLength(6);
   });
 
+  test("再試行の前に待つ", async () => {
+    let attempts = 0;
+    const fetcher = fakeFetch(() => {
+      attempts++;
+      return attempts < 2 ? new Response("", { status: 503 }) : new Response(ogp);
+    });
+
+    // 動的に作られる OGP 画像は初回だけ失敗することがある。間を空けて取り直す
+    const started = performance.now();
+    const meta = await fetchMeta("https://example.com/entry", {
+      fetch: fetcher,
+      retryDelayMs: 20,
+    });
+
+    expect(meta?.title).toBe("題");
+    expect(performance.now() - started).toBeGreaterThanOrEqual(20);
+  });
+
   test("4xx は再試行しない", async () => {
     const fetcher = fakeFetch(() => new Response("", { status: 404 }));
 
@@ -138,6 +156,24 @@ describe("サブドメインのフォールバック", () => {
       image: "",
     });
   });
+});
+
+test("本文が途中で切れたページは読めなかった扱いにする", async () => {
+  // 応答は 200 でも本文が届かないことがある。例外を投げずに次の UA へ進む
+  const broken = () =>
+    new Response(
+      new ReadableStream({
+        start(controller) {
+          controller.error(new Error("truncated"));
+        },
+      })
+    );
+  const fetcher = fakeFetch(broken);
+
+  expect(
+    await fetchMeta("https://example.com/entry", { ...options, fetch: fetcher })
+  ).toBeUndefined();
+  expect(fetcher.calls).toHaveLength(2);
 });
 
 test("全て失敗すれば undefined。呼び出し側は素のリンクへ倒す", async () => {

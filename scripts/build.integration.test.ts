@@ -7,7 +7,14 @@ import type { OptimizeResult } from "@/features/image/optimize";
 import { collectAllLinkCardUrls, collectLinkCardUrls } from "@/features/link-card/urls";
 import { ogUrl } from "@/features/og/generate";
 import { buildRoutes } from "@/routes";
-import { build, imageAssets, loadContent, markdownBodies, outputPath } from "./build";
+import {
+  build,
+  imageAssets,
+  imageCacheDir,
+  loadContent,
+  markdownBodies,
+  outputPath,
+} from "./build";
 
 /**
  * 実データ（content/）を読み、実際に書き出す統合テスト。
@@ -60,6 +67,51 @@ describe("リンクカードの収集元", () => {
     expect(collectLinkCardUrls(production.about).length).toBeGreaterThan(0);
     expect(urls).toEqual(expect.arrayContaining(collectLinkCardUrls(production.about)));
   });
+});
+
+/**
+ * 求められた大きさを覚えていない状態からのビルド。
+ *
+ * どの大きさを作るかは描画中にしか分からないため、記録（requests.json）が無い初回は
+ * 「描く → 作る → 描き直す」の 2 度描きになる。**2 度目に記録が残ることを見る**。
+ * 変換そのものは手元・CI と共有しているキャッシュ（index.json）に当たるので焼き直しはしない
+ */
+describe("記録の無い初回のビルド", () => {
+  let dir = "";
+  const target = () => path.join(dir, "out");
+  const cacheDir = () => path.join(dir, "images");
+
+  beforeAll(
+    async () => {
+      dir = fs.mkdtempSync(path.join(os.tmpdir(), "omemoji-cold-"));
+      // 変換結果だけを引き継ぎ、記録は落とす。実際のキャッシュには一切書かない
+      fs.cpSync(imageCacheDir, cacheDir(), { recursive: true });
+      fs.rmSync(path.join(cacheDir(), "requests.json"), { force: true });
+    },
+    // キャッシュが冷えていると全件を焼き直すことになる
+    180_000
+  );
+
+  afterAll(() => {
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  test("2 度描いて、求められた大きさを覚える", async () => {
+    const { written, skipped, images } = await build(target(), {
+      offline: true,
+      cacheDir: cacheDir(),
+    });
+
+    expect(skipped).toEqual([]);
+    expect(written.length).toBe(buildRoutes(production).length);
+    // 記録が残るので、次のビルドは 1 度描くだけで済む
+    expect(fs.existsSync(path.join(cacheDir(), "requests.json"))).toBe(true);
+    // 描画が求めた大きさが 2 度目までに作られている。切り抜きが要るのはギャラリー
+    expect(images.converted + images.cached).toBeGreaterThan(0);
+    expect(fs.readFileSync(path.join(target(), "artworks.html"), "utf-8")).toContain(
+      ".240x240.avif"
+    );
+  }, 180_000);
 });
 
 /** ここから下は実際に書き出す。手元の out/ を壊さないよう一時ディレクトリへ出力する */
