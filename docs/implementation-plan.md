@@ -82,7 +82,7 @@ UI なしで記事と作品を型付きで読み出せる状態にする。
 
 `bun test` が通り、`src/data/db.json` と `public/images/artworks/` を削除できている
 
-> **タグ名の変更は URL の変更**（`/artworks/tag/<tag>`）。整理する場合はリダイレクトの要否を判断する。`src/content/tags.ts`（`TAGS` と、タグ → 日本語ハッシュタグの `tagLabels`）も同時に更新する。
+> **タグ名の変更は URL の変更**（`/artworks/tag/<tag>`）。整理する場合はリダイレクトの要否を判断する。`src/collections/tags.ts`（`TAGS` と、タグ → 日本語ハッシュタグの `tagLabels`）も同時に更新する。
 
 ---
 

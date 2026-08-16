@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 
-import { pageCount, pageIdGen, paginate } from "@/content/paginate";
+import { pageCount, pageIdGen, paginate } from "@/collections/paginate";
 
 describe("pageCount", () => {
   test.each([

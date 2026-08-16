@@ -1,6 +1,6 @@
+import type { Artwork } from "@/collections/artworks";
 import { GALLERY_SIZE } from "@/components/Gallery";
 import { Picture } from "@/components/Image";
-import type { Artwork } from "@/content/artworks";
 import { imageUrl } from "@/features/image/assets";
 
 type Props = {

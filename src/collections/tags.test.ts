@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 
-import { TAGS, tagLabels, toHashtag } from "@/content/tags";
+import { TAGS, tagLabels, toHashtag } from "@/collections/tags";
 
 describe("TAGS", () => {
   test("重複が無い", () => {

@@ -1,5 +1,5 @@
+import type { Tag } from "@/collections/tags";
 import ShareButton from "@/components/ShareButton";
-import type { Tag } from "@/content/tags";
 
 type Props = {
   /** 戻り先の一覧 */

@@ -3,8 +3,8 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
-import { artworkSchema, loadArtworks } from "@/content/artworks";
-import { TAGS } from "@/content/tags";
+import { artworkSchema, loadArtworks } from "@/collections/artworks";
+import { TAGS } from "@/collections/tags";
 
 // 実データ（content/artworks）の検査は artworks.integration.test.ts にある
 

@@ -1,4 +1,4 @@
-import type { Article } from "@/content/articles";
+import type { Article } from "@/collections/articles";
 
 /**
  * 記事一覧のカード。絵文字・タイトル・説明・日付・タグ

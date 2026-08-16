@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { parse as parseYaml } from "yaml";
 
-import { articleSchema } from "@/content/articles";
+import { articleSchema } from "@/collections/articles";
 import { articles, articlesDir as baseDir } from "@/tests/content";
 
 // 落ちたら記事の書き方を直す

@@ -1,5 +1,5 @@
+import type { Artwork } from "@/collections/artworks";
 import { Picture } from "@/components/Image";
-import type { Artwork } from "@/content/artworks";
 import { imageUrl } from "@/features/image/assets";
 
 /**

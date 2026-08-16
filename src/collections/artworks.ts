@@ -2,8 +2,8 @@ import fs from "node:fs";
 import path from "node:path";
 import * as z from "zod";
 
-import { sortByDate } from "@/content/query";
-import { TAGS } from "@/content/tags";
+import { sortByDate } from "@/collections/query";
+import { TAGS } from "@/collections/tags";
 
 export const artworkSchema = z.object({
   $schema: z.string().optional(),

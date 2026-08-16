@@ -1,4 +1,4 @@
-import type { Article } from "@/content/articles";
+import type { Article } from "@/collections/articles";
 
 type Props = Pick<Article, "emoji" | "title" | "tags" | "date">;
 

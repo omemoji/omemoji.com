@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 
-import { collectTags, filterByTag, sortByDate } from "@/content/query";
+import { collectTags, filterByTag, sortByDate } from "@/collections/query";
 
 /**
  * 記事も作品も満たす最小の形。query は id やタイトルを見ない。

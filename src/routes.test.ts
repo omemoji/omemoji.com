@@ -1,8 +1,7 @@
 import { describe, expect, test } from "bun:test";
-
+import type { Artwork } from "@/collections/artworks";
+import { TAGS } from "@/collections/tags";
 import { ARTWORKS_PER_PAGE } from "@/config";
-import type { Artwork } from "@/content/artworks";
-import { TAGS } from "@/content/tags";
 import { buildRoutes } from "@/routes";
 
 // 実データを流したときの検査は routes.integration.test.ts にある

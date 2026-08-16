@@ -3,8 +3,8 @@ import path from "node:path";
 import { parse as parseYaml } from "yaml";
 import * as z from "zod";
 
-import { sortByDate } from "@/content/query";
-import { TAGS } from "@/content/tags";
+import { sortByDate } from "@/collections/query";
+import { TAGS } from "@/collections/tags";
 
 /** 先頭の frontmatter ブロック。行頭にアンカーしないと本文中の水平線を拾う */
 const FRONTMATTER = /^---\r?\n([\s\S]*?)\r?\n---/;

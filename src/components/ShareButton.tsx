@@ -1,7 +1,6 @@
 import { siX } from "simple-icons";
-
+import { type Tag, tagLabels } from "@/collections/tags";
 import { HOST } from "@/config";
-import { type Tag, tagLabels } from "@/content/tags";
 
 type Props = {
   /** 共有するページのパス。先頭が `/` */

@@ -1,8 +1,8 @@
+import type { Article } from "@/collections/articles";
+import type { Artwork } from "@/collections/artworks";
+import { pageCount, pageIdGen, paginate } from "@/collections/paginate";
+import { collectTags, filterByTag } from "@/collections/query";
 import { ARTWORKS_PER_PAGE, COUNT_PER_PAGE } from "@/config";
-import type { Article } from "@/content/articles";
-import type { Artwork } from "@/content/artworks";
-import { pageCount, pageIdGen, paginate } from "@/content/paginate";
-import { collectTags, filterByTag } from "@/content/query";
 
 /** 一覧ページ（タグ別・ページネーション込み）が受け取る props */
 type ListProps<T> = {

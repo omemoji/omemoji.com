@@ -1,8 +1,8 @@
 import path from "node:path";
 
-import { loadAbout } from "@/content/about";
-import { loadArticles } from "@/content/articles";
-import { loadArtworks } from "@/content/artworks";
+import { loadAbout } from "@/collections/about";
+import { loadArticles } from "@/collections/articles";
+import { loadArtworks } from "@/collections/artworks";
 
 /**
  * 実データを読み込むテスト用のフィクスチャ。

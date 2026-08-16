@@ -2,10 +2,10 @@ import fs from "node:fs";
 import path from "node:path";
 import type { ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+import { loadAbout } from "@/collections/about";
+import { loadArticles } from "@/collections/articles";
+import { loadArtworks } from "@/collections/artworks";
 import { HOST } from "@/config";
-import { loadAbout } from "@/content/about";
-import { loadArticles } from "@/content/articles";
-import { loadArtworks } from "@/content/artworks";
 import { collectImages, type ImageAsset, type ImageSource } from "@/features/image/assets";
 import { setImageManifest, takeImageWants } from "@/features/image/manifest";
 import {

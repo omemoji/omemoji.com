@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import * as z from "zod";
-import { artworkSchema } from "@/content/artworks";
+import { artworkSchema } from "@/collections/artworks";
 
 export const generateSchema = () => z.toJSONSchema(artworkSchema);
 

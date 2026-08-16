@@ -3,8 +3,8 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
-import { articleSchema, loadArticles } from "@/content/articles";
-import { TAGS } from "@/content/tags";
+import { articleSchema, loadArticles } from "@/collections/articles";
+import { TAGS } from "@/collections/tags";
 
 // 実データ（content/articles）の検査は articles.integration.test.ts にある
 
