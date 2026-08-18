@@ -5,6 +5,9 @@ import { artworkSchema } from "@/collections/artworks";
 
 export const generateSchema = () => z.toJSONSchema(artworkSchema);
 
-const outPath = path.join(import.meta.dirname, "../content/artworks/_schema.json");
+export const outPath = path.join(import.meta.dirname, "../content/artworks/_schema.json");
 
-fs.writeFileSync(outPath, JSON.stringify(generateSchema(), null, 2), "utf-8");
+// 直接実行したときだけ書く。ガードが無いと import しただけで _schema.json を上書きする
+if (import.meta.main) {
+  fs.writeFileSync(outPath, JSON.stringify(generateSchema(), null, 2), "utf-8");
+}
