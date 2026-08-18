@@ -100,6 +100,32 @@ describe("リンクカードの判定", () => {
       `"<p><a href="/artworks">/artworks</a></p>"`
     );
   });
+
+  // 脚注は本文の傍らの小さな注記。出典として URL を 1 行置くのは普通の書き方だが、
+  // そこがカードに開くと注記より大きくなる
+  test("脚注に単独で置いた URL は linkcard にならない", async () => {
+    const html = await render("本文[^a]\n\n[^a]: https://example.com");
+
+    expect(html).toContain('<a href="https://example.com">https://example.com</a>');
+    expect(html).not.toContain("linkcard");
+  });
+
+  test("脚注の入れ子の中の URL も linkcard にならない", async () => {
+    // 脚注が箇条書きなどを含むこともある。直下だけを見ていると漏れる
+    const html = await render("本文[^a]\n\n[^a]: 説明\n\n    https://example.com");
+
+    expect(html).toContain('<a href="https://example.com">https://example.com</a>');
+    expect(html).not.toContain("linkcard");
+  });
+
+  test("脚注があっても本文の URL は linkcard になる", async () => {
+    const html = await render(
+      "https://example.com/body\n\n本文[^a]\n\n[^a]: https://example.com/note"
+    );
+
+    expect(html).toContain('<a href="https://example.com/body" linkcard="">');
+    expect(html).toContain('<a href="https://example.com/note">');
+  });
 });
 
 // 実データ（content/articles）の検査は pipeline.integration.test.ts にある

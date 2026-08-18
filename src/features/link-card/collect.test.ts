@@ -23,6 +23,20 @@ describe("URL の収集", () => {
     expect(collectLinkCardUrls(markdown)).toEqual([]);
   });
 
+  test.each([
+    ["脚注に単独で置いた URL", "本文[^a]\n\n[^a]: https://example.com/a"],
+    ["脚注の入れ子の中の URL", "本文[^a]\n\n[^a]: 説明\n\n    https://example.com/a"],
+  ])("%s は拾わない", (_, markdown) => {
+    // 描画側（remark-link-card）がカードにしないため、取得しても誰も参照しない
+    expect(collectLinkCardUrls(markdown)).toEqual([]);
+  });
+
+  test("脚注があっても本文の URL は拾う", () => {
+    const markdown = "https://example.com/body\n\n本文[^a]\n\n[^a]: https://example.com/note";
+
+    expect(collectLinkCardUrls(markdown)).toEqual(["https://example.com/body"]);
+  });
+
   test("frontmatter の中の URL は拾わない", () => {
     const markdown = "---\nsite: https://example.com/a\n---\n\n本文";
 

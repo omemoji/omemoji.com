@@ -3,9 +3,7 @@ import remarkFrontmatter from "remark-frontmatter";
 import remarkGfm from "remark-gfm";
 import remarkParse from "remark-parse";
 import { unified } from "unified";
-import { visit } from "unist-util-visit";
-
-import { isLinkCardParagraph } from "@/features/markdown/plugins/remark-link-card";
+import { linkCardParagraphs } from "@/features/markdown/plugins/remark-link-card";
 
 /**
  * カードにする URL を集めるためだけのパーサ。
@@ -20,19 +18,13 @@ const parser = unified().use(remarkParse).use(remarkFrontmatter).use(remarkGfm).
  * Markdown 本文からリンクカードにする URL を集める。
  *
  * 取得はビルドの前段（ステージ）で一括して行うため、描画より先に URL の一覧が要る。
- * 判定は remark-link-card と共有しているので、集めた URL と描画される URL は一致する。
+ * 判定は remark-link-card の linkCardParagraphs をそのまま呼ぶので、
+ * 集めた URL と描画される URL は一致する（脚注の中を除くのも同じ関数の中）。
  */
 export function collectLinkCardUrls(markdown: string): string[] {
   const tree = parser.parse(markdown) satisfies Root;
-  const urls: string[] = [];
 
-  visit(tree, "paragraph", (node) => {
-    if (isLinkCardParagraph(node)) {
-      urls.push(node.children[0].url);
-    }
-  });
-
-  return urls;
+  return [...linkCardParagraphs(tree)].map((paragraph) => paragraph.children[0].url);
 }
 
 /** 複数の本文から重複を除いて集める */
