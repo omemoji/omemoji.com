@@ -3,7 +3,8 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
-import { CODE_ASSETS } from "@/config";
+import { CODE_ASSETS, KATEX_CSS, STYLESHEET } from "@/config";
+import type { AssetManifest } from "@/features/asset/manifest";
 import type { OptimizeResult } from "@/features/image/optimize";
 import { collectAllLinkCardUrls, collectLinkCardUrls } from "@/features/link-card/urls";
 import { ogUrl } from "@/features/og/generate";
@@ -121,15 +122,23 @@ describe("ビルド出力", () => {
   let written: string[] = [];
   let skipped: string[] = [];
   let images: OptimizeResult;
+  let assets: AssetManifest = {};
 
   const exists = (relative: string) => fs.existsSync(path.join(target, relative));
+  const read = (relative: string) => fs.readFileSync(path.join(target, relative), "utf-8");
+  /** 論理名から実際に出力された相対パスを引く。指紋は内容で決まるため直に書けない */
+  const asset = (name: string) => (assets[name] ?? "").slice(1);
+  const htmlFiles = (): string[] =>
+    fs
+      .readdirSync(target, { recursive: true, encoding: "utf-8" })
+      .filter((file) => file.endsWith(".html"));
 
   beforeAll(
     async () => {
       target = fs.mkdtempSync(path.join(os.tmpdir(), "omemoji-build-"));
       // キャッシュは手元・CI と共有する。変換をやり直さずに済む。
       // offline はテストをネットワークから切るため。リンクカードは取得済みの分だけ出る
-      ({ written, skipped, images } = await build(target, { offline: true }));
+      ({ written, skipped, images, assets } = await build(target, { offline: true }));
     },
     // 画像のキャッシュが冷えていると変換に 10 秒以上かかる。既定の 5 秒では足りない。
     // しかもフックが時間切れになっても変換は走り続け、後続のテストから CPU を奪う
@@ -264,12 +273,13 @@ describe("ビルド出力", () => {
       const withoutMath = fs.readFileSync(path.join(target, "articles/void_linux.html"), "utf-8");
 
       expect(mathArticle()).not.toBe("");
-      expect(withMath).toContain('href="/katex/katex.min.css"');
+      expect(withMath).toContain(`href="${assets[KATEX_CSS]}"`);
       expect(withoutMath).not.toContain("katex");
     });
 
     test("CSS が参照するフォントが全て存在する", () => {
-      const css = fs.readFileSync(path.join(target, "katex/katex.min.css"), "utf-8");
+      // 指紋は名前にしか混ぜないので、CSS からフォントへの相対参照は変わらない
+      const css = fs.readFileSync(path.join(target, asset(KATEX_CSS)), "utf-8");
       const fonts = [...css.matchAll(/url\(([^)]+\.woff2)\)/g)].map((matched) => matched[1] ?? "");
 
       expect(fonts.length).toBeGreaterThan(0);
@@ -291,17 +301,10 @@ describe("ビルド出力", () => {
    * ブラウザキャッシュも効かなくなる（記事 1 ページあたり CSS 24 KB）
    */
   describe("コードブロック", () => {
-    const htmlFiles = (): string[] =>
-      fs
-        .readdirSync(target, { recursive: true, encoding: "utf-8" })
-        .filter((file) => file.endsWith(".html"));
-
-    const read = (file: string): string => fs.readFileSync(path.join(target, file), "utf-8");
-
     test("CSS と JS を共通ファイルとして出力する", () => {
-      expect(exists(CODE_ASSETS.css)).toBe(true);
-      expect(exists(CODE_ASSETS.js)).toBe(true);
-      expect(read(CODE_ASSETS.css)).toContain("expressive-code");
+      expect(exists(asset(CODE_ASSETS.css))).toBe(true);
+      expect(exists(asset(CODE_ASSETS.js))).toBe(true);
+      expect(read(asset(CODE_ASSETS.css))).toContain("expressive-code");
     });
 
     test("どのページにも資産をインラインで持たせない", () => {
@@ -314,21 +317,22 @@ describe("ビルド出力", () => {
       // 使うページだけが読む。抜けると枠線も配色も消え、余ると 27 KB が無駄になる
       const mismatched = htmlFiles().filter((file) => {
         const html = read(file);
-        return html.includes('class="expressive-code"') !== html.includes(`/${CODE_ASSETS.css}`);
+        return html.includes('class="expressive-code"') !== html.includes(assets[CODE_ASSETS.css]!);
       });
 
       expect(mismatched).toEqual([]);
       expect(
-        htmlFiles().filter((file) => read(file).includes(`/${CODE_ASSETS.css}`)).length
+        htmlFiles().filter((file) => read(file).includes(assets[CODE_ASSETS.css]!)).length
       ).toBeGreaterThan(0);
     });
 
     test("参照する URL が実在する", () => {
-      const withCode = htmlFiles().find((file) => read(file).includes(`/${CODE_ASSETS.css}`)) ?? "";
+      const withCode =
+        htmlFiles().find((file) => read(file).includes(assets[CODE_ASSETS.css]!)) ?? "";
       const html = read(withCode);
 
-      expect(html).toContain(`<link rel="stylesheet" href="/${CODE_ASSETS.css}"`);
-      expect(html).toContain(`<script type="module" src="/${CODE_ASSETS.js}"`);
+      expect(html).toContain(`<link rel="stylesheet" href="${assets[CODE_ASSETS.css]}"`);
+      expect(html).toContain(`<script type="module" src="${assets[CODE_ASSETS.js]}"`);
     });
   });
 
@@ -462,10 +466,51 @@ describe("ビルド出力", () => {
     expect(broken).toEqual([]);
   });
 
-  test.each(["globals.css", "favicon.ico", "robots.txt", "omemoji.png"])(
-    "%s がコピーされる",
-    (file) => {
-      expect(exists(file)).toBe(true);
-    }
-  );
+  test.each(["favicon.ico", "robots.txt", "omemoji.png"])("%s がコピーされる", (file) => {
+    expect(exists(file)).toBe(true);
+  });
+
+  /**
+   * CSS と JS は名前に内容の指紋を持つ。
+   *
+   * 指紋が無いと、更新が閲覧者に届くかどうかがブラウザと CDN のヒューリスティクス任せに
+   * なり、同時に恒久キャッシュも効かせられない。**指紋の無い名前でも取れてしまうと
+   * `_headers` の immutable が嘘になる**ため、原本を置いていないことまで見る
+   */
+  describe("指紋付きの資産", () => {
+    test.each([STYLESHEET, KATEX_CSS, CODE_ASSETS.css, CODE_ASSETS.js])(
+      "%s が指紋付きで出力される",
+      (name) => {
+        expect(assets[name]).toBeDefined();
+        expect(assets[name]).not.toBe(`/${name}`);
+        expect(exists(asset(name))).toBe(true);
+      }
+    );
+
+    test("指紋の無い名前では出力されない", () => {
+      const bare = [STYLESHEET, KATEX_CSS, CODE_ASSETS.css, CODE_ASSETS.js].filter((name) =>
+        exists(name)
+      );
+
+      expect(bare).toEqual([]);
+    });
+
+    test("CSS は縮めて出力される", () => {
+      const css = read(asset(STYLESHEET));
+
+      expect(css.length).toBeLessThan(
+        fs.readFileSync(path.join(import.meta.dirname, "../src/styles/globals.css"), "utf-8").length
+      );
+    });
+
+    test("_headers が出力した URL だけを恒久キャッシュにする", () => {
+      const headers = read("_headers");
+      const urls = [...headers.matchAll(/^(\/\S+)$/gm)].map((matched) => matched[1] ?? "");
+
+      expect(urls.sort()).toEqual(Object.values(assets).sort());
+      // 実ファイルの無い URL に指定しても効かない
+      expect(urls.filter((url) => !exists(url.slice(1)))).toEqual([]);
+      expect(headers).toContain("max-age=31536000, immutable");
+    });
+  });
 });

@@ -2,7 +2,8 @@ import type { ReactNode } from "react";
 import Analytics from "@/components/Analytics";
 import Footer from "@/components/Footer";
 import Header, { type Category } from "@/components/Header";
-import { CODE_ASSETS, HOST } from "@/config";
+import { CODE_ASSETS, HOST, KATEX_CSS, STYLESHEET } from "@/config";
+import { assetUrl } from "@/features/asset/manifest";
 import { resolveOg } from "@/features/og/manifest";
 
 type Props = {
@@ -58,14 +59,15 @@ export default function Layout({
         <title>{title}</title>
         <meta name="description" content={description} />
         <link rel="canonical" href={url} />
-        <link rel="stylesheet" href="/globals.css" />
+        {/* URL は assetUrl 経由で引く。ビルドは指紋付き、dev は素の名前を返す */}
+        <link rel="stylesheet" href={assetUrl(STYLESHEET)} />
         <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="48x48" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
-        {math && <link rel="stylesheet" href="/katex/katex.min.css" />}
-        {code && <link rel="stylesheet" href={`/${CODE_ASSETS.css}`} />}
+        {math && <link rel="stylesheet" href={assetUrl(KATEX_CSS)} />}
+        {code && <link rel="stylesheet" href={assetUrl(CODE_ASSETS.css)} />}
         {/* type=module は既定で defer 相当のため、head に置いても描画を止めない */}
-        {code && <script type="module" src={`/${CODE_ASSETS.js}`} />}
+        {code && <script type="module" src={assetUrl(CODE_ASSETS.js)} />}
         <meta name="author" content="omemoji" />
         <meta name="creator" content="omemoji" />
         <meta name="publisher" content="omemoji" />

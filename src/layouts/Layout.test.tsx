@@ -1,7 +1,8 @@
-import { describe, expect, test } from "bun:test";
+import { beforeEach, describe, expect, test } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
 
-import { CODE_ASSETS } from "@/config";
+import { CODE_ASSETS, KATEX_CSS, STYLESHEET } from "@/config";
+import { assetUrl, clearAssetManifest, setAssetManifest } from "@/features/asset/manifest";
 import Layout from "@/layouts/Layout";
 
 const render = (props: Partial<Parameters<typeof Layout>[0]> = {}): string =>
@@ -10,6 +11,11 @@ const render = (props: Partial<Parameters<typeof Layout>[0]> = {}): string =>
       <p>本文</p>
     </Layout>
   );
+
+// ビルドを走らせるテストと同じプロセスに載るため、毎回落とす
+beforeEach(() => {
+  clearAssetManifest();
+});
 
 /**
  * KaTeX と expressive-code の CSS は、どちらも「使うページだけが読む」。
@@ -41,9 +47,37 @@ describe("ページごとに読み分ける資産", () => {
   });
 });
 
+/**
+ * URL は assetUrl 越しに引く。ビルドは指紋付き、dev はマニフェストを差し込まないため素の名前。
+ * ここを直書きに戻すと、指紋を付けてもページが古い URL を指したままになる
+ */
+describe("指紋付きの URL", () => {
+  test("マニフェストが無ければ論理名をそのまま指す", () => {
+    expect(render()).toContain(`href="/${STYLESHEET}"`);
+  });
+
+  test("マニフェストがあれば指紋付きの URL を指す", () => {
+    setAssetManifest({
+      [STYLESHEET]: "/globals.0123456789abcdef.css",
+      [KATEX_CSS]: "/katex/katex.min.0123456789abcdef.css",
+      [CODE_ASSETS.css]: "/code.0123456789abcdef.css",
+      [CODE_ASSETS.js]: "/code.0123456789abcdef.js",
+    });
+    const html = render({ math: true, code: true });
+
+    expect(html).toContain('href="/globals.0123456789abcdef.css"');
+    expect(html).toContain('href="/katex/katex.min.0123456789abcdef.css"');
+    expect(html).toContain('href="/code.0123456789abcdef.css"');
+    expect(html).toContain('src="/code.0123456789abcdef.js"');
+    // 指紋の無い URL は 1 つも残らない
+    expect(html).not.toContain(`"/${STYLESHEET}"`);
+    expect(assetUrl(STYLESHEET)).toBe("/globals.0123456789abcdef.css");
+  });
+});
+
 describe("共通の <head>", () => {
   test("globals.css は常に読む", () => {
-    expect(render()).toContain('href="/globals.css"');
+    expect(render()).toContain(`href="/${STYLESHEET}"`);
   });
 
   test("og:image は絶対 URL になる", () => {

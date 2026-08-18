@@ -86,6 +86,16 @@ Vite が必要になる理由を個別に潰せる。
 
 Vite を外すことで `@hono/vite-ssg` / `vite-imagetools` / `@mdx-js/rollup` がまとめて不要になる。
 
+> **実装時の変更**: CSS は「コピーするだけ」ではなくなった。**指紋（内容ハッシュ）を名前に混ぜて
+> 書き出す**必要があったため（`globals.css` → `globals.<指紋>.css`）。指紋が無いと、CSS を
+> 更新しても閲覧者に届くかどうかがブラウザと CDN のヒューリスティクス任せになり、同時に恒久
+> キャッシュ（`_headers` の `immutable`）も効かせられない。**Vite が黙ってやっていた仕事のうち、
+> 実際に必要だったのはこれ。**
+>
+> minify は lightningcss ではなく `Bun.build` を使った（20.0 KB → 16.0 KB、brotli 後 4.4 KB → 3.0 KB）。
+> 依存を増やさない方を採ったが、**§2 の「コードは Node API で書く」原則を build.ts で 1 箇所だけ破っている**。
+> 外すか lightningcss へ移すかは `siteStyles()` 1 関数の差し替えで済む。
+
 ### 検討した対抗案
 
 | 案             | 採用条件                                                                                                                                                                                     |
@@ -519,9 +529,12 @@ sharp は libuv のスレッドプールを使うため、`Promise.all` + 同時
 | データ検証   | zod, zod-to-json-schema（`_schema.json` の生成用）                |
 | 品質         | @biomejs/biome, typescript                                        |
 | テスト       | bun test（追加依存なし）                                          |
+| CSS の minify | `Bun.build`（追加依存なし。§1 の注記を参照）                     |
 
+**フレームワークが 0 個、依存として足したバンドラも 0 個。** いずれも単機能ライブラリであり、個別に差し替えられる。
 
-**ビルドツール・フレームワーク・バンドラが 0 個。** いずれも単機能ライブラリであり、個別に差し替えられる。
+ただし CSS の minify にはランタイム同梱の `Bun.build` を使っており、**「バンドラを 1 行も通していない」わけではない**。
+パッケージが増えていないだけで、build.ts はその 1 点で Bun に依存する（`siteStyles()`）。
 
 ---
 

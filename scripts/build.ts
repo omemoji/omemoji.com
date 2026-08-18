@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import type { ReactNode } from "react";
@@ -5,7 +6,8 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { loadAbout } from "@/collections/about";
 import { loadArticles } from "@/collections/articles";
 import { loadArtworks } from "@/collections/artworks";
-import { CODE_ASSETS, HOST } from "@/config";
+import { CODE_ASSETS, HOST, KATEX_CSS, STYLESHEET } from "@/config";
+import { type AssetManifest, setAssetManifest } from "@/features/asset/manifest";
 import { collectImages, type ImageAsset, type ImageSource } from "@/features/image/assets";
 import { setImageManifest, takeImageWants } from "@/features/image/manifest";
 import {
@@ -62,44 +64,107 @@ const pages: {
 export const publicDir = path.join(rootDir, "public");
 export const stylesheet = {
   file: path.join(rootDir, "src/styles/globals.css"),
-  href: "globals.css",
+  href: STYLESHEET,
 };
 
 /**
  * KaTeX のスタイル。数式のあるページだけが読み込む。
  *
  * CSS はフォントを相対パス（`fonts/...`）で参照するため、CSS とフォントの
- * 位置関係を保ったまま複製する。**woff2 だけを複製する**（woff と ttf も
- * 宣言されているが、対応していないブラウザは実質無く、1.2 MB が 296 KB になる）
+ * 位置関係を保ったまま複製する（指紋は名前にしか混ぜないので参照は壊れない）。
+ * **woff2 だけを複製する**（woff と ttf も宣言されているが、対応していない
+ * ブラウザは実質無く、1.2 MB が 296 KB になる）
  */
 export const katex = {
   dir: path.join(rootDir, "node_modules/katex/dist"),
-  href: "katex/katex.min.css",
+  href: KATEX_CSS,
 };
 
 /**
- * コードブロックの CSS と JS を書き出す。**複製ではなく生成する**ので assets には載せない。
+ * サイトの CSS を 1 枚に固めて縮める。
  *
- * 中身は全ページで同一なため、本文へ差し込まずここから 1 度だけ書き出す
- * （features/markdown/highlight.ts の getRendererWithoutAssets を参照）。
- * dev サーバも同じ関数の結果を返すので、中身がずれることはない
+ * **build.ts で `Bun.*` に触れる唯一の箇所。** ランタイム可搬性より依存を増やさない
+ * ことを採った（lightningcss を足せば Node のままにできる）。@import も url() も
+ * 使っていないため、やっているのは実質 minify だけで、外すなら原本をそのまま返せばよい。
+ * 20.0 KB → 16.0 KB、brotli 後で 4.4 KB → 3.0 KB。
  */
-export async function writeCodeAssets(target: string): Promise<string[]> {
-  fs.mkdirSync(target, { recursive: true });
-  fs.writeFileSync(path.join(target, CODE_ASSETS.css), await codeStyles(), "utf-8");
-  fs.writeFileSync(path.join(target, CODE_ASSETS.js), await codeScript(), "utf-8");
+export async function siteStyles(): Promise<string> {
+  const built = await Bun.build({ entrypoints: [stylesheet.file], minify: true });
+  const [output] = built.outputs;
+  if (!output) {
+    throw new Error(`${stylesheet.file} を変換できなかった`);
+  }
 
-  return [CODE_ASSETS.css, CODE_ASSETS.js];
+  return await output.text();
+}
+
+/** 内容から求める短い指紋。ファイル名に混ぜてブラウザのキャッシュを破棄させる */
+const fingerprint = (contents: string): string =>
+  crypto.createHash("sha256").update(contents).digest("hex").slice(0, 16);
+
+/** `globals.css` → `globals.<指紋>.css`。ディレクトリは変えない（相対参照を保つため） */
+export function fingerprinted(name: string, contents: string): string {
+  const ext = path.extname(name);
+
+  return `${name.slice(0, -ext.length)}.${fingerprint(contents)}${ext}`;
+}
+
+/**
+ * 指紋付きの資産を書き出す。**複製ではなく生成する**ので assets には載せない。
+ *
+ * 名前に内容が反映されるため、更新が確実に届き、同時に恒久キャッシュを効かせられる
+ * （`public/_headers`）。指紋の無い名前で出すと、CSS を直したのに古いものが
+ * 表示され続ける状態をブラウザ任せにすることになる。
+ *
+ * コードブロックの CSS と JS は本文へ差し込まず、ここから 1 度だけ書き出す
+ * （features/markdown/highlight.ts の getRendererWithoutAssets を参照）
+ */
+export async function writeAssets(target: string): Promise<AssetManifest> {
+  const contents: [string, string][] = [
+    [STYLESHEET, await siteStyles()],
+    [KATEX_CSS, fs.readFileSync(path.join(katex.dir, "katex.min.css"), "utf-8")],
+    [CODE_ASSETS.css, await codeStyles()],
+    [CODE_ASSETS.js, await codeScript()],
+  ];
+
+  return Object.fromEntries(
+    contents.map(([name, text]) => {
+      const file = fingerprinted(name, text);
+      const dest = path.join(target, file);
+      fs.mkdirSync(path.dirname(dest), { recursive: true });
+      fs.writeFileSync(dest, text, "utf-8");
+
+      return [name, `/${file}`];
+    })
+  );
+}
+
+/**
+ * Cloudflare Pages が読むヘッダ設定。**マニフェストから機械的に起こす。**
+ *
+ * 指紋付きの URL だけを恒久キャッシュにする。名前に内容が入っているため、
+ * 中身が変われば別の URL になり、古いものが返り続けることが起きない。
+ * ワイルドカードで書くと出力とずれうるので、実際に出した URL だけを並べる
+ * （サイトマップをルートテーブルから起こすのと同じ理由）
+ */
+export function buildHeaders(manifest: AssetManifest): string {
+  return Object.values(manifest)
+    .map((url) => `${url}\n  Cache-Control: public, max-age=31536000, immutable\n`)
+    .join("\n");
 }
 
 /** 複製する 1 件。to は out/ 直下からの相対パス */
 export type CopyTarget = { from: string; to: string; filter?: (from: string) => boolean };
 
-/** `out/` へ複製する対象 */
+/**
+ * `out/` へ複製する対象。
+ *
+ * CSS と JS はここに無い。指紋を付けて書き出す（writeAssets）ため、
+ * **原本をそのまま置くと指紋の無い URL でも取れてしまい、恒久キャッシュが嘘になる**。
+ * フォントは CSS からの相対参照であり、指紋を付けると参照が壊れるので複製のまま
+ */
 const assets: CopyTarget[] = [
   { from: publicDir, to: "." },
-  { from: stylesheet.file, to: stylesheet.href },
-  { from: path.join(katex.dir, "katex.min.css"), to: katex.href },
   {
     from: path.join(katex.dir, "fonts"),
     to: "katex/fonts",
@@ -277,6 +342,8 @@ export type BuildResult = RenderResult & {
   images: OptimizeResult;
   links: CollectResult;
   og: GenerateResult;
+  /** 論理名 → 指紋付きの URL。名前が内容で決まるため、外から知るにはこれが要る */
+  assets: AssetManifest;
 };
 
 /** 出力先を差し替えられるようにしてある。テストが実際の out/ を壊さずに検証するため */
@@ -297,7 +364,10 @@ export async function build(
   // 消えたページの残骸を残さないため作り直す
   fs.rmSync(target, { recursive: true, force: true });
   copyAssets(target, content);
-  await writeCodeAssets(target);
+  // 描画より前。Layout が assetUrl で指紋付きの URL を引く
+  const manifest = await writeAssets(target);
+  setAssetManifest(manifest);
+  fs.writeFileSync(path.join(target, "_headers"), buildHeaders(manifest), "utf-8");
 
   // 前回の描画で求められた大きさから始める。これがあると 1 回の描画で済む
   const assets = imageAssets(content);
@@ -342,7 +412,7 @@ export async function build(
     takeImageWants();
   }
 
-  return { written, skipped, images, links, og };
+  return { written, skipped, images, links, og, assets: manifest };
 }
 
 /** CLI の表示。ビルドの結果だけを見て組み立てる（副作用は console だけ） */

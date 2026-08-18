@@ -3,16 +3,19 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
-import { CODE_ASSETS } from "@/config";
+import { CODE_ASSETS, KATEX_CSS, STYLESHEET } from "@/config";
 import type { Route } from "@/routes";
 import {
   type BuildResult,
+  buildHeaders,
   copyFiles,
+  fingerprinted,
   outputPath,
   renderRoute,
   renderRoutes,
   reportBuild,
-  writeCodeAssets,
+  siteStyles,
+  writeAssets,
 } from "./build";
 
 // 実データを読み込む検査と、実際に書き出す検査は build.integration.test.ts にある
@@ -116,26 +119,100 @@ describe("複製", () => {
   });
 });
 
+describe("指紋", () => {
+  test.each([
+    ["globals.css", "globals."],
+    ["code.js", "code."],
+    ["katex/katex.min.css", "katex/katex.min."],
+  ])("%s は拡張子の手前に指紋を挟む", (name, prefix) => {
+    const file = fingerprinted(name, "body{}");
+
+    expect(file).toStartWith(prefix);
+    expect(file).toEndWith(path.extname(name));
+    // ディレクトリは変えない。CSS からフォントへの相対参照が壊れるため
+    expect(path.dirname(file)).toBe(path.dirname(name));
+  });
+
+  test("内容が変われば名前も変わる", () => {
+    expect(fingerprinted("a.css", "body{}")).not.toBe(fingerprinted("a.css", "body{ }"));
+  });
+
+  test("内容が同じなら名前も同じ", () => {
+    // 変更の無いデプロイでキャッシュを捨てさせない
+    expect(fingerprinted("a.css", "body{}")).toBe(fingerprinted("a.css", "body{}"));
+  });
+});
+
 /**
- * コードブロックの CSS と JS。**複製ではなく生成する**ため、複製の検査とは別に見る。
- * Layout はこの 2 つを固定の URL で読むので、名前が変わると静かにリンク切れになる
+ * 指紋付きの資産。**複製ではなく生成する**ため、複製の検査とは別に見る。
+ * 読む側（Layout）はマニフェスト越しに引くので、名前の綴りは表に出ない
  */
-describe("コードブロックの資産", () => {
+describe("資産の書き出し", () => {
   let dir = "";
 
   beforeEach(() => {
-    dir = fs.mkdtempSync(path.join(os.tmpdir(), "omemoji-code-"));
+    dir = fs.mkdtempSync(path.join(os.tmpdir(), "omemoji-assets-"));
   });
 
   afterEach(() => {
     fs.rmSync(dir, { recursive: true, force: true });
   });
 
-  test("CSS と JS を書き出す", async () => {
-    expect(await writeCodeAssets(dir)).toEqual([CODE_ASSETS.css, CODE_ASSETS.js]);
+  test("論理名から指紋付きの URL への対応表を返す", async () => {
+    const manifest = await writeAssets(dir);
 
-    expect(fs.readFileSync(path.join(dir, CODE_ASSETS.css), "utf-8")).toContain("expressive-code");
-    expect(fs.readFileSync(path.join(dir, CODE_ASSETS.js), "utf-8").length).toBeGreaterThan(0);
+    expect(Object.keys(manifest).sort()).toEqual(
+      [STYLESHEET, KATEX_CSS, CODE_ASSETS.css, CODE_ASSETS.js].sort()
+    );
+    // 論理名そのままの URL は返さない。返すと指紋を付けた意味が無い
+    expect(Object.entries(manifest).every(([name, url]) => url !== `/${name}`)).toBe(true);
+  });
+
+  test("対応表の URL が全て実ファイルとして存在する", async () => {
+    const manifest = await writeAssets(dir);
+    const missing = Object.values(manifest).filter(
+      (url) => !fs.existsSync(path.join(dir, url.slice(1)))
+    );
+
+    expect(missing).toEqual([]);
+    expect(
+      fs.readFileSync(path.join(dir, manifest[CODE_ASSETS.css]?.slice(1) ?? ""), "utf-8")
+    ).toContain("expressive-code");
+  });
+
+  test("指紋を付けない名前では出さない", async () => {
+    // 原本も置くと指紋なしの URL でも取れてしまい、恒久キャッシュが嘘になる
+    await writeAssets(dir);
+
+    expect(fs.existsSync(path.join(dir, STYLESHEET))).toBe(false);
+    expect(fs.existsSync(path.join(dir, CODE_ASSETS.css))).toBe(false);
+  });
+
+  test("CSS は縮めて書き出す", async () => {
+    const minified = await siteStyles();
+    const original = fs.readFileSync(
+      path.join(import.meta.dirname, "../src/styles/globals.css"),
+      "utf-8"
+    );
+
+    expect(minified.length).toBeLessThan(original.length);
+    // 縮めても層の宣言は先頭に残る。壊れていないことの最低限の確認
+    expect(minified).toStartWith("@layer reset,tokens,base,content,components;");
+  });
+});
+
+describe("ヘッダ設定", () => {
+  test("対応表の URL だけを恒久キャッシュにする", () => {
+    const headers = buildHeaders({ "a.css": "/a.deadbeef.css", "b.js": "/b.cafebabe.js" });
+
+    expect(headers).toContain(
+      "/a.deadbeef.css\n  Cache-Control: public, max-age=31536000, immutable"
+    );
+    expect(headers).toContain(
+      "/b.cafebabe.js\n  Cache-Control: public, max-age=31536000, immutable"
+    );
+    // 指紋の無い名前は載せない。内容が変わっても URL が変わらないため
+    expect(headers).not.toContain("/a.css");
   });
 });
 
@@ -146,6 +223,7 @@ describe("CLI の表示", () => {
     images: { manifest: {}, converted: 1, cached: 2, passthrough: 3 },
     links: { manifest: {}, fetched: 4, cached: 5, failed: [] },
     og: { manifest: {}, generated: 6, cached: 7 },
+    assets: {},
     ...over,
   });
 
