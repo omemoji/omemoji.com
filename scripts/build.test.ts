@@ -3,6 +3,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
+import { CODE_ASSETS } from "@/config";
 import type { Route } from "@/routes";
 import {
   type BuildResult,
@@ -11,6 +12,7 @@ import {
   renderRoute,
   renderRoutes,
   reportBuild,
+  writeCodeAssets,
 } from "./build";
 
 // 実データを読み込む検査と、実際に書き出す検査は build.integration.test.ts にある
@@ -111,6 +113,29 @@ describe("複製", () => {
 
     expect(copied).toEqual(["fonts"]);
     expect(fs.readdirSync(path.join(target(), "fonts"))).toEqual(["a.woff2"]);
+  });
+});
+
+/**
+ * コードブロックの CSS と JS。**複製ではなく生成する**ため、複製の検査とは別に見る。
+ * Layout はこの 2 つを固定の URL で読むので、名前が変わると静かにリンク切れになる
+ */
+describe("コードブロックの資産", () => {
+  let dir = "";
+
+  beforeEach(() => {
+    dir = fs.mkdtempSync(path.join(os.tmpdir(), "omemoji-code-"));
+  });
+
+  afterEach(() => {
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  test("CSS と JS を書き出す", async () => {
+    expect(await writeCodeAssets(dir)).toEqual([CODE_ASSETS.css, CODE_ASSETS.js]);
+
+    expect(fs.readFileSync(path.join(dir, CODE_ASSETS.css), "utf-8")).toContain("expressive-code");
+    expect(fs.readFileSync(path.join(dir, CODE_ASSETS.js), "utf-8").length).toBeGreaterThan(0);
   });
 });
 

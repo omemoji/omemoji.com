@@ -4,6 +4,7 @@ import { markdownComponents } from "@/components/MarkdownComponent";
 import TopArticle from "@/components/TopArticle";
 import { imageBase } from "@/features/image/assets";
 import { collectHeadings } from "@/features/markdown/headings";
+import { hasCode } from "@/features/markdown/highlight";
 import { hasMath } from "@/features/markdown/math";
 import { mdToHast } from "@/features/markdown/pipeline";
 import { toReact } from "@/features/markdown/render";
@@ -25,6 +26,7 @@ export default async function ArticlePage({ article }: PageProps["ArticlePage"])
       category="Articles"
       path={`/articles/${article.slug}`}
       math={hasMath(tree)}
+      code={hasCode(tree)}
     >
       <TopArticle
         emoji={article.emoji}

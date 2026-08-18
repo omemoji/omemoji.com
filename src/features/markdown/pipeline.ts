@@ -16,7 +16,7 @@ import remarkRehype from "remark-rehype";
 import { unified } from "unified";
 
 import { rewriteImageUrls } from "@/features/image/assets";
-import { expressiveCodeOptions, getRenderer } from "@/features/markdown/highlight";
+import { expressiveCodeOptions, getRendererWithoutAssets } from "@/features/markdown/highlight";
 import remarkLinkcard from "@/features/markdown/plugins/remark-link-card";
 
 /**
@@ -48,8 +48,13 @@ const processor = unified()
   .use(rehypeKatex)
   // expressive-code は rehype-raw より前。rehype-raw は木を HTML へ直列化して読み直すため、
   // コードフェンスの meta（title= など）を保持している data が失われる。
-  // レンダラは getRenderer が 1 度だけ構築したものを共有する
-  .use(rehypeExpressiveCode, { ...expressiveCodeOptions, customCreateRenderer: getRenderer })
+  //
+  // レンダラは getRenderer が 1 度だけ構築したものを共有する。渡すのは CSS と JS を
+  // 抜いた版で、ページごとの複製を止めている（highlight.ts の注記を参照）
+  .use(rehypeExpressiveCode, {
+    ...expressiveCodeOptions,
+    customCreateRenderer: getRendererWithoutAssets,
+  })
   // allowDangerousHtml で残した生 HTML を実際の要素へ組み立てる
   .use(rehypeRaw)
   .use(rehypeUnwrapImages)

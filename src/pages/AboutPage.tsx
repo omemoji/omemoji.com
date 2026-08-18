@@ -1,5 +1,6 @@
 import { markdownComponents } from "@/components/MarkdownComponent";
 import Top from "@/components/Top";
+import { hasCode } from "@/features/markdown/highlight";
 import { hasMath } from "@/features/markdown/math";
 import { mdToHast } from "@/features/markdown/pipeline";
 import { toReact } from "@/features/markdown/render";
@@ -16,6 +17,7 @@ export default async function AboutPage({ body }: PageProps["AboutPage"]) {
       category="About"
       path="/"
       math={hasMath(tree)}
+      code={hasCode(tree)}
     >
       <Top title="omemoji" description="omemoji's portfolio" />
       <article>{toReact(tree, markdownComponents)}</article>

@@ -1,5 +1,5 @@
 import type { Root } from "hast";
-import { visit } from "unist-util-visit";
+import { hasClass } from "@/features/markdown/has-class";
 
 /**
  * KaTeX の出力が木に含まれるか。
@@ -9,14 +9,5 @@ import { visit } from "unist-util-visit";
  * 一方で数式のあるページは一部なので、必要なページだけで読み込めるように判定する
  */
 export function hasMath(tree: Root): boolean {
-  let found = false;
-
-  visit(tree, "element", (node) => {
-    const className = node.properties?.className;
-    if (Array.isArray(className) && className.includes("katex")) {
-      found = true;
-    }
-  });
-
-  return found;
+  return hasClass(tree, "katex");
 }

@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { setAnalyticsEnabled } from "@/components/Analytics";
+import { CODE_ASSETS } from "@/config";
 import type { ImageAsset } from "@/features/image/assets";
 import { setImageManifest, takeImageWants } from "@/features/image/manifest";
 import {
@@ -16,6 +17,7 @@ import {
 import { collectLinkCards } from "@/features/link-card/collect";
 import { setLinkCardManifest } from "@/features/link-card/manifest";
 import { collectAllLinkCardUrls } from "@/features/link-card/urls";
+import { codeScript, codeStyles } from "@/features/markdown/highlight";
 import { buildRoutes } from "@/routes";
 import {
   contentDir,
@@ -127,14 +129,27 @@ const fileResponse = (file: string, root: string): Response | undefined => {
 };
 
 /** ビルドが out/ へ複製するのと同じものを、原本のまま返す */
-function staticResponse(
+async function staticResponse(
   pathname: string,
   images: ImageAsset[],
   optimized: Record<string, string>
-): Response | undefined {
+): Promise<Response | undefined> {
   if (pathname === `/${stylesheet.href}`) {
     // out/ へコピーしたものではなく原本を返すため、編集がそのまま反映される
     return new Response(Bun.file(stylesheet.file));
+  }
+
+  // コードブロックの CSS と JS。ビルドが書き出すのと同じ関数から作る。
+  // レンダラは使い回されるので、毎回組み立て直しても Shiki の初期化は走らない
+  if (pathname === `/${CODE_ASSETS.css}`) {
+    return new Response(await codeStyles(), {
+      headers: { "content-type": "text/css; charset=utf-8" },
+    });
+  }
+  if (pathname === `/${CODE_ASSETS.js}`) {
+    return new Response(await codeScript(), {
+      headers: { "content-type": "text/javascript; charset=utf-8" },
+    });
   }
 
   // 変換済みの画像はキャッシュから返す。dev のために作り直さない
@@ -341,7 +356,7 @@ const server = Bun.serve({
       const images = imageAssets(content);
       const state = await imageState(images);
 
-      const asset = staticResponse(pathname, images, state.files);
+      const asset = await staticResponse(pathname, images, state.files);
       if (asset) {
         logRequest(pathname, started, asset.status);
         return asset;

@@ -33,13 +33,13 @@ describe("toReact", () => {
     );
   });
 
-  test("expressive-code が差し込む style と script を描画できる", async () => {
-    // React は <style> / <script> の子要素の扱いが特殊なため、単独で確かめる
+  test("expressive-code の出力を描画できる", async () => {
+    // CSS と JS は共通ファイルへ追い出してあるので、本文には markup だけが来る
     const html = await render("```sh\necho 1\n```");
 
-    expect(html).toContain("<style>");
-    expect(html).toContain("<script");
     expect(html).toContain("expressive-code");
+    expect(html).not.toContain("<style>");
+    expect(html).not.toContain("<script");
   });
 
   test("生 HTML から組み立てた要素を描画できる", async () => {

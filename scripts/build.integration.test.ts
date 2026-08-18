@@ -3,6 +3,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
+import { CODE_ASSETS } from "@/config";
 import type { OptimizeResult } from "@/features/image/optimize";
 import { collectAllLinkCardUrls, collectLinkCardUrls } from "@/features/link-card/urls";
 import { ogUrl } from "@/features/og/generate";
@@ -280,6 +281,54 @@ describe("ビルド出力", () => {
       const files = fs.readdirSync(path.join(target, "katex/fonts"));
 
       expect(files.every((file) => file.endsWith(".woff2"))).toBe(true);
+    });
+  });
+
+  /**
+   * expressive-code の CSS と JS は、rehype 側の既定では
+   * 「コードブロックを含む文書ごと」にインラインで差し込まれる。
+   * 中身は全ページ同一なので、戻ると HTML が倍近くに膨らみ、ページを跨いだ
+   * ブラウザキャッシュも効かなくなる（記事 1 ページあたり CSS 24 KB）
+   */
+  describe("コードブロック", () => {
+    const htmlFiles = (): string[] =>
+      fs
+        .readdirSync(target, { recursive: true, encoding: "utf-8" })
+        .filter((file) => file.endsWith(".html"));
+
+    const read = (file: string): string => fs.readFileSync(path.join(target, file), "utf-8");
+
+    test("CSS と JS を共通ファイルとして出力する", () => {
+      expect(exists(CODE_ASSETS.css)).toBe(true);
+      expect(exists(CODE_ASSETS.js)).toBe(true);
+      expect(read(CODE_ASSETS.css)).toContain("expressive-code");
+    });
+
+    test("どのページにも資産をインラインで持たせない", () => {
+      const inlined = htmlFiles().filter((file) => read(file).includes("<style>"));
+
+      expect(inlined).toEqual([]);
+    });
+
+    test("読み込みに過不足が無い", () => {
+      // 使うページだけが読む。抜けると枠線も配色も消え、余ると 27 KB が無駄になる
+      const mismatched = htmlFiles().filter((file) => {
+        const html = read(file);
+        return html.includes('class="expressive-code"') !== html.includes(`/${CODE_ASSETS.css}`);
+      });
+
+      expect(mismatched).toEqual([]);
+      expect(
+        htmlFiles().filter((file) => read(file).includes(`/${CODE_ASSETS.css}`)).length
+      ).toBeGreaterThan(0);
+    });
+
+    test("参照する URL が実在する", () => {
+      const withCode = htmlFiles().find((file) => read(file).includes(`/${CODE_ASSETS.css}`)) ?? "";
+      const html = read(withCode);
+
+      expect(html).toContain(`<link rel="stylesheet" href="/${CODE_ASSETS.css}"`);
+      expect(html).toContain(`<script type="module" src="/${CODE_ASSETS.js}"`);
     });
   });
 

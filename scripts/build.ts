@@ -5,7 +5,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { loadAbout } from "@/collections/about";
 import { loadArticles } from "@/collections/articles";
 import { loadArtworks } from "@/collections/artworks";
-import { HOST } from "@/config";
+import { CODE_ASSETS, HOST } from "@/config";
 import { collectImages, type ImageAsset, type ImageSource } from "@/features/image/assets";
 import { setImageManifest, takeImageWants } from "@/features/image/manifest";
 import {
@@ -17,6 +17,7 @@ import {
 import { type CollectResult, collectLinkCards } from "@/features/link-card/collect";
 import { setLinkCardManifest } from "@/features/link-card/manifest";
 import { collectAllLinkCardUrls } from "@/features/link-card/urls";
+import { codeScript, codeStyles } from "@/features/markdown/highlight";
 import { type GenerateResult, generateOgImages, type OgSource } from "@/features/og/generate";
 import { setOgManifest } from "@/features/og/manifest";
 import { buildSitemap, type SitemapEntry } from "@/features/sitemap/generate";
@@ -75,6 +76,21 @@ export const katex = {
   dir: path.join(rootDir, "node_modules/katex/dist"),
   href: "katex/katex.min.css",
 };
+
+/**
+ * コードブロックの CSS と JS を書き出す。**複製ではなく生成する**ので assets には載せない。
+ *
+ * 中身は全ページで同一なため、本文へ差し込まずここから 1 度だけ書き出す
+ * （features/markdown/highlight.ts の getRendererWithoutAssets を参照）。
+ * dev サーバも同じ関数の結果を返すので、中身がずれることはない
+ */
+export async function writeCodeAssets(target: string): Promise<string[]> {
+  fs.mkdirSync(target, { recursive: true });
+  fs.writeFileSync(path.join(target, CODE_ASSETS.css), await codeStyles(), "utf-8");
+  fs.writeFileSync(path.join(target, CODE_ASSETS.js), await codeScript(), "utf-8");
+
+  return [CODE_ASSETS.css, CODE_ASSETS.js];
+}
 
 /** 複製する 1 件。to は out/ 直下からの相対パス */
 export type CopyTarget = { from: string; to: string; filter?: (from: string) => boolean };
@@ -281,6 +297,7 @@ export async function build(
   // 消えたページの残骸を残さないため作り直す
   fs.rmSync(target, { recursive: true, force: true });
   copyAssets(target, content);
+  await writeCodeAssets(target);
 
   // 前回の描画で求められた大きさから始める。これがあると 1 回の描画で済む
   const assets = imageAssets(content);

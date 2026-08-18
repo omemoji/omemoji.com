@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import Analytics from "@/components/Analytics";
 import Footer from "@/components/Footer";
 import Header, { type Category } from "@/components/Header";
-import { HOST } from "@/config";
+import { CODE_ASSETS, HOST } from "@/config";
 import { resolveOg } from "@/features/og/manifest";
 
 type Props = {
@@ -14,6 +14,8 @@ type Props = {
   path: string;
   /** 数式を含むページだけ KaTeX のスタイルを読む。無いと式が二重に見える */
   math?: boolean;
+  /** コードブロックを含むページだけ expressive-code の CSS と JS を読む */
+  code?: boolean;
   children: ReactNode;
 };
 
@@ -28,8 +30,8 @@ const DEFAULT_OG = { src: "/omemoji.png", width: 720, height: 720 };
 /**
  * 全ページ共通の外枠。`<head>` の組み立てをここに集約する。
  *
- * expressive-code の CSS と JS は hast の中に既に入っているため、
- * ここで読み込むと二重になる（features/markdown/pipeline.ts の注記）。
+ * expressive-code の CSS と JS は本文の hast から抜いてあり、ここから
+ * 共通ファイルとして読む（features/markdown/highlight.ts の注記）。
  */
 export default function Layout({
   title,
@@ -37,6 +39,7 @@ export default function Layout({
   category,
   path,
   math = false,
+  code = false,
   children,
 }: Props) {
   const site = `https://${HOST}`;
@@ -60,6 +63,9 @@ export default function Layout({
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
         {math && <link rel="stylesheet" href="/katex/katex.min.css" />}
+        {code && <link rel="stylesheet" href={`/${CODE_ASSETS.css}`} />}
+        {/* type=module は既定で defer 相当のため、head に置いても描画を止めない */}
+        {code && <script type="module" src={`/${CODE_ASSETS.js}`} />}
         <meta name="author" content="omemoji" />
         <meta name="creator" content="omemoji" />
         <meta name="publisher" content="omemoji" />
