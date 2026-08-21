@@ -1,6 +1,6 @@
 ---
 emoji: "🔧"
-title: "ポートフォリオをTypeScript+Bunでリニューアルする"
+title: "ポートフォリオをTypeScript+Bunの自作SSGでリニューアルする"
 description: "個人サイト「創作物紹介」をフレームワークなしでフルスクラッチし、Astroから自作SSGに移行する"
 date: 2026-08-17
 tags: ["Tech", "TypeScript", "Web", "Bun"]
