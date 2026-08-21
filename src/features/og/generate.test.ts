@@ -20,7 +20,8 @@ describe("生成", () => {
   let dir = "";
   const outDir = () => path.join(dir, "out");
   const cacheDir = () => path.join(dir, "cache");
-  const source = () => ({ path: "/artworks/x", from: path.join(dir, "x.png") });
+  const source = () =>
+    ({ kind: "artwork", path: "/artworks/x", from: path.join(dir, "x.png") }) as const;
 
   beforeAll(async () => {
     dir = fs.mkdtempSync(path.join(os.tmpdir(), "omemoji-og-"));
@@ -45,6 +46,7 @@ describe("生成", () => {
       src: "/images/og/artworks/x.png",
       width: 1200,
       height: 630,
+      kind: "artwork",
     });
 
     const meta = await sharp(path.join(outDir(), "images/og/artworks/x.png")).metadata();
@@ -80,5 +82,77 @@ describe("生成", () => {
     expect(generated).toBe(0);
     expect(cached).toBe(1);
     expect(fs.existsSync(path.join(outDir(), "images/og/artworks/x.png"))).toBe(true);
+  });
+});
+
+describe("記事", () => {
+  let dir = "";
+  const outDir = () => path.join(dir, "out");
+  const cacheDir = () => path.join(dir, "cache");
+  const source = () =>
+    ({ kind: "article", path: "/articles/x", title: "自作の静的サイト生成" }) as const;
+
+  beforeAll(() => {
+    dir = fs.mkdtempSync(path.join(os.tmpdir(), "omemoji-og-article-"));
+  });
+
+  afterAll(() => {
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  test("タイトルを描いた 1200x630 の PNG を出す", async () => {
+    const { manifest, generated } = await generateOgImages([source()], {
+      outDir: outDir(),
+      cacheDir: cacheDir(),
+    });
+
+    expect(generated).toBe(1);
+    // kind は `<head>` の出し分けに使う。記事の画像は Twitter Card 専用
+    expect(manifest["/articles/x"]).toEqual({
+      src: "/images/og/articles/x.png",
+      width: 1200,
+      height: 630,
+      kind: "article",
+    });
+
+    const file = path.join(outDir(), "images/og/articles/x.png");
+    const meta = await sharp(file).metadata();
+    expect([meta.width, meta.height]).toEqual([OG_PARAMS.width, OG_PARAMS.height]);
+    expect(meta.format).toBe("png");
+  });
+
+  test("外枠は移植元と同じ赤、中は白いカード", async () => {
+    const image = sharp(path.join(outDir(), "images/og/articles/x.png"));
+    const corner = await image
+      .clone()
+      .extract({ left: 2, top: 2, width: 1, height: 1 })
+      .raw()
+      .toBuffer();
+    const inside = await image
+      .extract({ left: OG_PARAMS.width / 2, top: OG_PARAMS.height - 40, width: 1, height: 1 })
+      .raw()
+      .toBuffer();
+
+    expect([corner[0], corner[1], corner[2]]).toEqual([0xd5, 0x00, 0x00]);
+    expect([inside[0], inside[1], inside[2]]).toEqual([0xff, 0xff, 0xff]);
+  });
+
+  test("タイトルが同じなら 2 回目は生成しない", async () => {
+    const { generated, cached } = await generateOgImages([source()], {
+      outDir: outDir(),
+      cacheDir: cacheDir(),
+    });
+
+    expect(generated).toBe(0);
+    expect(cached).toBe(1);
+  });
+
+  test("タイトルが変われば作り直す", async () => {
+    const { generated } = await generateOgImages(
+      [{ kind: "article", path: "/articles/y", title: "別のタイトル" }],
+      { outDir: outDir(), cacheDir: cacheDir() }
+    );
+
+    expect(generated).toBe(1);
   });
 });

@@ -209,15 +209,25 @@ export function imageAssets(content: Content): ImageAsset[] {
 /**
  * OGP 画像を持たせるページ。
  *
- * **作品だけ**が個別の画像を持つ。記事と一覧はサイト共通の画像（720x720）へ倒す。
- * 記事は satori で文字を載せた画像を作っていたが、フォントとレイアウトエンジンを
- * 抱える割に得るものが小さいため、移植では作らないことにした。
+ * 作品は作品画像を額装し、記事は satori でタイトルを描く。一覧とトップは
+ * サイト共通の画像（720x720）へ倒す。
+ *
+ * **記事の画像は Twitter Card にしか出さない。**`og:image` を読む通常のリンクカードは
+ * 記事も共通の画像を使う（layouts/Layout.tsx）
  */
-export function ogSources({ artworks }: Content): OgSource[] {
-  return artworks.map((artwork) => ({
-    path: `/artworks/${artwork.id}`,
-    from: path.join(contentDir, "artworks", artwork.id, artwork.src),
-  }));
+export function ogSources({ articles, artworks }: Content): OgSource[] {
+  return [
+    ...artworks.map<OgSource>((artwork) => ({
+      kind: "artwork",
+      path: `/artworks/${artwork.id}`,
+      from: path.join(contentDir, "artworks", artwork.id, artwork.src),
+    })),
+    ...articles.map<OgSource>((article) => ({
+      kind: "article",
+      path: `/articles/${article.slug}`,
+      title: article.title,
+    })),
+  ];
 }
 
 /**

@@ -2,7 +2,12 @@ import { afterEach, expect, test } from "bun:test";
 
 import { clearOgManifest, resolveOg, setOgManifest } from "@/features/og/manifest";
 
-const image = { src: "/images/og/artworks/x.png", width: 1200, height: 630 };
+const image = {
+  src: "/images/og/artworks/x.png",
+  width: 1200,
+  height: 630,
+  kind: "artwork",
+} as const;
 
 afterEach(() => {
   clearOgManifest();

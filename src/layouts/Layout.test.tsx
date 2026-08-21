@@ -3,6 +3,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 
 import { CODE_ASSETS, KATEX_CSS, STYLESHEET } from "@/config";
 import { assetUrl, clearAssetManifest, setAssetManifest } from "@/features/asset/manifest";
+import { clearOgManifest, setOgManifest } from "@/features/og/manifest";
 import Layout from "@/layouts/Layout";
 
 const render = (props: Partial<Parameters<typeof Layout>[0]> = {}): string =>
@@ -15,6 +16,7 @@ const render = (props: Partial<Parameters<typeof Layout>[0]> = {}): string =>
 // ビルドを走らせるテストと同じプロセスに載るため、毎回落とす
 beforeEach(() => {
   clearAssetManifest();
+  clearOgManifest();
 });
 
 /**
@@ -90,5 +92,61 @@ describe("共通の <head>", () => {
 
     expect(html).toContain('rel="canonical" href="https://omemoji.com/articles/foo"');
     expect(html).toContain('property="og:url" content="https://omemoji.com/articles/foo"');
+  });
+});
+
+/**
+ * 個別の OGP 画像の出し先は種類で違う。**記事の画像は Twitter Card 専用**で、
+ * og:image を読む通常のリンクカードには共通の画像を出す
+ */
+describe("OGP 画像", () => {
+  test("個別の画像が無ければ共通の画像と通常のカード", () => {
+    const html = render({ path: "/articles" });
+
+    expect(html).toContain('property="og:image" content="https://omemoji.com/omemoji.png"');
+    expect(html).toContain('name="twitter:image" content="https://omemoji.com/omemoji.png"');
+    expect(html).toContain('name="twitter:card" content="summary"');
+    expect(html).toContain('property="og:type" content="website"');
+  });
+
+  test("記事は Twitter だけが個別の画像を使う", () => {
+    setOgManifest({
+      "/articles/foo": {
+        src: "/images/og/articles/foo.png",
+        width: 1200,
+        height: 630,
+        kind: "article",
+      },
+    });
+    const html = render({ path: "/articles/foo" });
+
+    // リンクカードはサイトの顔（720x720）のまま
+    expect(html).toContain('property="og:image" content="https://omemoji.com/omemoji.png"');
+    expect(html).toContain('property="og:image:width" content="720"');
+    expect(html).toContain(
+      'name="twitter:image" content="https://omemoji.com/images/og/articles/foo.png"'
+    );
+    expect(html).toContain('name="twitter:card" content="summary_large_image"');
+  });
+
+  test("作品は og:image も個別の画像を使う", () => {
+    setOgManifest({
+      "/artworks/x": {
+        src: "/images/og/artworks/x.png",
+        width: 1200,
+        height: 630,
+        kind: "artwork",
+      },
+    });
+    const html = render({ path: "/artworks/x" });
+
+    expect(html).toContain(
+      'property="og:image" content="https://omemoji.com/images/og/artworks/x.png"'
+    );
+    expect(html).toContain('property="og:image:width" content="1200"');
+    expect(html).toContain(
+      'name="twitter:image" content="https://omemoji.com/images/og/artworks/x.png"'
+    );
+    expect(html).toContain('name="twitter:card" content="summary_large_image"');
   });
 });

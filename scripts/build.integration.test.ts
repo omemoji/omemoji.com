@@ -395,6 +395,9 @@ describe("ビルド出力", () => {
         `https://omemoji.com${ogUrl(`/artworks/${artwork?.id}`)}`
       );
       expect(meta(file, "og:image:width")).toBe("1200");
+      expect(meta(file, "twitter:image")).toBe(
+        `https://omemoji.com${ogUrl(`/artworks/${artwork?.id}`)}`
+      );
       expect(meta(file, "twitter:card")).toBe("summary_large_image");
       expect(meta(file, "og:type")).toBe("article");
     });
@@ -407,12 +410,36 @@ describe("ビルド出力", () => {
       expect(missing).toEqual([]);
     });
 
-    test.each(["index.html", "articles/void_linux.html", "artworks.html"])(
+    test("記事の個別の画像は Twitter Card だけに出す", () => {
+      const article = production.articles[0];
+      const file = `articles/${article?.slug}.html`;
+
+      // 通常のリンクカードが読む og:image は共通の画像のまま
+      expect(meta(file, "og:image")).toBe("https://omemoji.com/omemoji.png");
+      expect(meta(file, "og:image:width")).toBe("720");
+      // Twitter だけがタイトル入りの画像を大きく出す
+      expect(meta(file, "twitter:image")).toBe(
+        `https://omemoji.com${ogUrl(`/articles/${article?.slug}`)}`
+      );
+      expect(meta(file, "twitter:card")).toBe("summary_large_image");
+      expect(meta(file, "og:type")).toBe("article");
+    });
+
+    test("全ての記事ページの OGP 画像が実ファイルに解決する", () => {
+      const missing = production.articles
+        .map((article) => ogUrl(`/articles/${article.slug}`))
+        .filter((url) => !exists(decodeURIComponent(url).slice(1)));
+
+      expect(missing).toEqual([]);
+    });
+
+    test.each(["index.html", "articles.html", "artworks.html"])(
       "%s は共通の画像と通常のカードを使う",
       (file) => {
-        // 記事に個別の画像は作らない。トップと同じ扱いにするという判断
+        // 一覧とトップは個別の画像を持たない
         expect(meta(file, "og:image")).toBe("https://omemoji.com/omemoji.png");
         expect(meta(file, "og:image:width")).toBe("720");
+        expect(meta(file, "twitter:image")).toBe("https://omemoji.com/omemoji.png");
         expect(meta(file, "twitter:card")).toBe("summary");
         expect(meta(file, "og:type")).toBe("website");
       }

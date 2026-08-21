@@ -23,7 +23,7 @@ type Props = {
 /**
  * 個別の OGP 画像を持たないページが使う共通の画像。
  *
- * 記事も含めてほとんどのページがこちら。正方形なので大きいカードには向かず、
+ * 一覧やトップはこちら。正方形なので大きいカードには向かず、
  * Twitter Card は summary（小さいカード）にする
  */
 const DEFAULT_OG = { src: "/omemoji.png", width: 720, height: 720 };
@@ -49,7 +49,13 @@ export default function Layout({
   // 個別の OGP 画像はビルドが用意する（features/og）。ページ側は何も渡さない。
   // dev は生成しないため常に共通の画像になる
   const og = resolveOg(path);
-  const image = og ?? DEFAULT_OG;
+
+  // Twitter Card は個別の画像があればそれを大きく出す。
+  const twitterImage = og ?? DEFAULT_OG;
+
+  // **記事の画像は Twitter Card 専用。**og:image は共通の画像に倒す。
+  // 通常のリンクカード（og:image を読む側）には記事もサイトの顔を出すという判断
+  const image = og?.kind === "artwork" ? og : DEFAULT_OG;
 
   return (
     <html lang="ja">
@@ -85,6 +91,8 @@ export default function Layout({
         <meta name="twitter:creator" content="@omemoji_art" />
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={description} />
+        {/* og:image と別物になり得るため、Twitter 用の画像は明示する */}
+        <meta name="twitter:image" content={`${site}${twitterImage.src}`} />
       </head>
       <body>
         <Header category={category} />
