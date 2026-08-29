@@ -49,16 +49,19 @@ declare global {
   var __liveReload: { reload: ReturnType<typeof createLiveReload>; stop: () => void } | undefined;
 }
 
-globalThis.__liveReload ??= (() => {
-  const reload = createLiveReload();
-  // src と content の変更でページを作り直す。out/ は dev では使わない
-  const stop = reload.watch([path.join(rootDir, "src"), path.join(rootDir, "content"), publicDir]);
-  return { reload, stop };
-})();
-
-const { reload } = globalThis.__liveReload;
-
-setAnalyticsEnabled(false);
+const liveReload = (): ReturnType<typeof createLiveReload> => {
+  globalThis.__liveReload ??= (() => {
+    const reload = createLiveReload();
+    // src と content の変更でページを作り直す。out/ は dev では使わない
+    const stop = reload.watch([
+      path.join(rootDir, "src"),
+      path.join(rootDir, "content"),
+      publicDir,
+    ]);
+    return { reload, stop };
+  })();
+  return globalThis.__liveReload.reload;
+};
 
 /**
  * 取得を試した URL。`bun --hot` の差し替えを跨いで残す。
@@ -102,7 +105,7 @@ function warmLinkCards(urls: string[]): void {
       );
       if (fetched > 0) {
         // 取得できた分をカードとして出し直す
-        reload.notify("reload");
+        liveReload().notify("reload");
       }
     })
     .catch((error: unknown) => console.error(error))
@@ -115,12 +118,12 @@ function warmLinkCards(urls: string[]): void {
  * リクエストされたパスを routes.ts のパスへ正規化する。
  * `/articles/x.html`（本番の形）と末尾スラッシュのどちらでも引けるようにする。
  */
-const normalize = (pathname: string): string => {
+export const normalize = (pathname: string): string => {
   const stripped = pathname.replace(/\.html$/, "").replace(/\/+$/, "");
   return stripped === "" ? "/" : stripped;
 };
 
-const fileResponse = (file: string, root: string): Response | undefined => {
+export const fileResponse = (file: string, root: string): Response | undefined => {
   // 指定した根の外へ出る参照を弾く
   if (!file.startsWith(root) || !fs.existsSync(file) || !fs.statSync(file).isFile()) {
     return undefined;
@@ -242,7 +245,7 @@ function convertImages(assets: ImageAsset[], wants: ImageWant[]): void {
       measured = undefined;
       // キャッシュに当たっただけでも、そのページは今なら最適化された画像を出せる
       if (converted + cached > 0) {
-        reload.notify("reload");
+        liveReload().notify("reload");
       }
     })
     .catch((error: unknown) => console.error(error))
@@ -259,7 +262,7 @@ function convertImages(assets: ImageAsset[], wants: ImageWant[]): void {
  */
 let collected: { stamp: string; urls: string[] } | undefined;
 
-function linkCardUrls(bodies: string[]): string[] {
+export function linkCardUrls(bodies: string[]): string[] {
   const stamp = bodies.join("\u0000");
   if (collected?.stamp !== stamp) {
     collected = { stamp, urls: collectAllLinkCardUrls(bodies) };
@@ -316,7 +319,7 @@ const page = (status: number, title: string, body: string) =>
   );
 
 /** 例外を読める形にする。原因を先頭に出し、スタックはそのまま見せる */
-const errorPage = (error: unknown): Response => {
+export const errorPage = (error: unknown): Response => {
   const detail = error instanceof Error ? (error.stack ?? error.message) : String(error);
   const cause = error instanceof Error && error.cause ? String(error.cause) : undefined;
 
@@ -331,95 +334,105 @@ const errorPage = (error: unknown): Response => {
 const list = (paths: string[]) =>
   `<ul>${paths.map((p) => `<li><a href="${p}">${p}</a></li>`).join("")}</ul>`;
 
-const server = Bun.serve({
-  port,
-  // 既定の 10 秒では変更通知の接続が繋ぎっぱなしにできない。
-  // 切れるたびに繋ぎ直すと、その間の変更を取りこぼす（0 で無効）
-  idleTimeout: 0,
-  websocket: reload.handlers,
-  async fetch(request, server) {
-    const started = performance.now();
-    const pathname = decodeURIComponent(new URL(request.url).pathname);
+/**
+ * 直接実行したときだけ立ち上げる。**ガードが無いと import しただけでポートを掴み、
+ * 監視スレッドと `setAnalyticsEnabled(false)` の副作用まで持ち込む**（build.ts・
+ * gen-schema.ts と同じ作り）。テストから純粋なヘルパだけを読めるのはこのため
+ */
+if (import.meta.main) {
+  setAnalyticsEnabled(false);
+  const reload = liveReload();
 
-    // 変更通知の購読。ページより先に見る。切り替わった場合は応答を返さない
-    if (pathname === RELOAD_PATH) {
-      return reload.upgrade(request, server);
-    }
+  const server = Bun.serve({
+    port,
+    // 既定の 10 秒では変更通知の接続が繋ぎっぱなしにできない。
+    // 切れるたびに繋ぎ直すと、その間の変更を取りこぼす（0 で無効）
+    idleTimeout: 0,
+    websocket: reload.handlers,
+    async fetch(request, server) {
+      const started = performance.now();
+      const pathname = decodeURIComponent(new URL(request.url).pathname);
 
-    // コンテンツの読み込みから描画までを 1 つの try で包む。
-    // frontmatter の書き損じ（zod の検証エラー）もここに来るため、
-    // 描画だけを包むとサーバのログにしか出ず、ブラウザは素の 500 を見ることになる
-    try {
-      // 毎回読み直す。記事を書き換えたらリロードだけで反映される。
-      // 下書きも表示する（build.ts は本番として除外する）
-      const content = loadContent({ includeDrafts: true });
-      const images = imageAssets(content);
-      const state = await imageState(images);
-
-      const asset = await staticResponse(pathname, images, state.files);
-      if (asset) {
-        logRequest(pathname, started, asset.status);
-        return asset;
+      // 変更通知の購読。ページより先に見る。切り替わった場合は応答を返さない
+      if (pathname === RELOAD_PATH) {
+        return reload.upgrade(request, server);
       }
 
-      // 変換済みならそれを、まだなら原寸を指す。どちらも寸法は出すので見た目のずれは起きない
-      setImageManifest(state.manifest);
-      convertImages(images, state.missing);
-      const leftEarly = abandoned(request);
-      if (leftEarly) {
-        logRequest(pathname, started, leftEarly.status);
-        return leftEarly;
+      // コンテンツの読み込みから描画までを 1 つの try で包む。
+      // frontmatter の書き損じ（zod の検証エラー）もここに来るため、
+      // 描画だけを包むとサーバのログにしか出ず、ブラウザは素の 500 を見ることになる
+      try {
+        // 毎回読み直す。記事を書き換えたらリロードだけで反映される。
+        // 下書きも表示する（build.ts は本番として除外する）
+        const content = loadContent({ includeDrafts: true });
+        const images = imageAssets(content);
+        const state = await imageState(images);
+
+        const asset = await staticResponse(pathname, images, state.files);
+        if (asset) {
+          logRequest(pathname, started, asset.status);
+          return asset;
+        }
+
+        // 変換済みならそれを、まだなら原寸を指す。どちらも寸法は出すので見た目のずれは起きない
+        setImageManifest(state.manifest);
+        convertImages(images, state.missing);
+        const leftEarly = abandoned(request);
+        if (leftEarly) {
+          logRequest(pathname, started, leftEarly.status);
+          return leftEarly;
+        }
+
+        // 描画に使うのはキャッシュだけ。未取得の分はこのリクエストでは素のリンクになる
+        const links = await collectLinkCards(linkCardUrls(markdownBodies(content)), {
+          cacheFile: linkCacheFile,
+          cacheDir: linkCacheDir,
+          offline: true,
+        });
+        setLinkCardManifest(links.manifest);
+
+        // 未取得の分は裏で取りに行き、揃ったらライブリロードで出し直す。
+        // 下書きの記事もここを通るので、書きながらカードを確認できる
+        warmLinkCards(links.failed);
+
+        const routes = buildRoutes(content);
+        const route = routes.find((r) => r.path === normalize(pathname));
+
+        if (!route) {
+          logRequest(pathname, started, 404);
+          return page(404, "404 ページがありません", list(routes.map((r) => r.path)));
+        }
+
+        // 変換は 1 ページで 100ms を超えることがある。始める前に見捨てられていないか確かめる
+        const leftBeforeRender = abandoned(request);
+        if (leftBeforeRender) {
+          logRequest(pathname, started, leftBeforeRender.status);
+          return leftBeforeRender;
+        }
+
+        // ビルドと同じ関数を通す。dev だけ結果が違うということが起きない
+        const html = await renderRoute(route);
+        if (html === undefined) {
+          // ルート自体は存在するので 404 とは区別する
+          logRequest(pathname, started, 501);
+          return page(501, `${route.page} は未実装です`, list(routes.map((r) => r.path)));
+        }
+
+        // 描画が求めた大きさのうち、まだ無かったもの。作れたらライブリロードで出し直す
+        convertImages(images, takeImageWants());
+
+        logRequest(pathname, started, 200);
+
+        // 差し込むのは dev だけ。ビルドは同じ renderRoute を使うが素の HTML のまま
+        return new Response(injectClient(html), {
+          headers: { "content-type": "text/html; charset=utf-8" },
+        });
+      } catch (error) {
+        logRequest(pathname, started, 500);
+        return errorPage(error);
       }
+    },
+  });
 
-      // 描画に使うのはキャッシュだけ。未取得の分はこのリクエストでは素のリンクになる
-      const links = await collectLinkCards(linkCardUrls(markdownBodies(content)), {
-        cacheFile: linkCacheFile,
-        cacheDir: linkCacheDir,
-        offline: true,
-      });
-      setLinkCardManifest(links.manifest);
-
-      // 未取得の分は裏で取りに行き、揃ったらライブリロードで出し直す。
-      // 下書きの記事もここを通るので、書きながらカードを確認できる
-      warmLinkCards(links.failed);
-
-      const routes = buildRoutes(content);
-      const route = routes.find((r) => r.path === normalize(pathname));
-
-      if (!route) {
-        logRequest(pathname, started, 404);
-        return page(404, "404 ページがありません", list(routes.map((r) => r.path)));
-      }
-
-      // 変換は 1 ページで 100ms を超えることがある。始める前に見捨てられていないか確かめる
-      const leftBeforeRender = abandoned(request);
-      if (leftBeforeRender) {
-        logRequest(pathname, started, leftBeforeRender.status);
-        return leftBeforeRender;
-      }
-
-      // ビルドと同じ関数を通す。dev だけ結果が違うということが起きない
-      const html = await renderRoute(route);
-      if (html === undefined) {
-        // ルート自体は存在するので 404 とは区別する
-        logRequest(pathname, started, 501);
-        return page(501, `${route.page} は未実装です`, list(routes.map((r) => r.path)));
-      }
-
-      // 描画が求めた大きさのうち、まだ無かったもの。作れたらライブリロードで出し直す
-      convertImages(images, takeImageWants());
-
-      logRequest(pathname, started, 200);
-
-      // 差し込むのは dev だけ。ビルドは同じ renderRoute を使うが素の HTML のまま
-      return new Response(injectClient(html), {
-        headers: { "content-type": "text/html; charset=utf-8" },
-      });
-    } catch (error) {
-      logRequest(pathname, started, 500);
-      return errorPage(error);
-    }
-  },
-});
-
-console.log(`dev server: ${server.url}`);
+  console.log(`dev server: ${server.url}`);
+}
