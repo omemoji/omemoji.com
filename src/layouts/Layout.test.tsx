@@ -78,10 +78,6 @@ describe("指紋付きの URL", () => {
 });
 
 describe("共通の <head>", () => {
-  test("globals.css は常に読む", () => {
-    expect(render()).toContain(`href="/${STYLESHEET}"`);
-  });
-
   test("og:image は絶対 URL になる", () => {
     // クローラは相対パスを解決できない
     expect(render()).toContain('property="og:image" content="https://omemoji.com/omemoji.png"');

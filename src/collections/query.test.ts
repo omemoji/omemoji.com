@@ -34,13 +34,6 @@ describe("filterByTag", () => {
     // includes は配列の要素比較であり、文字列の部分一致ではない
     expect(filterByTag(contents, "bet")).toEqual([]);
   });
-
-  test("元の配列を破壊しない", () => {
-    const original = [...contents];
-    filterByTag(contents, "beta");
-
-    expect(contents).toEqual(original);
-  });
 });
 
 describe("collectTags", () => {

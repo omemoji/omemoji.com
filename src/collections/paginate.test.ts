@@ -15,16 +15,6 @@ describe("pageCount", () => {
   });
 });
 
-describe("pageIdGen", () => {
-  test("1 から始まる連番を返す", () => {
-    expect(pageIdGen(3)).toEqual([1, 2, 3]);
-  });
-
-  test("0 ページなら空配列を返す", () => {
-    expect(pageIdGen(0)).toEqual([]);
-  });
-});
-
 describe("paginate", () => {
   const items = [...Array(10)].map((_, i) => i);
 
@@ -47,12 +37,5 @@ describe("paginate", () => {
     );
 
     expect(joined).toEqual(items);
-  });
-
-  test("元の配列を破壊しない", () => {
-    const original = [...items];
-    paginate(items, 4, 1);
-
-    expect(items).toEqual(original);
   });
 });

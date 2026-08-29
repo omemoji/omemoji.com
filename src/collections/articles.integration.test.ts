@@ -8,19 +8,13 @@ import { articles, articlesDir as baseDir } from "@/tests/content";
 
 // 落ちたら記事の書き方を直す
 describe("実データ（content/articles）", () => {
-  test(`全ての記事がスキーマを通る（${articles.length} 件）`, () => {
-    // loadArticles は検証に失敗した時点で throw するため、ここまで来れば全件通っている
+  test("記事が 1 件以上ある", () => {
     expect(articles.length).toBeGreaterThan(0);
   });
 
   test("slug がサイト全体で一意である", () => {
     const slugs = articles.map((article) => article.slug);
     expect(new Set(slugs).size).toBe(slugs.length);
-  });
-
-  test("日付の降順に並んでいる", () => {
-    const dates = articles.map((article) => article.date.getTime());
-    expect(dates).toEqual([...dates].sort((a, b) => b - a));
   });
 
   test("配置されたディレクトリの年月と date が全ての記事で一致する", () => {

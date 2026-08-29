@@ -26,7 +26,7 @@ jobs:
       - uses: ./.github/actions/setup
       - run: bun run typecheck
 
-  # 並列実行: Test with Coverage
+  # 並列実行: Test
   test:
     name: Test
     runs-on: ubuntu-latest
@@ -47,4 +47,4 @@ jobs:
             images-${{ hashFiles('content/**/*.png', 'content/**/*.jpg', 'content/**/*.jpeg', 'content/**/*.webp', 'public/*.png') }}-
             images-
 
-      - run: bun run test:coverage
+      - run: bun run test

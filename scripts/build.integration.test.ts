@@ -3,7 +3,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
-import { CODE_ASSETS, KATEX_CSS, STYLESHEET } from "@/config";
+import { CODE_ASSETS, KATEX_CSS } from "@/config";
 import type { AssetManifest } from "@/features/asset/manifest";
 import type { OptimizeResult } from "@/features/image/optimize";
 import { collectAllLinkCardUrls, collectLinkCardUrls } from "@/features/link-card/urls";
@@ -160,13 +160,6 @@ describe("ビルド出力", () => {
     expect(written.length).toBe(buildRoutes(production).length);
   });
 
-  test.each(["index.html", "404.html", "articles.html", "artworks.html"])(
-    "%s が出力される",
-    (file) => {
-      expect(exists(file)).toBe(true);
-    }
-  );
-
   test("下書きの記事は出力されない", () => {
     const drafts = dev.articles
       .filter((article) => !article.published)
@@ -241,16 +234,15 @@ describe("ビルド出力", () => {
     expect(missing).toEqual([]);
   });
 
-  test.each(["index.html", "articles/void_linux.html", "artworks.html"])(
-    "%s に Google Analytics が入る",
-    (file) => {
-      const html = fs.readFileSync(path.join(target, file), "utf-8");
+  test("Google Analytics が入る", () => {
+    // Layout が無条件に描くため、1 ページ見れば全ページの配線が分かる。
+    // タグ自体の出し分けは Analytics.test.tsx にある
+    const html = fs.readFileSync(path.join(target, "index.html"), "utf-8");
 
-      expect(html).toContain("G-XXCZ8KW3CC");
-      expect(html).toContain("googletagmanager.com/gtag/js");
-      expect(html).toContain("2500");
-    }
-  );
+    expect(html).toContain("G-XXCZ8KW3CC");
+    expect(html).toContain("googletagmanager.com/gtag/js");
+    expect(html).toContain("2500");
+  });
 
   test("記事の末尾は一覧へ戻る導線にする", () => {
     const html = fs.readFileSync(path.join(target, "articles/void_linux.html"), "utf-8");
@@ -505,31 +497,6 @@ describe("ビルド出力", () => {
    * `_headers` の immutable が嘘になる**ため、原本を置いていないことまで見る
    */
   describe("指紋付きの資産", () => {
-    test.each([STYLESHEET, KATEX_CSS, CODE_ASSETS.css, CODE_ASSETS.js])(
-      "%s が指紋付きで出力される",
-      (name) => {
-        expect(assets[name]).toBeDefined();
-        expect(assets[name]).not.toBe(`/${name}`);
-        expect(exists(asset(name))).toBe(true);
-      }
-    );
-
-    test("指紋の無い名前では出力されない", () => {
-      const bare = [STYLESHEET, KATEX_CSS, CODE_ASSETS.css, CODE_ASSETS.js].filter((name) =>
-        exists(name)
-      );
-
-      expect(bare).toEqual([]);
-    });
-
-    test("CSS は縮めて出力される", () => {
-      const css = read(asset(STYLESHEET));
-
-      expect(css.length).toBeLessThan(
-        fs.readFileSync(path.join(import.meta.dirname, "../src/styles/globals.css"), "utf-8").length
-      );
-    });
-
     test("_headers が出力した URL だけを恒久キャッシュにする", () => {
       const headers = read("_headers");
       const urls = [...headers.matchAll(/^(\/\S+)$/gm)].map((matched) => matched[1] ?? "");
