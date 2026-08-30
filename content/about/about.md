@@ -17,11 +17,11 @@
 | ----------- | --------------------------------------------------- |
 | GitHub      | [omemoji](https://github.com/omemoji)               |
 | Instagram   | [omemoji](https://instagram.com/omemoji)            |
-| Fediverse   | [@omemoji@omemoji.net](https://omemoji.net/omemoji) |
 | X (Twitter) | [omemoji_art](https://twitter.com/omemoji_art)      |
-| Pixiv       | [omemoji](https://www.pixiv.net/users/65949346)     |
-| Zenn        | [omemoji](https://zenn.dev/omemoji)                 |
+| Email       | [me@omemoji.com](mailto:me@omemoji.com)             |
 | Keybase     | [omemoji](https://keybase.io/omemoji)               |
+| Zenn        | [omemoji](https://zenn.dev/omemoji)                 |
+| Fediverse   | [@omemoji@omemoji.net](https://omemoji.net/omemoji) |
 
 ## Projects
 
