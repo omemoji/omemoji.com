@@ -28,15 +28,20 @@ jobs:
             images-${{ hashFiles('content/**/*.png', 'content/**/*.jpg', 'content/**/*.jpeg', 'content/**/*.webp', 'public/*.png') }}-
             images-
 
-      # 取得済みのリンク先メタデータを持ち越す。当たった URL は取得しに行かない
+      # 取得済みのリンク先メタデータを持ち越す。当たった URL は取得しに行かない。
+      # 画像キャッシュと同じ理由で末尾を実行ごとに変える（exact hit の回に
+      # "not saving cache" となり、その回に取り直したカードが捨てられるため）。
+      # 取り直しの判定は cacheFile 内の取得時刻が持つ。キーは選択にしか効かない
       - name: Restore link card cache
         uses: actions/cache@v4
         with:
           path: |
             .cache/link-meta.json
             .cache/link-card
-          key: link-cards-${{ hashFiles('content/articles/**/*.md', 'content/about/*.md') }}
-          restore-keys: link-cards-
+          key: link-cards-${{ hashFiles('content/articles/**/*.md', 'content/about/*.md') }}-${{ github.run_id }}-${{ github.job }}
+          restore-keys: |
+            link-cards-${{ hashFiles('content/articles/**/*.md', 'content/about/*.md') }}-
+            link-cards-
 
       # 生成済みの OGP 画像を持ち越す。画像キャッシュと同じ理由で末尾を実行ごとに変える
       # （生成側のコードやフォントを変えた回に、新しい結果が保存されなくなるため）

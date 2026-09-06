@@ -87,13 +87,14 @@ describe("取得のステージ", () => {
     fs.rmSync(dir, { recursive: true, force: true });
   });
 
-  const collect = (fetch: Fetcher, offline = false) =>
+  const collect = (fetch: Fetcher, offline = false, maxAgeMs?: number) =>
     collectLinkCards(["https://example.com/entry"], {
       cacheFile: cacheFile(),
       cacheDir: cacheDir(),
       outDir: outDir(),
       offline,
       retryDelayMs: 0,
+      ...(maxAgeMs === undefined ? {} : { maxAgeMs }),
       fetch,
     });
 
@@ -118,6 +119,47 @@ describe("取得のステージ", () => {
     expect(fetched).toBe(0);
     expect(cached).toBe(1);
     expect(manifest["https://example.com/entry"]?.title).toBe("題");
+  });
+
+  test("期限が切れたキャッシュは取り直す", async () => {
+    await collect(fetcher());
+    const second = fetcher();
+    const { fetched, cached } = await collect(second, false, 0);
+
+    expect(second.calls).not.toEqual([]);
+    expect(fetched).toBe(1);
+    expect(cached).toBe(0);
+  });
+
+  test("期限が切れても取り直せなければ古いカードを使う", async () => {
+    await collect(fetcher());
+    const dead = Object.assign(async () => new Response("", { status: 500 }), { calls: [] });
+    const { manifest, failed } = await collect(dead, false, 0);
+
+    expect(manifest["https://example.com/entry"]?.title).toBe("題");
+    expect(failed).toEqual([]);
+  });
+
+  test("画像を差し替えるとサムネイルの名前も変わる", async () => {
+    const { manifest: before } = await collect(fetcher());
+
+    thumbnail = await sharp({
+      create: { width: 1200, height: 630, channels: 3, background: "#111" },
+    })
+      .png()
+      .toBuffer();
+    const { manifest: after } = await collect(fetcher(), false, 0);
+
+    expect(after["https://example.com/entry"]?.image?.src).not.toBe(
+      before["https://example.com/entry"]?.image?.src
+    );
+  });
+
+  test("キャッシュに管理項目を持ち込まない", async () => {
+    await collect(fetcher());
+    const { manifest } = await collect(fetcher());
+
+    expect(manifest["https://example.com/entry"]).not.toHaveProperty("fetchedAt");
   });
 
   test("dev はキャッシュにある分だけカードにする", async () => {

@@ -21,9 +21,12 @@ export type LinkCardManifest = Record<string, LinkCard>;
 const THUMB_DIR = "images/ogp_link";
 const THUMB_HEIGHT = 120;
 const THUMB_QUALITY = 30;
+/** キャッシュを使い回す上限。既定は 7 日 */
+const MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
 
-const thumbName = (url: string): string =>
-  `${crypto.createHash("sha256").update(url).digest("hex").slice(0, 16)}.webp`;
+/** 中身のハッシュ。画像を差し替えれば名前も変わり、配信側のキャッシュも剥がれる */
+const thumbName = (data: Buffer): string =>
+  `${crypto.createHash("sha256").update(data).digest("hex").slice(0, 16)}.webp`;
 
 /**
  * 取得済みのメタデータ。`.cache/link-meta.json` にそのまま入る。
@@ -31,7 +34,14 @@ const thumbName = (url: string): string =>
  * サムネイルの実体は `<cacheDir>/<ハッシュ>.webp`。マニフェストと同じ形で持つので、
  * キャッシュに当たった場合は複製するだけで済む
  */
-type CacheFile = Record<string, LinkCard>;
+type CacheEntry = LinkCard & {
+  /** 取得時刻。無い場合は期限切れとして扱い、取り直す */
+  fetchedAt?: number;
+};
+type CacheFile = Record<string, CacheEntry>;
+
+/** キャッシュの管理項目を落とす。マニフェストには載せない */
+const toCard = ({ fetchedAt: _, ...card }: CacheEntry): LinkCard => card;
 
 const readCache = (file: string): CacheFile => {
   try {
@@ -76,7 +86,7 @@ async function makeThumbnail(
       .webp({ quality: THUMB_QUALITY })
       .toBuffer({ resolveWithObject: true });
 
-    const name = thumbName(imageUrl);
+    const name = thumbName(data);
     fs.mkdirSync(cacheDir, { recursive: true });
     fs.writeFileSync(path.join(cacheDir, name), data);
 
@@ -92,6 +102,8 @@ export type CollectOptions = {
   cacheFile: string;
   /** サムネイルの実体を溜める場所 */
   cacheDir: string;
+  /** キャッシュを使い回す上限。過ぎた URL は取り直す */
+  maxAgeMs?: number;
   /** サムネイルの複製先。dev は複製しないので省く */
   outDir?: string;
   /**
@@ -119,7 +131,15 @@ export type CollectResult = {
  */
 export async function collectLinkCards(
   urls: string[],
-  { cacheFile, cacheDir, outDir, offline = false, concurrency = 6, ...fetchOptions }: CollectOptions
+  {
+    cacheFile,
+    cacheDir,
+    outDir,
+    offline = false,
+    concurrency = 6,
+    maxAgeMs = MAX_AGE_MS,
+    ...fetchOptions
+  }: CollectOptions
 ): Promise<CollectResult> {
   const cache = readCache(cacheFile);
   const manifest: LinkCardManifest = {};
@@ -150,20 +170,26 @@ export async function collectLinkCards(
 
   await mapWithLimit(urls, concurrency, async (url) => {
     const hit = cache[url];
-    if (hit) {
+    // dev は期限を見ない。取得は本番ビルドの仕事
+    if (hit && (offline || Date.now() - (hit.fetchedAt ?? 0) < maxAgeMs)) {
       cached++;
-      publish(hit);
+      publish(toCard(hit));
       return;
     }
 
     if (offline) {
-      // dev はここで止める。取得は本番ビルドの仕事
       failed.push(url);
       return;
     }
 
     const meta = await fetchMeta(url, fetchOptions);
     if (!meta) {
+      // 期限切れでも取り直せなければ古いカードで凌ぐ。ビルドは落とさない
+      if (hit) {
+        cached++;
+        publish(toCard(hit));
+        return;
+      }
       failed.push(url);
       return;
     }
@@ -179,7 +205,7 @@ export async function collectLinkCards(
     };
 
     fetched++;
-    cache[url] = card;
+    cache[url] = { ...card, fetchedAt: Date.now() };
     publish(card);
   });
 
