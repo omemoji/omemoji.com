@@ -5,8 +5,9 @@ import satori from "satori";
 
 /** 描く文字を持つ OGP のパラメータ。作品の額装（generate.ts）とは別物 */
 export const OG_TEXT_PARAMS = {
-  /** 外枠の色。移植元と同じ */
-  frame: "#d50000",
+  /** 外枠のグラデーション*/
+  frameFrom: "#d50000",
+  frameTo: "#ffc500",
   card: "#ffffff",
   text: "#000000",
 } as const;
@@ -60,7 +61,7 @@ export async function renderTitleSvg(
     <div
       style={{
         fontFamily: "Noto Sans CJK JP, sans-serif",
-        backgroundColor: OG_TEXT_PARAMS.frame,
+        backgroundImage: `linear-gradient(to bottom right, ${OG_TEXT_PARAMS.frameFrom}, ${OG_TEXT_PARAMS.frameTo})`,
         color: OG_TEXT_PARAMS.text,
         display: "flex",
         flexDirection: "row",

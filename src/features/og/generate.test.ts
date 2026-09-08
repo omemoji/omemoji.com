@@ -121,20 +121,22 @@ describe("記事", () => {
     expect(meta.format).toBe("png");
   });
 
-  test("外枠は移植元と同じ赤、中は白いカード", async () => {
+  test("外枠は左上の赤から右下の黄へのグラデーション、中は白いカード", async () => {
     const image = sharp(path.join(outDir(), "images/og/articles/x.png"));
-    const corner = await image
-      .clone()
-      .extract({ left: 2, top: 2, width: 1, height: 1 })
-      .raw()
-      .toBuffer();
-    const inside = await image
-      .extract({ left: OG_PARAMS.width / 2, top: OG_PARAMS.height - 40, width: 1, height: 1 })
-      .raw()
-      .toBuffer();
+    const pixel = async (left: number, top: number): Promise<number[]> => {
+      const raw = await image.clone().extract({ left, top, width: 1, height: 1 }).raw().toBuffer();
+      return [...raw.subarray(0, 3)];
+    };
+    // 端から 2px 内側を見るので、グラデーションが少しだけ進んでいる
+    const near = (actual: number[], expected: number[]) => {
+      expect(actual.length).toBe(expected.length);
+      for (const [i, value] of expected.entries())
+        expect(Math.abs((actual[i] ?? Number.NaN) - value)).toBeLessThan(8);
+    };
 
-    expect([corner[0], corner[1], corner[2]]).toEqual([0xd5, 0x00, 0x00]);
-    expect([inside[0], inside[1], inside[2]]).toEqual([0xff, 0xff, 0xff]);
+    near(await pixel(2, 2), [0xd5, 0x00, 0x00]);
+    near(await pixel(OG_PARAMS.width - 3, OG_PARAMS.height - 3), [0xff, 0xbb, 0x00]);
+    expect(await pixel(OG_PARAMS.width / 2, OG_PARAMS.height - 40)).toEqual([0xff, 0xff, 0xff]);
   });
 
   test("タイトルが同じなら 2 回目は生成しない", async () => {
