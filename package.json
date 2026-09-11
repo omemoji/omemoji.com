@@ -44,7 +44,7 @@
     "remark-rehype": "11.1.2",
     "satori": "^0.33.4",
     "sharp": "0.35.4",
-    "simple-icons": "16.29.0",
+    "simple-icons": "16.30.0",
     "unified": "11.0.5",
     "unist-util-visit": "5.1.0",
     "yaml": "2.9.0",
