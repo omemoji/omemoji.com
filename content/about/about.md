@@ -13,15 +13,15 @@
 
 ## Accounts
 
-| Service     | ID                                                  |
-| ----------- | --------------------------------------------------- |
-| GitHub      | [omemoji](https://github.com/omemoji)               |
-| Instagram   | [omemoji](https://instagram.com/omemoji)            |
-| X (Twitter) | [omemoji_art](https://twitter.com/omemoji_art)      |
-| Email       | [me@omemoji.com](mailto:me@omemoji.com)             |
-| Keybase     | [omemoji](https://keybase.io/omemoji)               |
-| Zenn        | [omemoji](https://zenn.dev/omemoji)                 |
-| Fediverse   | [@omemoji@omemoji.net](https://omemoji.net/omemoji) |
+| Service     | ID                                                                   |
+| ----------- | -------------------------------------------------------------------- |
+| Email       | [me@omemoji.com](mailto:me@omemoji.com)                              |
+| GitHub      | [omemoji](https://github.com/omemoji)                                |
+| Instagram   | [omemoji](https://instagram.com/omemoji)                             |
+| Misskey     | [@omemoji@misskey.omemoji.net](https://misskey.omemoji.net/@omemoji) |
+| X (Twitter) | [omemoji_art](https://twitter.com/omemoji_art)                       |
+| Zenn        | [omemoji](https://zenn.dev/omemoji)                                  |
+| Keybase     | [omemoji](https://keybase.io/omemoji)                                |
 
 ## Projects
 

@@ -1,8 +1,9 @@
-import { type SimpleIcon, siGithub, siInstagram, siX, siZenn } from "simple-icons";
+import { type SimpleIcon, siGithub, siInstagram, siMisskey, siX, siZenn } from "simple-icons";
 
 const snsList: { icon: SimpleIcon; href: string }[] = [
   { icon: siGithub, href: "https://github.com/omemoji" },
   { icon: siInstagram, href: "https://instagram.com/omemoji" },
+  { icon: siMisskey, href: "https://misskey.omemoji.net/@omemoji" },
   { icon: siX, href: "https://x.com/omemoji_art" },
   { icon: siZenn, href: "https://zenn.dev/omemoji" },
 ];
