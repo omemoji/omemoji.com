@@ -274,6 +274,38 @@
     border-block-end: 1px solid var(--border);
   }
 
+  /* 見出しの節番号（1. / 1.2 / 1.2.3）。記事ページのみ。
+     h2::before はアクセント下線で使っているため、autolink が挟む a の ::before に出す */
+  .numbered-headings {
+    counter-reset: h2;
+
+    & h2 {
+      counter-increment: h2;
+      counter-reset: h3;
+    }
+
+    & h3 {
+      counter-increment: h3;
+      counter-reset: h4;
+    }
+
+    & h4 {
+      counter-increment: h4;
+    }
+
+    & h2 > a::before {
+      content: counter(h2) ". ";
+    }
+
+    & h3 > a::before {
+      content: counter(h2) "." counter(h3) " ";
+    }
+
+    & h4 > a::before {
+      content: counter(h2) "." counter(h3) "." counter(h4) " ";
+    }
+  }
+
   /* 見出しは rehype-autolink-headings により a で包まれるため、
      リンク色ではなく本文色を維持する */
   article :is(h2, h3, h4, h5, h6) a {
@@ -291,6 +323,13 @@
         text-decoration-line: underline;
       }
     }
+  }
+
+  /* 区切り線 ----------------------------------------------------------- */
+
+  /* 既定は文字色（currentColor）。body の枠線と揃える */
+  hr {
+    border-color: var(--border);
   }
 
   /* 表 ----------------------------------------------------------------- */
@@ -710,6 +749,29 @@
 
     &[data-depth="3"] {
       padding-inline-start: 4rem;
+    }
+  }
+
+  /* 本文の .numbered-headings と同じ節番号を振る。項目は平らな li の並びなので、
+     h2 の項目で h3 のカウンターを戻す */
+  .toc ol {
+    counter-reset: toc-h2;
+  }
+
+  .toc-item[data-depth="2"] {
+    counter-increment: toc-h2;
+    counter-reset: toc-h3;
+
+    & > a::before {
+      content: counter(toc-h2) ". ";
+    }
+  }
+
+  .toc-item[data-depth="3"] {
+    counter-increment: toc-h3;
+
+    & > a::before {
+      content: counter(toc-h2) "." counter(toc-h3) " ";
     }
   }
 

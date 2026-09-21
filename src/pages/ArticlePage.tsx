@@ -38,7 +38,7 @@ export default async function ArticlePage({ article }: PageProps["ArticlePage"])
       {/* 目次は article の外に置く。本文向けのリスト装飾を受けないようにするため */}
       <ArticleToc headings={headings} />
 
-      <article>{toReact(tree, markdownComponents)}</article>
+      <article className="numbered-headings">{toReact(tree, markdownComponents)}</article>
 
       <Back
         href="/articles"

@@ -50,7 +50,7 @@ https://elsainmac.tistory.com/1017
 実は、Fedora Asahi Remixでは既に成功例が存在している（詳細は上記を参照）。
 これを参考に、Void Linuxで`fairydust`ブランチのLinuxカーネルをインストールする方法を2つ紹介する。なお、Fedora Asahi Remixを使っている人は上記記事を直接見ることをおすすめする。
 
-### 1. カスタムxbpsリポジトリを導入する
+### カスタムxbpsリポジトリを導入する
 
 https://github.com/omemoji/void-asahi-fairydust
 
@@ -73,7 +73,7 @@ https://github.com/omemoji/void-asahi-fairydust
 
    インストールが完了したら再起動する。
 
-### 2. 自分でビルドする
+### 自分でビルドする
 
 自分でパッケージをビルドする場合、上記カスタムリポジトリに加え[void-packages](https://github.com/void-linux/void-packages)リポジトリもクローンする必要がある。
 
