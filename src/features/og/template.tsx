@@ -29,10 +29,13 @@ function loadAssets(): { font: Buffer; icon: string } {
   return assets;
 }
 
-/** キャッシュのキーに混ぜる。フォントやアイコンを差し替えたら値が変わる */
+/**
+ * キャッシュのキーに混ぜる。フォントやアイコン、色を差し替えたら値が変わる。
+ * **レイアウト（JSX）の変更はここに現れない。**変えたら OG_VERSION を上げる
+ */
 export function textAssetsKey(): string {
   const { font, icon } = loadAssets();
-  return `${font.byteLength}:${icon.length}`;
+  return `${font.byteLength}:${icon.length}:${JSON.stringify(OG_TEXT_PARAMS)}`;
 }
 
 const parser = loadDefaultJapaneseParser();

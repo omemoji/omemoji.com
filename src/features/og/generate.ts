@@ -10,7 +10,7 @@ import { renderTitleSvg, textAssetsKey } from "@/features/og/template";
  * 変換パラメータを変えたらこれを上げる。画像の最適化（features/image）と同じ考え方で、
  * キャッシュのキーに含めることで古い出力が生き残らないようにする。
  */
-export const OG_VERSION = 2;
+export const OG_VERSION = 3;
 
 /** OGP 画像の仕様。1200x630 は Twitter / Facebook が大きいカードで使う比率 */
 export const OG_PARAMS = {
