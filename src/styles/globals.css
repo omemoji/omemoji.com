@@ -144,7 +144,9 @@
     --bg-artwork: light-dark(#dddddd, #222222);
     --bg-thead: light-dark(#dddddd, #222222);
     --border: #aaaaaa;
-    --link: light-dark(#d50000, #ffc500);
+    --link-light: #d50000;
+    --link-dark: #ffc500;
+    --link: light-dark(var(--link-light), var(--link-dark));
     --quote: light-dark(#666666, #9c9c9c);
     --linkcard: light-dark(#aaaaaa, #666666);
     --menu: light-dark(#666666, #9c9c9c);
@@ -934,8 +936,18 @@
       background-color: var(--bg-artwork);
     }
 
+    /*
+      outline はグラデーションを描けないため、透明な border の下に
+      グラデーションの背景を敷いて枠にする（OGP 画像の枠と同じ向き）。
+      border の分だけ外へ広げ、outline と同じく周りの配置を動かさない
+    */
     a[aria-current="page"] img {
-      outline: 2px solid var(--link);
+      inline-size: calc(100% + 4px);
+      margin: -2px;
+      border: 3px solid transparent;
+      background:
+        linear-gradient(var(--bg-artwork)) padding-box,
+        linear-gradient(to bottom right, var(--link-light), var(--link-dark)) border-box;
     }
 
     @media (hover: hover) {
