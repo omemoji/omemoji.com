@@ -1,6 +1,6 @@
 ---
 emoji: "🍎"
-title: "M2 MacBookにVoid Linuxをインストールする"
+title: "M2 MacBookにAsahi Linux (Void Linux) をインストールする"
 description: "Asahi LinuxベースのVoid LinuxをMacBook Air (M2, 2022) にインストールし、普段使いする"
 date: 2025-08-18
 tags: ["Tech", "Linux", "VoidLinux", "AsahiLinux", "Apple"]
@@ -234,6 +234,28 @@ MacBook 本来の OS である macOS とも比較してみよう。まず、メ�
 
 ### Google Chrome
 
+2026-10-26追記: [ARM64 Linux版のGoogle Chrome](https://blog.google/chromium/bringing-chrome-to-arm64-linux-devices/)が2026年3月に発表され、現在ではAsahi LinuxでもChromeを使えるようになった。
+また、[void-packages](https://github.com/void-linux/void-packages) にPRを出し、Void Linuxでも`google-chrome`のaarch64版を使えるようにした。
+
+https://github.com/void-linux/void-packages/pull/61726
+
+他のパッケージと同様、以下の方法で簡単にビルド・インストール出来る。
+
+```sh
+cd path/to/void-packages
+# build
+./xbps-src pkg google-chrome
+# install
+sudo xbps-install --repository hostdir/binpkgs/nonfree google-chrome
+```
+
+
+
+
+
+<details>
+<summary>以前の方法（ChromiumにGoogle API Keyを渡す）</summary>
+
 前提として、Linux 向けの Google Chrome は arm64 版のビルドが存在しない。つまり、arm64 アーキテクチャである M1/M2 チップ上で動作する Asahi Linux は、Google Chrome を使えない ── ように見える。
 
 しかしよく考えてみてほしい。Google Chrome を使うメリットは「Google アカウントを介してパスワードやブックマークを同期出来ること」それに尽きるのではないだろうか？
@@ -248,6 +270,8 @@ Chromium をインストールしたあと、 Google Sync API を取得する。
 https://658c196ef6.seesaa.net/article/474071017.html
 
 そして`chromium`の起動時にそれらの環境変数をオプションとして追加すれば、Google アカウントとの同期が出来るようになる。自分でデスクトップエントリーを作っておくと楽である。
+
+</details>
 
 ### Visual Studio Code
 
