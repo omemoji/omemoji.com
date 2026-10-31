@@ -1,4 +1,5 @@
 ---
+
 emoji: "📕"
 title: "Linux（Waydroid）でKindleを使ってみよう"
 description: "Waydroidを導入し、LinuxでもKindleで本を読めるようにする"

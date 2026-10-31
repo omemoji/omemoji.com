@@ -1,4 +1,5 @@
 ---
+
 emoji: "☯️"
 title: "東方Projectの音楽を語りたい"
 description: "弾幕シューティングゲーム「東方Project」とその音楽について"

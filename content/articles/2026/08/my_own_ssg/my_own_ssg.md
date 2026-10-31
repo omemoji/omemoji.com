@@ -1,4 +1,5 @@
 ---
+
 emoji: "🔧"
 title: "ポートフォリオをTypeScript+Bunの自作SSGでリニューアルする"
 description: "個人サイト「創作物紹介」をフレームワークなしでフルスクラッチし、Astroから自作SSGに移行する"
@@ -131,7 +132,7 @@ Astro を参考に、役割ごとにディレクトリを分割した。
 
 ### ページのルーティング
 
-恐らく最も独自性の高い部分。 
+恐らく最も独自性の高い部分。
 Astro では`src/pages`配下の`.astro`ファイルの構成および`getStaticPaths()`関数によってルーティングを自動で生成してくれた[^routing_astro]が、この自作SSGでは`routes.ts`に純粋関数としてルーティングを記述する。
 考え方としては、TanStack Routerのcode-based routing[^vs_tanstack]と似ている。
 
@@ -171,7 +172,7 @@ export function buildRoutes({ articles, artworks, about }: Content): Route[] {
     { path: "/", indexable: true, page: "AboutPage", props: { body: about } },
     // 作品（作品データ配列を元に生成）
     ...artworksListRoutes,
-    ...artworkRoutes, 
+    ...artworkRoutes,
     // 記事（記事データ配列を元に生成）
     ...articlesListRoutes,
     ...articleRoutes,

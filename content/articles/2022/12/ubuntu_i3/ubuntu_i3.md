@@ -1,4 +1,5 @@
 ---
+
 emoji: "💻"
 title: "Ubuntu Server を普段使いしてみよう "
 description: "Ubuntu Server 22.04 にGUI環境を入れて普段使い"
@@ -146,4 +147,4 @@ yes | sudo apt install --no-install-recommends pavucontrol pulseaudio-utils
 
 ## おわりに
 
-🎄***Merry Christmas.***
+🎄_**Merry Christmas.**_

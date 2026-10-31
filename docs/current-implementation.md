@@ -5,15 +5,15 @@
 
 ## 1. スタック
 
-| 領域 | 採用技術 |
-| --- | --- |
-| フレームワーク | Astro 7（静的出力） |
-| UI | Astro コンポーネント + React（OGP 画像生成のみ） |
-| スタイル | Tailwind CSS v4（`@tailwindcss/vite`） |
-| 言語 | TypeScript（`astro/tsconfigs/strict`、エイリアス `@/*` → `./src/*`） |
-| Lint / Format | Biome |
-| パッケージマネージャ | Bun |
-| ホスティング | Cloudflare Pages |
+| 領域                 | 採用技術                                                             |
+| -------------------- | -------------------------------------------------------------------- |
+| フレームワーク       | Astro 7（静的出力）                                                  |
+| UI                   | Astro コンポーネント + React（OGP 画像生成のみ）                     |
+| スタイル             | Tailwind CSS v4（`@tailwindcss/vite`）                               |
+| 言語                 | TypeScript（`astro/tsconfigs/strict`、エイリアス `@/*` → `./src/*`） |
+| Lint / Format        | Biome                                                                |
+| パッケージマネージャ | Bun                                                                  |
+| ホスティング         | Cloudflare Pages                                                     |
 
 ## 2. ビルド設定（`astro.config.ts`）
 
@@ -29,18 +29,18 @@ image.remotePatterns: [{ protocol: "https" }]
 
 ファイルベースルーティング + `getStaticPaths`。
 
-| ファイル | 生成されるパス |
-| --- | --- |
-| `src/pages/index.astro` | `/` |
-| `src/pages/articles/[...page].astro` | `/articles`, `/articles/2` … |
-| `src/pages/articles/[slug].astro` | `/articles/<slug>` |
-| `src/pages/articles/tag/[tag]/[...page].astro` | `/articles/tag/<tag>/…` |
-| `src/pages/artworks/[...page].astro` | `/artworks`, `/artworks/2` … |
-| `src/pages/artworks/[id].astro` | `/artworks/<id>` |
-| `src/pages/artworks/tag/[tag]/[...page].astro` | `/artworks/tag/<tag>/…` |
-| `src/pages/api/og/articles/[slug].png.ts` | `/api/og/articles/<slug>.png` |
-| `src/pages/api/og/artworks/[slug].png.ts` | `/api/og/artworks/<id>.png` |
-| `src/pages/404.astro` | `/404` |
+| ファイル                                       | 生成されるパス                |
+| ---------------------------------------------- | ----------------------------- |
+| `src/pages/index.astro`                        | `/`                           |
+| `src/pages/articles/[...page].astro`           | `/articles`, `/articles/2` …  |
+| `src/pages/articles/[slug].astro`              | `/articles/<slug>`            |
+| `src/pages/articles/tag/[tag]/[...page].astro` | `/articles/tag/<tag>/…`       |
+| `src/pages/artworks/[...page].astro`           | `/artworks`, `/artworks/2` …  |
+| `src/pages/artworks/[id].astro`                | `/artworks/<id>`              |
+| `src/pages/artworks/tag/[tag]/[...page].astro` | `/artworks/tag/<tag>/…`       |
+| `src/pages/api/og/articles/[slug].png.ts`      | `/api/og/articles/<slug>.png` |
+| `src/pages/api/og/artworks/[slug].png.ts`      | `/api/og/artworks/<id>.png`   |
+| `src/pages/404.astro`                          | `/404`                        |
 
 ページネーションは Astro の `paginate()` を使用。ページ番号リンクは `src/lib/fs.ts` の `pageIdGen()`（1..N の配列）を `PageBar` に渡して描画する。
 
@@ -51,8 +51,8 @@ image.remotePatterns: [{ protocol: "https" }]
 `astro:content` の glob loader。
 
 ```ts
-loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/articles" })
-schema: z.object({ emoji, title, description, date, tags, published })
+loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/articles" });
+schema: z.object({ emoji, title, description, date, tags, published });
 ```
 
 - ID はファイルパス由来でディレクトリ階層を含む。`index.mdx` はディレクトリ名が ID になる。
@@ -71,12 +71,12 @@ schema: z.object({ emoji, title, description, date, tags, published })
 
 ### remark
 
-| プラグイン | 対応する機能要件 |
-| --- | --- |
-| `remark-gemoji` | 絵文字ショートコード |
-| `remark-denden-ruby` | ルビ |
-| `remark-math` | 数式 |
-| `src/lib/remark-link-card.ts`（自作） | リンクカード判定 |
+| プラグイン                            | 対応する機能要件     |
+| ------------------------------------- | -------------------- |
+| `remark-gemoji`                       | 絵文字ショートコード |
+| `remark-denden-ruby`                  | ルビ                 |
+| `remark-math`                         | 数式                 |
+| `src/lib/remark-link-card.ts`（自作） | リンクカード判定     |
 
 `remarkRehype` オプション: `allowDangerousHtml: true`, `footnoteLabel: "脚注"`
 
@@ -85,12 +85,12 @@ schema: z.object({ emoji, title, description, date, tags, published })
 
 ### rehype
 
-| プラグイン | 対応する機能要件 |
-| --- | --- |
-| `rehype-slug` | 見出しアンカー ID |
-| `rehype-autolink-headings`（`behavior: "wrap"`） | 見出しのリンク化 |
-| `rehype-katex` | 数式レンダリング |
-| `rehype-unwrap-images` | 画像を `<p>` から取り出す |
+| プラグイン                                       | 対応する機能要件          |
+| ------------------------------------------------ | ------------------------- |
+| `rehype-slug`                                    | 見出しアンカー ID         |
+| `rehype-autolink-headings`（`behavior: "wrap"`） | 見出しのリンク化          |
+| `rehype-katex`                                   | 数式レンダリング          |
+| `rehype-unwrap-images`                           | 画像を `<p>` から取り出す |
 
 KaTeX の CSS は `src/pages/articles/[slug].astro` で `katex/dist/katex.min.css` を import。
 
@@ -109,7 +109,7 @@ KaTeX の CSS は `src/pages/articles/[slug].astro` で `katex/dist/katex.min.cs
 記事・About のレンダリング時に MDX の要素を差し替える。
 
 ```ts
-const components = { img: ImageHandler, a: LinkHandler }
+const components = { img: ImageHandler, a: LinkHandler };
 ```
 
 - `ImageHandler`: `src` が文字列なら素の `<img>`、`ImageMetadata` なら最適化済み `<Image>`（`max-h-110` + 上下ボーダー）
@@ -180,7 +180,7 @@ filter: (page) =>
   !page.includes("/artworks/tag") &&
   !page.includes("/articles/tag") &&
   !page.match(/\/artworks\/[0-9]+\//) &&
-  !page.match(/\/articles\/[0-9]+\//)
+  !page.match(/\/articles\/[0-9]+\//);
 ```
 
 > **要確認**: 記事 slug は `2025/03/...` のように数字セグメントで始まるため、最後の 2 条件が記事・作品の詳細ページまで除外している疑いがある。生成対象パスと除外ルールが `getStaticPaths` と `astro.config.ts` に分かれた二重管理になっているのが原因。
@@ -188,10 +188,10 @@ filter: (page) =>
 ## 11. 定数（`src/lib/constant.ts`）
 
 ```ts
-WIDTH_MAIN = 700
-COUNT_PER_PAGE = 7        // 記事一覧
-ARTWORKS_PER_PAGE = 9     // 作品一覧
-HOST = "omemoji.com"
+WIDTH_MAIN = 700;
+COUNT_PER_PAGE = 7; // 記事一覧
+ARTWORKS_PER_PAGE = 9; // 作品一覧
+HOST = "omemoji.com";
 ```
 
 ## 12. CI / CD

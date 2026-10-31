@@ -1,4 +1,5 @@
 ---
+
 emoji: "📺️"
 title: "Asahi LinuxでUSB Type-Cから外部ディスプレイに画面出力を行う"
 description: "Void Linux（Asahi Linux）でDP Altモードで画面出力するために、ハック済みのLinuxカーネルをビルドする"

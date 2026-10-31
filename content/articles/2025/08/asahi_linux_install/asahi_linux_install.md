@@ -1,4 +1,5 @@
 ---
+
 emoji: "🍎"
 title: "M2 MacBookにAsahi Linux (Void Linux) をインストールする"
 description: "Asahi LinuxベースのVoid LinuxをMacBook Air (M2, 2022) にインストールし、普段使いする"
@@ -178,8 +179,7 @@ shutdown -r now # 電源を切る
 
 インストールが成功していれば、GRUB が立ち上がり Void Linux を起動出来るようになっているはずである。あとは好きにカスタマイズしてしまおう。
 
-![正しくインストールされている場合、起動時の画面の真ん中にVoid Linuxのロゴが表示される。おめでとう🎉
-](./install_success.png)
+![正しくインストールされている場合、起動時の画面の真ん中にVoid Linuxのロゴが表示される。おめでとう🎉](./install_success.png)
 
 ## 実際に使ってみて
 
