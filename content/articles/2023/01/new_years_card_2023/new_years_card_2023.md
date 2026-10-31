@@ -1,4 +1,5 @@
 ---
+
 emoji: "🐇"
 title: "2023年度年賀状イラストを作る"
 description: "Inkscapeで年賀状イラストを作成"
@@ -49,7 +50,7 @@ https://akane-glass.com
 
 > 透明なガラスの中に截金を封じ込めた「截金ガラス」は、山本茜が独自に編み出した技法です。
 > 「截金を装飾ではなく、表現の主体にするために空間に浮遊させたい」という願いから生まれました。\
->  [https://akane-glass.com/message/](https://akane-glass.com/message/)
+> [https://akane-glass.com/message/](https://akane-glass.com/message/)
 
 この「截金ガラス」という表現手法に強いインスピレーションを受け、参考にしようと考えた。
 

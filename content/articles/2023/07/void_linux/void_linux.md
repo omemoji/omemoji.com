@@ -1,4 +1,5 @@
 ---
+
 emoji: "🐧"
 title: "Void Linuxをインストールする"
 description: "Void Linuxのインストール及びi3デスクトップ環境の構築"

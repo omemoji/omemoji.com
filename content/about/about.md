@@ -1,9 +1,9 @@
 ## Profile
 
-| key      | val                 |
-| -------- | ------------------- |
-| Name     | **omemoji**         |
-| Region   | 🗼Tokyo, 🇯🇵Japan      |
+| key      | val                    |
+| -------- | ---------------------- |
+| Name     | **omemoji**            |
+| Region   | 🗼Tokyo, 🇯🇵Japan       |
 | Interest | 🌐Web, 🎨Art , 🐧Linux |
 
 ### Qualification
