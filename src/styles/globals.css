@@ -308,12 +308,6 @@
     }
   }
 
-  /* 見出しは rehype-autolink-headings により a で包まれるため、
-     リンク色ではなく本文色を維持する */
-  article :is(h2, h3, h4, h5, h6) a {
-    color: var(--fg);
-  }
-
   /* リンク ------------------------------------------------------------- */
 
   article a {
@@ -325,6 +319,12 @@
         text-decoration-line: underline;
       }
     }
+  }
+
+  /* 見出しは rehype-autolink-headings により a で包まれるため、
+     リンク色ではなく本文色を維持する */
+  article :is(h2, h3, h4, h5, h6) a {
+    color: var(--fg);
   }
 
   /* 区切り線 ----------------------------------------------------------- */
@@ -826,6 +826,7 @@
       display: flex;
     }
 
+    /* biome-ignore lint/style/noDescendingSpecificity: .toc の見出しとは別の要素 */
     h2 {
       margin: 0 0 1rem;
       padding: 0 0 0.5rem;
