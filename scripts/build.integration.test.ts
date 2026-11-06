@@ -87,7 +87,11 @@ describe("記録の無い初回のビルド", () => {
     async () => {
       dir = fs.mkdtempSync(path.join(os.tmpdir(), "omemoji-cold-"));
       // 変換結果だけを引き継ぎ、記録は落とす。実際のキャッシュには一切書かない
-      fs.cpSync(imageCacheDir, cacheDir(), { recursive: true });
+      if (fs.existsSync(imageCacheDir)) {
+        fs.cpSync(imageCacheDir, cacheDir(), { recursive: true });
+      } else {
+        fs.mkdirSync(cacheDir(), { recursive: true });
+      }
       fs.rmSync(path.join(cacheDir(), "requests.json"), { force: true });
     },
     // キャッシュが冷えていると全件を焼き直すことになる
