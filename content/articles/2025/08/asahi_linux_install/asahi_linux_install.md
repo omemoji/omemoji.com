@@ -249,10 +249,6 @@ cd path/to/void-packages
 sudo xbps-install --repository hostdir/binpkgs/nonfree google-chrome
 ```
 
-
-
-
-
 <details>
 <summary>以前の方法（ChromiumにGoogle API Keyを渡す）</summary>
 

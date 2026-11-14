@@ -22,7 +22,7 @@
   "dependencies": {
     "@expressive-code/plugin-collapsible-sections": "0.44.3",
     "@expressive-code/plugin-line-numbers": "0.44.3",
-    "budoux": "^0.10.2",
+    "budoux": "^0.10.3",
     "cheerio": "1.2.0",
     "hast-util-to-jsx-runtime": "2.3.7",
     "katex": "0.19.1",
@@ -52,7 +52,7 @@
     "zod-to-json-schema": "3.25.2"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.6.4",
+    "@biomejs/biome": "2.6.6",
     "@types/bun": "1.4.4",
     "@types/node": "26.6.6",
     "@types/react": "19.3.0",
