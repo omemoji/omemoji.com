@@ -4,7 +4,7 @@ import path from "node:path";
 import sharp from "sharp";
 
 import { mapWithLimit } from "@/features/concurrency";
-import { type Fetcher, type FetchMetaOptions, fetchMeta } from "@/features/link-card/fetch-meta";
+import { type FetchMetaOptions, fetchMeta, fetchWithRetry } from "@/features/link-card/fetch-meta";
 
 /** カード 1 枚の描画に必要な情報。画像は自前で持つサムネイルを指す */
 export type LinkCard = {
@@ -72,11 +72,17 @@ const copyTo = (from: string, outDir: string, to: string): void => {
 async function makeThumbnail(
   imageUrl: string,
   cacheDir: string,
-  fetcher: Fetcher
+  options: FetchMetaOptions
 ): Promise<LinkCard["image"]> {
   try {
-    const response = await fetcher(imageUrl, { headers: { Accept: "image/*,*/*;q=0.8" } });
-    if (!response.ok) {
+    // 動的に生成される OGP 画像（GitHub など）は初回だけ失敗・遅延しやすい。
+    // HTML と同じく 5xx・ネットワークエラー・タイムアウトを再試行する
+    const response = await fetchWithRetry(
+      imageUrl,
+      { headers: { Accept: "image/*,*/*;q=0.8" } },
+      options
+    );
+    if (!response?.ok) {
       return undefined;
     }
 
@@ -168,10 +174,19 @@ export async function collectLinkCards(
     }
   };
 
+  /** サムネイルの参照があり、その実体が手元にあるか */
+  const hasThumb = (card: LinkCard): boolean =>
+    card.image !== undefined && fs.existsSync(path.join(cacheDir, path.basename(card.image.src)));
+
   await mapWithLimit(urls, concurrency, async (url) => {
     const hit = cache[url];
+    // 参照しているサムネイルの実体が失われたエントリは、期限内でも取り直す
+    const fresh =
+      hit !== undefined &&
+      Date.now() - (hit.fetchedAt ?? 0) < maxAgeMs &&
+      (hit.image === undefined || hasThumb(hit));
     // dev は期限を見ない。取得は本番ビルドの仕事
-    if (hit && (offline || Date.now() - (hit.fetchedAt ?? 0) < maxAgeMs)) {
+    if (hit && (offline || fresh)) {
       cached++;
       publish(toCard(hit));
       return;
@@ -194,9 +209,12 @@ export async function collectLinkCards(
       return;
     }
 
-    const fetcher = fetchOptions.fetch ?? fetch;
-    const image =
-      meta.image === "" ? undefined : await makeThumbnail(meta.image, cacheDir, fetcher);
+    const thumb =
+      meta.image === "" ? undefined : await makeThumbnail(meta.image, cacheDir, fetchOptions);
+    // OGP 画像はあるのにサムネイルにできなかった。一時的な失敗のことが多い
+    const imageFailed = meta.image !== "" && thumb === undefined;
+    // 取り直しで画像だけ失敗した場合は、前回のサムネイルで凌ぐ
+    const image = thumb ?? (imageFailed && hit && hasThumb(hit) ? hit.image : undefined);
     const card: LinkCard = {
       url,
       title: meta.title,
@@ -205,7 +223,9 @@ export async function collectLinkCards(
     };
 
     fetched++;
-    cache[url] = { ...card, fetchedAt: Date.now() };
+    // 画像の失敗を「取得済み」として期限まで固定しない。取得時刻を付けずに保存し、
+    // 次のビルドで取り直させる（取り直せなければこのカードで凌ぐ）
+    cache[url] = imageFailed ? card : { ...card, fetchedAt: Date.now() };
     publish(card);
   });
 

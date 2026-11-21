@@ -42,7 +42,7 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
  * 動的に生成される OGP 画像は初回だけ失敗することがある。
  * 4xx は再試行しても変わらないのでそのまま返す。
  */
-async function fetchWithRetry(
+export async function fetchWithRetry(
   url: string,
   init: RequestInit,
   { fetch: fetcher = fetch, retries = 2, retryDelayMs = 1000, timeoutMs = 15000 }: FetchMetaOptions

@@ -228,6 +228,69 @@ describe("取得のステージ", () => {
     expect(manifest["https://example.com/entry"]?.image).toBeUndefined();
   });
 
+  test("OGP 画像の一時的な失敗は再試行する", async () => {
+    let imageCalls = 0;
+    const flaky = Object.assign(
+      async (url: string) => {
+        if (!url.endsWith(".png")) {
+          return page(head);
+        }
+        imageCalls++;
+        return imageCalls === 1
+          ? new Response("", { status: 502 })
+          : new Response(thumbnail as unknown as BodyInit);
+      },
+      { calls: [] }
+    );
+
+    const { manifest } = await collect(flaky);
+
+    expect(manifest["https://example.com/entry"]?.image?.height).toBe(120);
+  });
+
+  test("OGP 画像が取れなかったカードは次のビルドで取り直す", async () => {
+    const brokenImage = Object.assign(
+      async (url: string) =>
+        url.endsWith(".png") ? new Response("", { status: 404 }) : page(head),
+      { calls: [] }
+    );
+    await collect(brokenImage);
+
+    // 期限内でも、画像の失敗を固定せずに取り直す
+    const second = fetcher();
+    const { manifest, fetched } = await collect(second);
+
+    expect(fetched).toBe(1);
+    expect(second.calls).toContain("https://example.com/a.png");
+    expect(manifest["https://example.com/entry"]?.image?.height).toBe(120);
+  });
+
+  test("取り直しで画像だけ失敗したら前回のサムネイルを使う", async () => {
+    const { manifest: before } = await collect(fetcher());
+    const brokenImage = Object.assign(
+      async (url: string) =>
+        url.endsWith(".png") ? new Response("", { status: 404 }) : page(head),
+      { calls: [] }
+    );
+
+    const { manifest: after } = await collect(brokenImage, false, 0);
+
+    expect(after["https://example.com/entry"]?.image).toEqual(
+      before["https://example.com/entry"]?.image
+    );
+  });
+
+  test("サムネイルの実体が失われたエントリは期限内でも取り直す", async () => {
+    await collect(fetcher());
+    fs.rmSync(cacheDir(), { recursive: true, force: true });
+
+    const second = fetcher();
+    const { manifest, fetched } = await collect(second);
+
+    expect(fetched).toBe(1);
+    expect(manifest["https://example.com/entry"]?.image?.height).toBe(120);
+  });
+
   test("サムネイルの実体が無ければ画像の参照ごと落とす", async () => {
     await collect(fetcher());
     // メタデータだけが残り、画像が失われた状態を作る
