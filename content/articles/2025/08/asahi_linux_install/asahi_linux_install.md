@@ -26,7 +26,7 @@ https://omemoji.com/articles/void_linux
 
 Apple Silicon を搭載した MacBook Air は持ち運びに適した軽さとバッテリー持ちの良さ、そしてそれにも関わらず高いパフォーマンス...と、ラップトップとしての総合的な完成度の高さが魅力になっている。そして何より、 **Linux をインストール出来る**。なんでも **[Asahi Linux](https://asahilinux.org)** なるプロジェクトによって、M1/M2 に関しては GPU を始めとしたかなりの部分まで Linux が動くようになったのだという。
 
-ThinkPad に Linux を入れて普段使いしていた筆者にとって、Asahi Linux の存在は朗報だった ── ノート PC に必要な全てを備えた、どこにでも持っていける最高の Linux ラップトップ。そのロマンに突き動かされ、気づくとターミナルを叩いて Asahi Linux のインストールを開始していたのであった。~~最悪 macOS 使えばいいし~~
+ThinkPad に Linux を入れて普段使いしていた筆者にとって、Asahi Linux の存在は朗報だった ── ノート PC に必要な全てを備えた、どこにでも持っていける最高の Linux ラップトップ。そのロマンに突き動かされ、気づくとターミナルを叩いて Asahi Linux のインストールを開始していたのであった。
 
 ## Asahi Linux って何？
 
